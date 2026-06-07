@@ -1,0 +1,25 @@
+{
+  "name": "ProdeBEB — Mundial 2026",
+  "short_name": "ProdeBEB",
+  "description": "El prode del Mundial 2026. Predecí, competí y seguí el torneo en tiempo real.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0D1A",
+  "theme_color": "#1A1A2E",
+  "lang": "es-AR",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

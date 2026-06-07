@@ -1,26 +1,110 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Brand extras */
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-green: var(--brand-green);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-red: var(--brand-red);
+
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-bebas);
+  --font-mono: ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Light theme (fallback / future uso) */
+:root {
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.12 0.03 264);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.12 0.03 264);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.12 0.03 264);
+  --primary: oklch(0.77 0.155 72);
+  --primary-foreground: oklch(0.12 0.03 264);
+  --secondary: oklch(0.94 0.01 264);
+  --secondary-foreground: oklch(0.12 0.03 264);
+  --muted: oklch(0.94 0.01 264);
+  --muted-foreground: oklch(0.5 0.01 264);
+  --accent: oklch(0.61 0.185 152);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.54 0.245 24);
+  --border: oklch(0.88 0.01 264);
+  --input: oklch(0.88 0.01 264);
+  --ring: oklch(0.77 0.155 72);
+  --radius: 0.625rem;
+
+  --brand-blue: oklch(0.49 0.2 255);
+  --brand-green: oklch(0.61 0.185 152);
+  --brand-gold: oklch(0.77 0.155 72);
+  --brand-red: oklch(0.54 0.245 24);
+}
+
+/* Dark theme — ProdeBEB brand (tema principal) */
+.dark {
+  --background: oklch(0.1 0.025 264);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.15 0.03 264);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.15 0.03 264);
+  --popover-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.77 0.155 72);
+  --primary-foreground: oklch(0.12 0.03 264);
+  --secondary: oklch(0.2 0.03 264);
+  --secondary-foreground: oklch(0.97 0 0);
+  --muted: oklch(0.2 0.03 264);
+  --muted-foreground: oklch(0.6 0.02 264);
+  --accent: oklch(0.61 0.185 152);
+  --accent-foreground: oklch(0.97 0 0);
+  --destructive: oklch(0.54 0.245 24);
+  --border: oklch(0.25 0.025 264);
+  --input: oklch(0.2 0.03 264);
+  --ring: oklch(0.77 0.155 72);
+
+  --brand-blue: oklch(0.49 0.2 255);
+  --brand-green: oklch(0.61 0.185 152);
+  --brand-gold: oklch(0.77 0.155 72);
+  --brand-red: oklch(0.54 0.245 24);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
+  body {
+    @apply bg-background font-sans text-foreground;
+  }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
 }

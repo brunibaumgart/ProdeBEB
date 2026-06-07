@@ -1,65 +1,120 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { CalendarDays, Grid3x3, MapPin, Users } from 'lucide-react'
+import { auth } from '@clerk/nextjs/server'
 
-export default function Home() {
+import { AppShell } from '@/components/layout/app-shell'
+import { CountdownTimer, MatchCard } from '@/components/ui-mundial'
+import { canAccessTestContent } from '@/lib/auth/test-access'
+import {
+  getNextMatch,
+  getRecentFinishedMatches,
+  getTodayMatches,
+  getUpcomingMatches,
+} from '@/lib/queries/matches'
+import { getArgentinaTodayBounds, isWithinTwoHours } from '@/lib/time'
+
+export default async function HomePage() {
+  const { userId: clerkId } = await auth()
+  const includeTestMatches = await canAccessTestContent(clerkId)
+  const { gte, lte } = getArgentinaTodayBounds()
+
+  const [todayMatches, nextMatch, upcoming, recent] = await Promise.all([
+    getTodayMatches(gte, lte, { includeTestMatches }),
+    getNextMatch({ includeTestMatches }),
+    getUpcomingMatches(3, { includeTestMatches }),
+    getRecentFinishedMatches(3, { includeTestMatches }),
+  ])
+
+  let featuredMatches = todayMatches.slice(0, 3)
+  let sectionTitle = 'PARTIDOS DE HOY'
+
+  if (featuredMatches.length === 0) {
+    if (upcoming.length > 0) {
+      featuredMatches = upcoming
+      sectionTitle = 'PRÓXIMOS PARTIDOS'
+    } else {
+      featuredMatches = recent
+      sectionTitle = 'ÚLTIMOS RESULTADOS'
+    }
+  }
+
+  const showMatchCountdown = nextMatch && isWithinTwoHours(nextMatch.date)
+  const countdownTarget = showMatchCountdown ? nextMatch.date : null
+
+  const quickLinks = [
+    { href: '/fixture', label: 'Fixture', icon: CalendarDays, description: '104 partidos' },
+    { href: '/grupos', label: 'Grupos', icon: Grid3x3, description: '12 grupos' },
+    { href: '/selecciones', label: 'Selecciones', icon: Users, description: '48 equipos' },
+    { href: '/estadios', label: 'Estadios', icon: MapPin, description: '16 sedes' },
+  ]
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <AppShell pathname="/">
+      <section className="mb-10 text-center">
+        <p className="mb-2 text-sm font-medium uppercase tracking-widest text-brand-gold">
+          FIFA World Cup 2026
+        </p>
+        <h1 className="font-heading text-4xl tracking-wide text-foreground sm:text-5xl">
+          PRODEBEB
+        </h1>
+        <p className="mx-auto mt-3 max-w-md text-muted-foreground">
+          Predecí, competí y seguí el Mundial 2026 en tiempo real.
+        </p>
+      </section>
+
+      {countdownTarget && (
+        <section className="mb-10 rounded-2xl border border-brand-gold/30 bg-card p-6">
+          <CountdownTimer
+            targetDate={countdownTarget}
+            label={
+              nextMatch?.homeTeam && nextMatch?.awayTeam
+                ? `${nextMatch.homeTeam.nameEs} vs ${nextMatch.awayTeam.nameEs}`
+                : 'Próximo partido'
+            }
+          />
+        </section>
+      )}
+
+      <section className="mb-10">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-heading text-2xl tracking-wide">{sectionTitle}</h2>
+          <Link href="/fixture" className="text-sm font-medium text-primary hover:underline">
+            Ver todos
+          </Link>
+        </div>
+        {featuredMatches.length > 0 ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredMatches.map((match) => (
+              <MatchCard key={match.id} match={match} href={`/fixture/${match.id}`} />
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">
+            No hay partidos para mostrar.
           </p>
+        )}
+      </section>
+
+      <section>
+        <h2 className="mb-4 font-heading text-2xl tracking-wide">EXPLORAR</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {quickLinks.map(({ href, label, icon: Icon, description }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
+            >
+              <span className="flex size-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                <Icon className="size-5" aria-hidden />
+              </span>
+              <span>
+                <span className="block font-medium">{label}</span>
+                <span className="text-sm text-muted-foreground">{description}</span>
+              </span>
+            </Link>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+      </section>
+    </AppShell>
+  )
 }

@@ -1,0 +1,332 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  clerkId            String   @unique
+  name               String
+  email              String   @unique
+  avatar             String?
+  hasChosenUsername  Boolean  @default(false)
+  isAdmin            Boolean  @default(false)
+  isTester           Boolean  @default(false)
+  createdAt          DateTime @default(now())
+
+  predictions        Prediction[]
+  awardPredictions   AwardPrediction[]
+  juryPredictions    JuryPrediction[]
+  bracketEntry       BracketEntry?
+  memberships        TournamentMember[]
+  createdTournaments Tournament[]
+  tournamentPayments TournamentPayment[]
+}
+
+model Team {
+  id            String  @id @default(cuid())
+  name          String  @unique
+  nameEs        String
+  group         String
+  iso2          String
+  confederation String
+  flagEmoji     String
+  kitPrimary    String
+  kitSecondary  String
+  kitThird      String?
+  textOnPrimary String
+  isTest        Boolean @default(false)
+
+  players            Player[]
+  awardPredictions   AwardPrediction[]
+  awardResults       AwardResult[]
+  juryPredictions    JuryPrediction[]
+  juryResults        JuryResult[]
+  homeMatches Match[]  @relation("HomeTeam")
+  awayMatches Match[]  @relation("AwayTeam")
+
+  @@index([group])
+}
+
+model Player {
+  id                   String @id @default(cuid())
+  name                 String
+  position             String
+  club                 String
+  internationalMatches Int
+  teamId               String
+  team                 Team   @relation(fields: [teamId], references: [id])
+  predictionScorers    PredictionScorer[]
+  matchGoals           MatchGoal[]
+  awardPredictions     AwardPrediction[]
+  awardResults         AwardResult[]
+  juryPredictions      JuryPrediction[]
+  juryResults          JuryResult[]
+
+  @@index([teamId])
+  @@index([position])
+}
+
+model Venue {
+  id       String @id @default(cuid())
+  name     String @unique
+  city     String
+  country  String
+  capacity Int
+
+  matches Match[]
+}
+
+model Match {
+  id       Int     @id
+  round    String
+  matchday Int?
+  group    String?
+  date     DateTime
+  timeArg  String
+
+  venueId String
+  venue   Venue  @relation(fields: [venueId], references: [id])
+
+  homeTeamId String?
+  awayTeamId String?
+  homeTeam   Team?   @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam   Team?   @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  homeLabel String?
+  awayLabel String?
+
+  homeFromMatchId  Int?
+  awayFromMatchId  Int?
+  homeFromPosition String?
+  awayFromPosition String?
+
+  homeScore Int?
+  awayScore Int?
+  status    String   @default("scheduled")
+  isTest    Boolean  @default(false)
+
+  predictions  Prediction[]
+  bracketSlots BracketSlot[]
+  goals        MatchGoal[]
+
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([round])
+  @@index([group])
+  @@index([status])
+}
+
+model Prediction {
+  id            String   @id @default(cuid())
+  userId        String
+  matchId       Int
+  predHome      Int
+  predAway      Int
+  points        Int?
+  pointsScorers Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user    User               @relation(fields: [userId], references: [id])
+  match   Match              @relation(fields: [matchId], references: [id])
+  scorers PredictionScorer[]
+
+  @@unique([userId, matchId])
+  @@index([userId])
+  @@index([matchId])
+}
+
+model PredictionScorer {
+  id           String @id @default(cuid())
+  predictionId String
+  playerId     String
+  isHome       Boolean
+
+  prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  player     Player     @relation(fields: [playerId], references: [id])
+
+  @@index([predictionId])
+  @@index([playerId])
+}
+
+model AwardPrediction {
+  id        String   @id @default(cuid())
+  userId    String
+  awardId   String
+  playerId  String?
+  teamId    String?
+  points    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player Player? @relation(fields: [playerId], references: [id])
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  @@unique([userId, awardId])
+  @@index([awardId])
+  @@index([userId])
+}
+
+model AwardResult {
+  awardId   String   @id
+  playerId  String?
+  teamId    String?
+  updatedAt DateTime @updatedAt
+
+  player Player? @relation(fields: [playerId], references: [id])
+  team   Team?   @relation(fields: [teamId], references: [id])
+}
+
+model JuryPrediction {
+  id         String   @id @default(cuid())
+  userId     String
+  categoryId String
+  playerId   String?
+  teamId     String?
+  points     Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  player Player? @relation(fields: [playerId], references: [id])
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  @@unique([userId, categoryId])
+  @@index([categoryId])
+  @@index([userId])
+}
+
+model JuryResult {
+  categoryId String   @id
+  playerId   String?
+  teamId     String?
+  updatedAt  DateTime @updatedAt
+
+  player Player? @relation(fields: [playerId], references: [id])
+  team   Team?   @relation(fields: [teamId], references: [id])
+}
+
+model MatchGoal {
+  id       String @id @default(cuid())
+  matchId  Int
+  playerId String
+  isHome   Boolean
+
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player @relation(fields: [playerId], references: [id])
+
+  @@index([matchId])
+  @@index([playerId])
+}
+
+model BracketEntry {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  championId      String?
+  pointsPositions Int       @default(0)
+  pointsChampion  Int       @default(0)
+  pointsEarlyBonus Int      @default(0)
+  locked          Boolean   @default(false)
+  lockedAt        DateTime?
+  createdAt       DateTime  @default(now())
+
+  user  User          @relation(fields: [userId], references: [id])
+  slots BracketSlot[]
+}
+
+model BracketSlot {
+  id             String @id @default(cuid())
+  bracketEntryId String
+  matchId        Int
+
+  predHomeTeamId String?
+  predAwayTeamId String?
+  predHomeScore  Int?
+  predAwayScore  Int?
+  /** Equipo que avanza en eliminatorias (obligatorio si empate en 90'). */
+  predAdvancesTeamId String?
+  /** regulation | extra_time | penalties */
+  predDecidedIn  String?
+  points         Int?
+
+  bracketEntry BracketEntry @relation(fields: [bracketEntryId], references: [id])
+  match        Match        @relation(fields: [matchId], references: [id])
+
+  @@unique([bracketEntryId, matchId])
+  @@index([bracketEntryId])
+}
+
+model Tournament {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  code         String   @unique
+  isPublic     Boolean  @default(false)
+  modeComplete Boolean  @default(true)
+  modeMatchday Boolean  @default(true)
+  modeScorers  Boolean  @default(true)
+  createdById  String?
+  createdAt    DateTime @default(now())
+
+  createdBy User?              @relation(fields: [createdById], references: [id])
+  members   TournamentMember[]
+  payments  TournamentPayment[]
+}
+
+model TournamentMember {
+  id             String   @id @default(cuid())
+  userId         String
+  tournamentId   String
+  pointsComplete Int      @default(0)
+  pointsMatchday Int      @default(0)
+  pointsScorers  Int      @default(0)
+  pointsTotal    Int      @default(0)
+  rank           Int?
+  joinedAt       DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id])
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+
+  @@unique([userId, tournamentId])
+  @@index([tournamentId, pointsTotal])
+}
+
+enum TournamentPaymentStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}
+
+enum TournamentPaymentType {
+  tournament_create
+  tournament_join
+}
+
+model TournamentPayment {
+  id                   String                  @id @default(cuid())
+  userId               String
+  type                 TournamentPaymentType
+  status               TournamentPaymentStatus @default(pending)
+  amount               Int
+  currency             String                  @default("ARS")
+  preferenceId         String?                 @unique
+  mercadoPagoPaymentId String?                 @unique
+  metadata             Json
+  tournamentId         String?
+  fulfilledAt          DateTime?
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  tournament Tournament? @relation(fields: [tournamentId], references: [id])
+
+  @@index([userId, status])
+  @@index([status])
+}

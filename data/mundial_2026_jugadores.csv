@@ -1,0 +1,1249 @@
+pais,nombre_completo,club,posicion,partidos_internacionales
+México,Guillermo Ochoa,AEL Limassol,Portero,152
+México,Raúl Rangel,Guadalajara,Portero,13
+México,Carlos Acevedo,Santos Laguna,Portero,7
+México,Jesús Gallardo,Toluca,Defensa,120
+México,César Montes,Lokomotiv Moscow,Defensa,66
+México,Jorge Sánchez,PAOK,Defensa,58
+México,Johan Vásquez,Genoa,Defensa,45
+México,Israel Reyes,América,Defensa,33
+México,Mateo Chávez,AZ,Defensa,9
+México,Edson Álvarez,Fenerbahçe,Mediocampista,97
+México,Orbelín Pineda,AEK Athens,Mediocampista,91
+México,Roberto Alvarado,Guadalajara,Mediocampista,66
+México,Luis Romo,Guadalajara,Mediocampista,62
+México,Luis Chávez,Dynamo Moscow,Mediocampista,44
+México,Érik Lira,Cruz Azul,Mediocampista,24
+México,Gilberto Mora,Tijuana,Mediocampista,7
+México,Brian Gutiérrez,Guadalajara,Mediocampista,6
+México,Obed Vargas,Atlético Madrid,Mediocampista,6
+México,Álvaro Fidalgo,Real Betis,Mediocampista,3
+México,Raúl Jiménez,Fulham,Delantero,123
+México,Alexis Vega,Toluca,Delantero,51
+México,Santiago Giménez,AC Milan,Delantero,47
+México,César Huerta,Anderlecht,Delantero,26
+México,Julián Quiñones,Al Qadsiah,Delantero,21
+México,Guillermo Martínez,UNAM,Delantero,11
+México,Armando González,Guadalajara,Delantero,7
+Sudáfrica,Ronwen Williams,Mamelodi Sundowns,Portero,62
+Sudáfrica,Ricardo Goss,Siwelele,Portero,4
+Sudáfrica,Sipho Chaine,Orlando Pirates,Portero,3
+Sudáfrica,Aubrey Modiba,Mamelodi Sundowns,Defensa,44
+Sudáfrica,Khuliso Mudau,Mamelodi Sundowns,Defensa,34
+Sudáfrica,Nkosinathi Sibisi,Orlando Pirates,Defensa,19
+Sudáfrica,Mbekezeli Mbokazi,Chicago Fire,Defensa,10
+Sudáfrica,Ime Okon,Hannover 96,Defensa,7
+Sudáfrica,Samukele Kabini,Molde,Defensa,5
+Sudáfrica,Khulumani Ndamane,Mamelodi Sundowns,Defensa,5
+Sudáfrica,Thabang Matuludi,Polokwane City,Defensa,2
+Sudáfrica,Kamogelo Sebelebele,Orlando Pirates,Defensa,2
+Sudáfrica,Bradley Cross,Kaizer Chiefs,Defensa,0
+Sudáfrica,Olwethu Makhanya,Philadelphia Union,Defensa,0
+Sudáfrica,Teboho Mokoena,Mamelodi Sundowns,Mediocampista,51
+Sudáfrica,Sphephelo Sithole,Tondela,Mediocampista,27
+Sudáfrica,Thalente Mbatha,Orlando Pirates,Mediocampista,14
+Sudáfrica,Jayden Adams,Mamelodi Sundowns,Mediocampista,4
+Sudáfrica,Themba Zwane,Mamelodi Sundowns,Delantero,53
+Sudáfrica,Lyle Foster,Burnley,Delantero,26
+Sudáfrica,Evidence Makgopa,Orlando Pirates,Delantero,26
+Sudáfrica,Oswin Appollis,Orlando Pirates,Delantero,25
+Sudáfrica,Iqraam Rayners,Mamelodi Sundowns,Delantero,13
+Sudáfrica,Relebohile Mofokeng,Orlando Pirates,Delantero,12
+Sudáfrica,Thapelo Maseko,AEL Limassol,Delantero,9
+Sudáfrica,Tshepang Moremi,Orlando Pirates,Delantero,9
+República Checa,Matěj Kovář,PSV Eindhoven,Portero,19
+República Checa,Jindřich Staněk,Slavia Prague,Portero,14
+República Checa,Lukáš Horníček,Braga,Portero,1
+República Checa,Vladimír Coufal,Hoffenheim,Defensa,61
+República Checa,Tomáš Holeš,Slavia Prague,Defensa,40
+República Checa,Ladislav Krejčí,Wolves,Defensa,26
+República Checa,David Zima,Slavia Prague,Defensa,24
+República Checa,Jaroslav Zelený,Sparta Prague,Defensa,22
+República Checa,David Jurásek,Slavia Prague,Defensa,17
+República Checa,David Douděra,Slavia Prague,Defensa,16
+República Checa,Robin Hranáč,Hoffenheim,Defensa,13
+República Checa,Štěpán Chaloupek,Slavia Prague,Defensa,4
+República Checa,Tomáš Souček,West Ham,Mediocampista,89
+República Checa,Vladimír Darida,Hradec Králové,Mediocampista,78
+República Checa,Lukáš Provod,Slavia Prague,Mediocampista,37
+República Checa,Michal Sadílek,Slavia Prague,Mediocampista,34
+República Checa,Pavel Šulc,Lyon,Mediocampista,20
+República Checa,Lukáš Červ,Viktoria Plzeň,Mediocampista,16
+República Checa,Hugo Sochůrek,Sparta Prague,Mediocampista,1
+República Checa,Alexandr Sojka,Viktoria Plzeň,Mediocampista,1
+República Checa,Denis Višinský,Viktoria Plzeň,Mediocampista,1
+República Checa,Patrik Schick,Bayer Leverkusen,Delantero,52
+República Checa,Adam Hložek,Hoffenheim,Delantero,42
+República Checa,Jan Kuchta,Sparta Prague,Delantero,31
+República Checa,Mojmír Chytil,Slavia Prague,Delantero,22
+República Checa,Tomáš Chorý,Slavia Prague,Delantero,21
+Corea del Sur,Kim Seung-gyu,FC Tokyo,Portero,85
+Corea del Sur,Jo Hyeon-woo,Ulsan HD,Portero,47
+Corea del Sur,Song Bum-keun,Jeonbuk Hyundai Motors,Portero,2
+Corea del Sur,Kim Min-jae,Bayern Munich,Defensa,77
+Corea del Sur,Kim Moon-hwan,Daejeon Hana Citizen,Defensa,34
+Corea del Sur,Seol Young-woo,Red Star Belgrade,Defensa,32
+Corea del Sur,Cho Yu-min,Sharjah,Defensa,18
+Corea del Sur,Lee Tae-seok,Austria Wien,Defensa,14
+Corea del Sur,Park Jin-seob,Zhejiang,Defensa,12
+Corea del Sur,Kim Tae-hyeon,Kashima Antlers,Defensa,7
+Corea del Sur,Lee Han-beom,Midtjylland,Defensa,6
+Corea del Sur,Jens Castrop,Borussia Mönchengladbach,Defensa,5
+Corea del Sur,Lee Ki-hyuk,Gangwon FC,Defensa,1
+Corea del Sur,Lee Jae-sung,Mainz,Mediocampista,103
+Corea del Sur,Hwang Hee-chang,Wolves,Mediocampista,77
+Corea del Sur,Hwang In-beom,Feyenoord,Mediocampista,71
+Corea del Sur,Lee Kang-in,PSG,Mediocampista,46
+Corea del Sur,Paik Seung-ho,Birmingham City,Mediocampista,25
+Corea del Sur,Kim Jin-gyu,Jeonbuk Hyundai Motors,Mediocampista,20
+Corea del Sur,Lee Dong-gyeong,Ulsan HD,Mediocampista,16
+Corea del Sur,Bae Jun-ho,Stoke City,Mediocampista,12
+Corea del Sur,Eom Ji-sung,Swansea City,Mediocampista,8
+Corea del Sur,Yang Hyun-jun,Celtic,Mediocampista,8
+Corea del Sur,Son Heung-min,LAFC,Delantero,142
+Corea del Sur,Cho Gue-sung,Midtjylland,Delantero,42
+Corea del Sur,Oh Hyeon-gyu,Beşiktaş,Delantero,20
+Canadá,Dayne St. Clair,Inter Miami,Portero,19
+Canadá,Maxime Crépeau,Orlando City SC,Portero,30
+Canadá,Owen Goodman,Barnsley,Portero,0
+Canadá,Alistair Johnston,Celtic,Defensa,56
+Canadá,Luc de Fougerolles,Dender,Defensa,11
+Canadá,Alfie Jones,Middlesbrough,Defensa,1
+Canadá,Joel Waterman,Chicago Fire,Defensa,17
+Canadá,Derek Cornelius,Rangers,Defensa,42
+Canadá,Moïse Bombito,OGC Nice,Defensa,19
+Canadá,Alphonso Davies,Bayern Munich,Defensa,4
+Canadá,Richie Laryea,Toronto FC,Defensa,73
+Canadá,Niko Sigur,Hadjuk Split,Defensa,17
+Canadá,Mathieu Choinière,LAFC,Mediocampista,22
+Canadá,Stephen Eustáquio,LAFC,Mediocampista,54
+Canadá,Ismaël Koné,Sassuolo,Mediocampista,38
+Canadá,Liam Millar,Hull City,Mediocampista,39
+Canadá,Jacob Shaffelburg,LAFC,Mediocampista,31
+Canadá,Ali Ahmed,Norwich City,Mediocampista,24
+Canadá,Jonathan Osorio,Toronto FC,Mediocampista,89
+Canadá,Nathan Saliba,Anderlecht,Mediocampista,13
+Canadá,Marcelo Flores,Tigres UANL,Mediocampista,2
+Canadá,Tajon Buchanan,Villarreal,Delantero,58
+Canadá,Jonathan David,Juventus,Delantero,75
+Canadá,Tani Oluwaseyi,Villarreal,Delantero,11
+Canadá,Cyle Larin,Southampton,Delantero,88
+Canadá,Promise David,Union Saint-Gilloise,Delantero,8
+Bosnia y Herzegovina,Nikola Vasilj,St. Pauli,Portero,25
+Bosnia y Herzegovina,Martin Zlomislić,Rijeka,Portero,2
+Bosnia y Herzegovina,Osman Hadžikić,Slaven Belupo,Portero,0
+Bosnia y Herzegovina,Sead Kolašinac,Atalanta,Defensa,64
+Bosnia y Herzegovina,Dennis Hadžikadunić,Sampdoria,Defensa,30
+Bosnia y Herzegovina,Amar Dedić,Benfica,Defensa,26
+Bosnia y Herzegovina,Nikola Katić,Schalke,Defensa,15
+Bosnia y Herzegovina,Tarik Muharemović,Sassuolo,Defensa,12
+Bosnia y Herzegovina,Nihad Mujakić,Gaziantep,Defensa,10
+Bosnia y Herzegovina,Stjepan Radeljić,Rijeka,Defensa,4
+Bosnia y Herzegovina,Nidal Čelik,Lens,Defensa,0
+Bosnia y Herzegovina,Amir Hadžiahmetović,Hull City,Mediocampista,34
+Bosnia y Herzegovina,Benjamin Tahirović,Brøndby,Mediocampista,26
+Bosnia y Herzegovina,Armin Gigović,Young Boys,Mediocampista,18
+Bosnia y Herzegovina,Dženis Burnić,Karlsruher SC,Mediocampista,18
+Bosnia y Herzegovina,Ivan Bašić,Astana,Mediocampista,15
+Bosnia y Herzegovina,Esmir Bajraktarević,PSV Eindhoven,Mediocampista,14
+Bosnia y Herzegovina,Amar Memić,Viktoria Plzeň,Mediocampista,11
+Bosnia y Herzegovina,Ivan Šunjić,Pafos,Mediocampista,11
+Bosnia y Herzegovina,Kerim Alajbegović,RB Salzburg,Mediocampista,8
+Bosnia y Herzegovina,Ermin Mahmić,Slovan Liberec,Mediocampista,0
+Bosnia y Herzegovina,Edin Džeko,Schalke,Delantero,148
+Bosnia y Herzegovina,Ermedin Demirović,Stuttgart,Delantero,38
+Bosnia y Herzegovina,Samed Baždar,Jagiellonia Białystok,Delantero,11
+Bosnia y Herzegovina,Haris Tabaković,Borussia Mönchengladbach,Delantero,10
+Bosnia y Herzegovina,Jovo Lukić,Universitatea Cluj,Delantero,1
+Catar,Mahmud Abunada,Al Rayyan,Portero,4
+Catar,Salah Zakaria,Al Duhail,Portero,8
+Catar,Meshaal Barsham,Al Sadd,Portero,52
+Catar,Pedro Miguel,Al Sadd,Defensa,98
+Catar,Lucas Mendes,Al Wakrah,Defensa,25
+Catar,Issa Laye,Al Arabi,Defensa,3
+Catar,Jassem Gaber,Al Rayyan,Defensa,31
+Catar,Ayoub Al-Oui,Al Gharafa,Defensa,5
+Catar,Homam Ahmed,Cultural Leonesa,Defensa,67
+Catar,Boualem Khoukhi,Al Sadd,Defensa,115
+Catar,Sultan Al-Brake,Al Duhail,Defensa,16
+Catar,Al-Hashmi Al-Hussain,Al Arabi,Defensa,7
+Catar,Abdulaziz Hatem,Al Rayyan,Mediocampista,117
+Catar,Karim Boudiaf,Al Duhail,Mediocampista,117
+Catar,Ahmed Al-Ganehi,Al Gharafa,Mediocampista,13
+Catar,Ahmed Fathy,Al Arabi,Mediocampista,47
+Catar,Assim Madibo,Al Wakrah,Mediocampista,50
+Catar,Ahmed Alaaeldin,Al Rayyan,Mediocampista,67
+Catar,Edmilson Junior,Al Duhail,Mediocampista,15
+Catar,Mohammed Muntari,Al Gharafa,Delantero,67
+Catar,Hassan Al-Haydos,Al Sadd,Delantero,185
+Catar,Akram Afif,Al Sadd,Delantero,124
+Catar,Yusuf Abdurisag,Al Wakrah,Delantero,38
+Catar,Almoez Ali,Al Duhail,Delantero,115
+Catar,Tahsin Jamshid,Al Duhail,Delantero,2
+Catar,Mohamed Manai,Al Shamal,Delantero,9
+Suiza,Gregor Kobel,Borussia Dortmund,Portero,20
+Suiza,Yvon Mvogo,Lorient,Portero,12
+Suiza,Marvin Keller,Young Boys,Portero,0
+Suiza,Ricardo Rodriguez,Real Betis,Defensa,136
+Suiza,Manuel Akanji,Inter,Defensa,79
+Suiza,Nico Elvedi,Borussia Mönchengladbach,Defensa,65
+Suiza,Silvan Widmer,Mainz,Defensa,58
+Suiza,Eray Cömert,Valencia,Defensa,20
+Suiza,Miro Muheim,Hamburg,Defensa,8
+Suiza,Aurèle Amenda,Eintracht Frankfurt,Defensa,6
+Suiza,Luca Jaquez,Stuttgart,Defensa,2
+Suiza,Granit Xhaka,Sunderland,Mediocampista,144
+Suiza,Remo Freuler,Bologna,Mediocampista,86
+Suiza,Denis Zakaria,Monaco,Mediocampista,63
+Suiza,Djibril Sow,Sevilla,Mediocampista,50
+Suiza,Michel Aebischer,Pisa,Mediocampista,38
+Suiza,Fabian Rieder,Augsburg,Mediocampista,27
+Suiza,Christian Fassnacht,Young Boys,Mediocampista,21
+Suiza,Johan Manzambi,Freiburg,Mediocampista,10
+Suiza,Ardon Jashari,Milan,Mediocampista,6
+Suiza,Breel Embolo,Rennes,Delantero,85
+Suiza,Rubén Vargas,Sevilla,Delantero,60
+Suiza,Dan Ndoye,Nottingham Forest,Delantero,29
+Suiza,Zeki Amdouni,Burnley,Delantero,27
+Suiza,Noah Okafor,Leeds United,Delantero,24
+Suiza,Cedric Itten,Fortuna Düsseldorf,Delantero,13
+Brasil,Alisson,Liverpool,Portero,76
+Brasil,Ederson,Fenerbahçe,Portero,31
+Brasil,Weverton,Grêmio,Portero,10
+Brasil,Marquinhos,PSG,Defensa,104
+Brasil,Danilo Luiz,Flamengo,Defensa,68
+Brasil,Alex Sandro,Flamengo,Defensa,43
+Brasil,Gabriel Magalhães,Arsenal,Defensa,17
+Brasil,Bremer,Juventus,Defensa,6
+Brasil,Wesley,Roma,Defensa,6
+Brasil,Roger Ibañez,Al Ahli,Defensa,5
+Brasil,Douglas Santos,Zenit,Defensa,5
+Brasil,Léo Pereira,Flamengo,Defensa,2
+Brasil,Casemiro,Manchester United,Mediocampista,84
+Brasil,Lucas Paquetá,Flamengo,Mediocampista,61
+Brasil,Bruno Guimarães,Newcastle,Mediocampista,41
+Brasil,Fabinho,Al Ittihad,Mediocampista,31
+Brasil,Danilo Santos,Botafogo,Mediocampista,2
+Brasil,Neymar,Santos,Delantero,128
+Brasil,Vinicius Junior,Real Madrid,Delantero,47
+Brasil,Raphinha,Barcelona,Delantero,37
+Brasil,Gabriel Martinelli,Arsenal,Delantero,22
+Brasil,Matheus Cunha,Manchester United,Delantero,21
+Brasil,Endrick,Lyon,Delantero,15
+Brasil,Luiz Henrique,Zenit,Delantero,13
+Brasil,Igor Thiago,Brentford,Delantero,2
+Brasil,Rayan,Bournemouth,Delantero,1
+Marruecos,Yassine Bounou,Al Hilal,Portero,89
+Marruecos,Munir Mohamedi,RS Berkane,Portero,50
+Marruecos,Ahmed Reda Tagnaouti,AS FAR,Portero,3
+Marruecos,Achraf Hakimi,Paris Saint-Germain,Defensa,95
+Marruecos,Nayef Aguerd,Marseille,Defensa,64
+Marruecos,Noussair Mazraoui,Manchester United,Defensa,43
+Marruecos,Youssef Belammari,Al Ahly,Defensa,8
+Marruecos,Anass Salah-Eddine,PSV Eindhoven,Defensa,8
+Marruecos,Chadi Riad,Crystal Palace,Defensa,4
+Marruecos,Issa Diop,Fulham,Defensa,2
+Marruecos,Zakaria El Ouahdi,Genk,Defensa,2
+Marruecos,Redouane Halhal,Mechelen,Defensa,1
+Marruecos,Sofyan Amrabat,Real Betis,Mediocampista,73
+Marruecos,Azzedine Ounahi,Girona,Mediocampista,47
+Marruecos,Bilal El Khannouss,Stuttgart,Mediocampista,35
+Marruecos,Ismael Saibari,PSV Eindhoven,Mediocampista,27
+Marruecos,Neil El Aynaoui,Roma,Mediocampista,15
+Marruecos,Samir El Mourabet,Strasbourg,Mediocampista,2
+Marruecos,Ayyoub Bouaddi,Lille,Mediocampista,0
+Marruecos,Ayoud El Kaabi,Olympiacos,Delantero,55
+Marruecos,Abde Ezzalzouli,Real Betis,Delantero,35
+Marruecos,Soufiane Rahimi,Al Ain,Delantero,25
+Marruecos,Brahim Díaz,Real Madrid,Delantero,24
+Marruecos,Chemsdine Talbi,Sunderland,Delantero,5
+Marruecos,Gessime Yassine,Strasbourg,Delantero,2
+Marruecos,Ayoube Amaimouni,Eintracht Frankfurt,Delantero,0
+Haití,Johny Placide,Bastia,Portero,79
+Haití,Alexandre Pierre,Sochaux,Portero,14
+Haití,Josué Duverger,Cosmos Koblenz,Portero,6
+Haití,Ricardo Adé,LDU Quito,Defensa,57
+Haití,Carlens Arcus,Angers,Defensa,51
+Haití,Martin Expérience,Nancy,Defensa,19
+Haití,Jean-Kévin Duverne,Gent,Defensa,15
+Haití,Duke Lacroix,Colorado Springs Switchbacks FC,Defensa,14
+Haití,Wilguens Paugain,Zulte Waregem,Defensa,6
+Haití,Hannes Delcroix,Lugano,Defensa,5
+Haití,Keeto Thermoncy,Young Boys,Defensa,1
+Haití,Leverton Pierre,Vizela,Mediocampista,33
+Haití,Danley Jean Jacques,Philadelphia Union,Mediocampista,28
+Haití,Carl Sainté,,Mediocampista,25
+Haití,Jean-Ricner Bellegarde,Wolves,Mediocampista,8
+Haití,Woodensky Pierre,El Paso Locomotive FC,Mediocampista,1
+Haití,Dominique Simon,Tatran Prešov,Mediocampista,0
+Haití,Duckens Nazon,Esteghal,Delantero,76
+Haití,Frantzdy Pierrot,Çaykur Rizespor,Delantero,49
+Haití,Derrick Etienne Jr.,Toronto FC,Delantero,46
+Haití,Louicius Deedson,FC Dallas,Delantero,30
+Haití,Ruben Providence,Almere City,Delantero,13
+Haití,Josué Casimir,Auxerre,Delantero,5
+Haití,Yassin Fortuné,Vizela,Delantero,3
+Haití,Wilson Isidor,Sunderland,Delantero,2
+Haití,Lenny Joseph,Ferencváros,Delantero,0
+Escocia,Craig Gordon,Hearts,Portero,83
+Escocia,Angus Gunn,Nottingham Forest,Portero,21
+Escocia,Liam Kelly,Rangers,Portero,2
+Escocia,Andy Robertson,Liverpool,Defensa,92
+Escocia,Grant Hanley,Hibernian,Defensa,66
+Escocia,Kieran Tierney,Celtic,Defensa,55
+Escocia,Scott McKenna,Dinamo Zagreb,Defensa,49
+Escocia,Jack Hendry,Al Ettifaq,Defensa,37
+Escocia,Nathan Patterson,Everton,Defensa,25
+Escocia,Anthony Ralston,Celtic,Defensa,25
+Escocia,John Souttar,Rangers,Defensa,22
+Escocia,Aaron Hickey,Brentford,Defensa,19
+Escocia,Dominic Hyam,Wrexham,Defensa,2
+Escocia,John McGinn,Aston Villa,Mediocampista,85
+Escocia,Scott McTominay,Napoli,Mediocampista,69
+Escocia,Ryan Christie,Bournemouth,Mediocampista,66
+Escocia,Kenny McLean,Norwich City,Mediocampista,56
+Escocia,Tyler Fletcher,Manchester United,Mediocampista,1
+Escocia,Lewis Ferguson,Bologna,Mediocampista,23
+Escocia,Ben Gannon-Doak,Bournemouth,Mediocampista,12
+Escocia,Findlay Curtis,Kilmarnock,Mediocampista,1
+Escocia,Lyndon Dykes,Charlton Athletic,Delantero,50
+Escocia,Ché Adams,Torino,Delantero,46
+Escocia,Lawrence Shankland,Hearts,Delantero,18
+Escocia,George Hirst,Ipswich Town,Delantero,8
+Escocia,Ross Stewart,Southampton,Delantero,2
+Estados Unidos,Matt Turner,New England Revolution,Portero,53
+Estados Unidos,Matt Freese,New York City FC,Portero,14
+Estados Unidos,Chris Brady,Chicago Fire,Portero,0
+Estados Unidos,Tim Ream,Charlotte FC,Defensa,80
+Estados Unidos,Antonee Robinson,Fulham,Defensa,52
+Estados Unidos,Miles Robinson,FC Cincinnati,Defensa,38
+Estados Unidos,Sergiño Dest,PSV Eindhoven,Defensa,37
+Estados Unidos,Chris Richards,Crystal Palace,Defensa,36
+Estados Unidos,Mark McKenzie,Toulouse,Defensa,27
+Estados Unidos,Joe Scally,Borussia Mönchengladbach,Defensa,24
+Estados Unidos,Maximilian Arfsten,Columbus Crew,Defensa,18
+Estados Unidos,Alex Freeman,Villarreal,Defensa,15
+Estados Unidos,Auston Trusty,Celtic,Defensa,6
+Estados Unidos,Weston McKennie,Juventus,Mediocampista,64
+Estados Unidos,Tyler Adams,Bournemouth,Mediocampista,52
+Estados Unidos,Cristian Roldan,Seattle Sounders,Mediocampista,45
+Estados Unidos,Giovanni Reyna,Borussia Mönchengladbach,Mediocampista,36
+Estados Unidos,Malik Tillman,Bayer Leverkusen,Mediocampista,28
+Estados Unidos,Sebastian Berhalter,Vancouver Whitecaps,Mediocampista,11
+Estados Unidos,Christian Pulisic,Milan,Delantero,84
+Estados Unidos,Brenden Aaronson,Leeds United,Delantero,57
+Estados Unidos,Timothy Weah,Marseille,Delantero,49
+Estados Unidos,Ricardo Pepi,PSV Eindhoven,Delantero,35
+Estados Unidos,Folarin Balgoun,Monaco,Delantero,25
+Estados Unidos,Haji Wright,Coventry City,Delantero,20
+Estados Unidos,Alex Zendejas,Club América,Delantero,13
+Paraguay,Gatito Fernández,Cerro Porteño,Portero,30
+Paraguay,Orlando Gill,San Lorenzo,Portero,5
+Paraguay,Gastón Olveira,Olimpia,Portero,1
+Paraguay,Gustavo Gómez,Palmeiras,Defensa,88
+Paraguay,Júnior Alonso,Atlético Mineiro,Defensa,70
+Paraguay,Fabián Balbuena,Grêmio,Defensa,47
+Paraguay,Omar Alderete,Sunderland,Defensa,35
+Paraguay,Juan José Cáceres,Dynamo Moscow,Defensa,16
+Paraguay,Gustavo Velázquez,Cerro Porteño,Defensa,12
+Paraguay,José Canale,Lanús,Defensa,1
+Paraguay,Alexandro Maidana,Talleres,Defensa,1
+Paraguay,Miguel Almirón,Atlanta United,Mediocampista,75
+Paraguay,Kaku,Al Ain,Mediocampista,32
+Paraguay,Andrés Cubas,Vancouver Whitecaps,Mediocampista,32
+Paraguay,Ramón Sosa,Palmeiras,Mediocampista,28
+Paraguay,Diego Gómez,Brighton,Mediocampista,23
+Paraguay,Damián Bobadilla,São Paulo,Mediocampista,19
+Paraguay,Braian Ojeda,Orlando City,Mediocampista,16
+Paraguay,Matías Galarza,Atlanta United,Mediocampista,14
+Paraguay,Maurício,Palmeiras,Mediocampista,2
+Paraguay,Antonio Sanabria,Cremonese,Delantero,47
+Paraguay,Julio Enciso,Strasbourg,Delantero,31
+Paraguay,Gabriel Ávalos,Independiente,Delantero,22
+Paraguay,Álex Arce,Independiente Rivadavia,Delantero,14
+Paraguay,Isidro Pitta,Red Bull Bragantino,Delantero,5
+Paraguay,Gustavo Caballero,Portsmouth,Delantero,2
+Australia,Mathew Ryan,Levante,Portero,104
+Australia,Paul Izzo,Randers,Portero,4
+Australia,Patrick Beach,Melbourne City,Portero,0
+Australia,Aziz Behich,Melbourne City,Defensa,83
+Australia,Miloš Degenek,APOEL,Defensa,56
+Australia,Harry Souttar,Leicester,Defensa,37
+Australia,Jordan Bos,Feyenoord,Defensa,26
+Australia,Cameron Burgess,Swansea,Defensa,26
+Australia,Jason Geria,Albirex Niigata,Defensa,13
+Australia,Alessandro Circati,Parma,Defensa,12
+Australia,Kai Trewin,New York City FC,Defensa,5
+Australia,Jacob Italiano,Grazer AK,Defensa,4
+Australia,Lucas Herrington,Colorado Rapids,Defensa,3
+Australia,Jackson Irvine,St. Pauli,Mediocampista,81
+Australia,Ajdin Hrustic,Heracles,Mediocampista,37
+Australia,Connor Metcalfe,St. Pauli,Mediocampista,35
+Australia,Aiden O'Neill,New York City FC,Mediocampista,30
+Australia,Paul Okon-Engstler,Sydney FC,Mediocampista,5
+Australia,Cammy Devlin,Hearts,Mediocampista,4
+Australia,Mathew Leckie,Melbourne City,Delantero,79
+Australia,Awer Mabil,Castellón,Delantero,38
+Australia,Nestory Irankunda,Watford,Delantero,14
+Australia,Mohamed Touré,Norwich,Delantero,9
+Australia,Nishan Velupilla,Melbourne Victory,Delantero,7
+Australia,Cristian Volpato,Sassuolo,Delantero,0
+Australia,Tete Yengi,Machida Zelvia,Delantero,0
+Turquía,Mert Günok,Fenerbahçe,Portero,37
+Turquía,Altay Bayındır,Manchester United,Portero,11
+Turquía,Uğurcan Çakır,Galatasaray,Portero,38
+Turquía,Zeki Çelik,Roma,Defensa,59
+Turquía,Merih Demiral,Al Ahli,Defensa,61
+Turquía,Çağlar Söyüncü,Fenerbahçe,Defensa,59
+Turquía,Eren Elmalı,Galatasaray,Defensa,21
+Turquía,Abdülkerim Bardakcı,Galatasaray,Defensa,26
+Turquía,Ozan Kabak,Hoffenheim,Defensa,28
+Turquía,Mert Müldür,Fenerbahçe,Defensa,43
+Turquía,Ferdi Kadıoğlu,Brighton,Defensa,30
+Turquía,Samet Akaydin,Çaykur Rizespor,Defensa,18
+Turquía,Salih Özcan,Borussia Dortmund,Mediocampista,28
+Turquía,Orkun Kökçü,Beşiktaş,Mediocampista,48
+Turquía,Hakan Çalhanoğlu,Inter Milan,Mediocampista,104
+Turquía,İsmail Yüksek,Fenerbahçe,Mediocampista,31
+Turquía,Kaan Ayhan,Galatasaray,Mediocampista,72
+Turquía,Kerem Aktürkoğlu,Benfica,Mediocampista,51
+Turquía,Arda Güler,Real Madrid,Mediocampista,28
+Turquía,Deniz Gül,Porto,Mediocampista,6
+Turquía,Kenan Yıldız,Juventus,Delantero,28
+Turquía,İrfan Can Kahveci,Kasımpaşa,Delantero,45
+Turquía,Yunus Akgün,Galatasaray,Delantero,17
+Turquía,Barış Alper Yılmaz,Galatasaray,Delantero,33
+Turquía,Oğuz Aydın,Fenerbahçe,Delantero,9
+Turquía,Can Uzun,Eintracht Frankfurt,Delantero,4
+Alemania,Manuel Neuer,Bayern Munich,Portero,124
+Alemania,Oliver Baumann,Hoffenheim,Portero,11
+Alemania,Alexander Nübel,Stuttgart,Portero,3
+Alemania,Antonio Rüdiger,Real Madrid,Defensa,82
+Alemania,Jonathan Tah,Bayern Munich,Defensa,45
+Alemania,David Raum,RB Leipzig,Defensa,36
+Alemania,Nico Schlotterbeck,Borussia Dortmund,Defensa,25
+Alemania,Waldemar Anton,Borussia Dortmund,Defensa,12
+Alemania,Malick Thiaw,Newcastle United,Defensa,5
+Alemania,Nathaniel Brown,Eintracht Frankfurt,Defensa,3
+Alemania,Joshua Kimmich,Bayern Munich,Mediocampista,108
+Alemania,Leroy Sané,Galatasaray,Mediocampista,74
+Alemania,Leon Goretzka,Bayern Munich,Mediocampista,69
+Alemania,Kai Havertz,Arsenal,Mediocampista,57
+Alemania,Jamal Musiala,Bayern Munich,Mediocampista,40
+Alemania,Florian Wirtz,Liverpool,Mediocampista,39
+Alemania,Pascal Groß,Brighton & Hove Albion,Mediocampista,18
+Alemania,Nadiem Amiri,Mainz,Mediocampista,9
+Alemania,Aleksandar Pavlović,Bayern Munich,Mediocampista,9
+Alemania,Angelo Stiller,Stuttgart,Mediocampista,7
+Alemania,Felix Nmecha,Borussia Dortmund,Mediocampista,6
+Alemania,Jamie Leweling,Stuttgart,Mediocampista,4
+Alemania,Lennart Karl,Bayern Munich,Mediocampista,2
+Alemania,Nick Woltemade,Newcastle United,Delantero,10
+Alemania,Deniz Undav,Stuttgart,Delantero,7
+Alemania,Maximilian Beier,Borussia Dortmund,Delantero,7
+Curazao,Eloy Room,Miami FC,Portero,70
+Curazao,Trevor Doornbusch,VVV-Venlo,Portero,7
+Curazao,Tyrick Bodak,Telstar,Portero,4
+Curazao,Juriën Gaari,Abha,Defensa,58
+Curazao,Roshon van Eijma,RKC Waalwijk,Defensa,27
+Curazao,Sherel Floranus,PEC Zwolle,Defensa,26
+Curazao,Joshua Brenet,Kayserispor,Defensa,17
+Curazao,Shurandy Sambo,Sparta Rotterdam,Defensa,7
+Curazao,Armando Obispo,PSV Eindhoven,Defensa,4
+Curazao,Riechedly Bazoer,Konyaspor,Defensa,3
+Curazao,Deveron Fonville,NEC Nijmegen,Defensa,0
+Curazao,Leandro Bacuna,Iğdir F.K.,Mediocampista,70
+Curazao,Juninho Bacuna,Volendam,Mediocampista,47
+Curazao,Godfried Roemeratoe,RKC Waalwijk,Mediocampista,26
+Curazao,Kevin Felida,Den Bosch,Mediocampista,19
+Curazao,Livano Comenencia,Zürich,Mediocampista,18
+Curazao,Ar'jany Martha,Rotherham United,Mediocampista,8
+Curazao,Tyrese Noslin,Telstar,Mediocampista,5
+Curazao,Kenji Gorré,Maccabi Haifa,Delantero,37
+Curazao,Brandley Kuwas,Volendam,Delantero,34
+Curazao,Gervane Kastaneer,Terengganu,Delantero,27
+Curazao,Jeremy Antonisse,A.E. Kifisia,Delantero,25
+Curazao,Jearl Margaritha,SK Beveren,Delantero,21
+Curazao,Jürgen Locadia,Miami FC,Delantero,12
+Curazao,Sontje Hansen,Middlesbrough,Delantero,5
+Curazao,Tahith Chong,Sheffield United,Delantero,4
+Costa de Marfil,Yahia Fofana,Çaykur Rizespor,Portero,34
+Costa de Marfil,Alban Lafont,Panathinaikos,Portero,4
+Costa de Marfil,Mohamed Koné,Charleroi,Portero,0
+Costa de Marfil,Ghislain Konan,Gil Vicente,Defensa,53
+Costa de Marfil,Odilon Kossounou,Atalanta,Defensa,35
+Costa de Marfil,Wilfried Singo,Galatasaray,Defensa,33
+Costa de Marfil,Evan Ndicka,Roma,Defensa,28
+Costa de Marfil,Emmanuel Agbadou,Beşiktaş,Defensa,19
+Costa de Marfil,Guéla Doué,Strasbourg,Defensa,19
+Costa de Marfil,Ousmane Diomande,Sporting CP,Defensa,14
+Costa de Marfil,Clément Akpa,Auxerre,Defensa,5
+Costa de Marfil,Franck Kessié,Al Ahli,Mediocampista,102
+Costa de Marfil,Jean Michaël Seri,Maribor,Mediocampista,65
+Costa de Marfil,Ibrahim Sangaré,Nottingham Forest,Mediocampista,57
+Costa de Marfil,Seko Fofana,Porto,Mediocampista,31
+Costa de Marfil,Christ Inao Oulaï,Trabzonspor,Mediocampista,8
+Costa de Marfil,Parfait Guiagon,Charleroi,Mediocampista,5
+Costa de Marfil,Nicolas Pépé,Villarreal,Delantero,54
+Costa de Marfil,Oumar Diakité,Cercle Brugge,Delantero,28
+Costa de Marfil,Simon Adingra,Monaco,Delantero,28
+Costa de Marfil,Evann Guessand,Crystal Palace,Delantero,21
+Costa de Marfil,Amad Diallo,Manchester United,Delantero,18
+Costa de Marfil,Yan Diomande,RB Leipzig,Delantero,9
+Costa de Marfil,Bazoumana Touré,Hoffenheim,Delantero,5
+Costa de Marfil,Elye Wahi,Nice,Delantero,1
+Costa de Marfil,Ange-Yoan Bonny,Inter Milan,Delantero,0
+Ecuador,Hernán Galíndez,Huracán,Portero,34
+Ecuador,Moisés Ramírez,Kifisia,Portero,7
+Ecuador,Gonzalo Valle,LDU Quito,Portero,3
+Ecuador,Félix Torres,Internacional,Defensa,48
+Ecuador,Piero Hincapié,Arsenal,Defensa,51
+Ecuador,Joel Ordóñez,Club Brugge,Defensa,16
+Ecuador,Willian Pacho,PSG,Defensa,34
+Ecuador,Pervis Estupiñán,AC Milan,Defensa,53
+Ecuador,Ángelo Preciado,Atlético Mineiro,Defensa,54
+Ecuador,Jackson Porozo,Tijuana,Defensa,9
+Ecuador,Jordy Alcívar,Independiente del Valle,Mediocampista,10
+Ecuador,Denil Castillo,Midtjylland,Mediocampista,5
+Ecuador,John Yeboah,Venezia,Mediocampista,22
+Ecuador,Kendry Páez,River Plate,Mediocampista,25
+Ecuador,Alan Minda,Atlético Mineiro,Mediocampista,19
+Ecuador,Pedro Vite,UNAM,Mediocampista,16
+Ecuador,Gonzalo Plata,Flamengo,Mediocampista,49
+Ecuador,Alan Franco,Atlético Mineiro,Mediocampista,57
+Ecuador,Moisés Caicedo,Chelsea,Mediocampista,60
+Ecuador,Yaimar Medina,Genk,Mediocampista,5
+Ecuador,Kevin Rodríguez,Union Saint-Gilloise,Delantero,31
+Ecuador,Enner Valencia,Pachuca,Delantero,105
+Ecuador,Anthony Valencia,Antwerp,Delantero,2
+Ecuador,Jordy Caicedo,Huracán,Delantero,19
+Ecuador,Nilson Angulo,Sunderland,Delantero,13
+Ecuador,Jeremy Arévalo,Stuttgart,Delantero,3
+Países Bajos,Bart Verburggen,Brighton & Hove Albion,Portero,27
+Países Bajos,Mark Flekken,Bayer Leverkusen,Portero,11
+Países Bajos,Robin Roefs,Sunderland,Portero,0
+Países Bajos,Virgil van Dijk,Liverpool,Defensa,90
+Países Bajos,Denzel Dumfries,Inter,Defensa,71
+Países Bajos,Nathan Aké,Manchester City,Defensa,58
+Países Bajos,Jurriën Timber,Arsenal,Defensa,23
+Países Bajos,Micky van de Ven,Tottenham Hotspur,Defensa,19
+Países Bajos,Mats Wieffer,Brighton & Hove Albion,Defensa,14
+Países Bajos,Jan Paul van Hecke,Brighton & Hove Albion,Defensa,10
+Países Bajos,Jorrel Hato,Chelsea,Defensa,7
+Países Bajos,Frenkie de Jong,Barcelona,Mediocampista,64
+Países Bajos,Marten de Roon,Atalanta,Mediocampista,42
+Países Bajos,Tijjani Reijnders,Manchester City,Mediocampista,30
+Países Bajos,Teun Koopmeiners,Juventus,Mediocampista,27
+Países Bajos,Ryan Gravenberch,Liverpool,Mediocampista,25
+Países Bajos,Justin Kluivert,Bournemouth,Mediocampista,11
+Países Bajos,Quinten Timber,Marseille,Mediocampista,10
+Países Bajos,Guus Til,PSV Eindhoven,Mediocampista,6
+Países Bajos,Memphis Depay,Corinthians,Delantero,108
+Países Bajos,Wout Weghorst,Ajax,Delantero,51
+Países Bajos,Donyell Malen,Roma,Delantero,51
+Países Bajos,Cody Gakpo,Liverpool,Delantero,48
+Países Bajos,Noa Lang,Galatasaray,Delantero,15
+Países Bajos,Brian Brobbey,Sunderland,Delantero,10
+Países Bajos,Crysencio Summerville,West Ham United,Delantero,0
+Japón,Zion Suzuki,Parma,Portero,23
+Japón,Keisuke Ōsako,Sanfrecce Hiroshima,Portero,11
+Japón,Tomoki Hayakawa,Kashima Antlers,Portero,3
+Japón,Yūto Nagatomo,FC Tokyo,Defensa,144
+Japón,Takehiro Tomiyasu,Ajax,Defensa,42
+Japón,Ko Itakura,Ajax,Defensa,39
+Japón,Shōgo Taniguchi,Sint-Truiden,Defensa,37
+Japón,Hiroki Ito,Bayern Munich,Defensa,23
+Japón,Yukinari Sugawara,Werder Bremen,Defensa,20
+Japón,Ayumu Seko,Le Havre,Defensa,13
+Japón,Tsuyoshi Watanabe,Feyenoord,Defensa,10
+Japón,Junnosuke Suzuki,Copenhagen,Defensa,6
+Japón,Wataru Endo,Liverpool,Mediocampista,72
+Japón,Junya Itō,Genk,Mediocampista,68
+Japón,Ritsu Dōan,Eintracht Frankfurt,Mediocampista,64
+Japón,Daichi Kamada,Crystal Palace,Mediocampista,49
+Japón,Takefusa Kubo,Real Sociedad,Mediocampista,48
+Japón,Ao Tanaka,Leeds United,Mediocampista,37
+Japón,Keito Nakamura,Reims,Mediocampista,24
+Japón,Kaishu Sano,Mainz,Mediocampista,12
+Japón,Ayase Ueda,Feyenoord,Delantero,38
+Japón,Daizen Maeda,Celtic,Delantero,27
+Japón,Kōki Ogawa,NEC,Delantero,14
+Japón,Yuito Suzuki,Freiburg,Delantero,6
+Japón,Keisuke Gotō,Sint-Truiden,Delantero,3
+Japón,Kento Shiogai,Wolfsburg,Delantero,1
+Suecia,Kristoffer Nordfeldt,AIK,Portero,20
+Suecia,Viktor Johansson,Stoke City,Portero,12
+Suecia,Jacob Widell Zetterström,Derby County,Portero,2
+Suecia,Victor Lindelöf,Aston Villa,Defensa,75
+Suecia,Isak Hien,Atalanta,Defensa,27
+Suecia,Gabriel Gudmundsson,Leeds United,Defensa,23
+Suecia,Carl Starfelt,Celta Vigo,Defensa,17
+Suecia,Hjalmar Ekdal,Burnley,Defensa,11
+Suecia,Daniel Svensson,Borussia Dortmund,Defensa,11
+Suecia,Gustaf Lagerbielke,Braga,Defensa,9
+Suecia,Herman Johansson,FC Dallas,Defensa,2
+Suecia,Eric Smith,St. Pauli,Defensa,0
+Suecia,Elliot Stroud,Mjällby AIF,Defensa,0
+Suecia,Mattias Svanberg,Wolfsburg,Mediocampista,39
+Suecia,Jesper Karlström,Udinese,Mediocampista,23
+Suecia,Yasin Ayari,Brighton & Hove Albion,Mediocampista,19
+Suecia,Lucas Bergvall,Tottenham Hotspur,Mediocampista,8
+Suecia,Besfort Zeneli,Union Saint-Gilloise,Mediocampista,6
+Suecia,Alexander Isak,Liverpool,Delantero,56
+Suecia,Viktor Gyökeres,Arsenal,Delantero,32
+Suecia,Ken Sema,Pafos,Delantero,32
+Suecia,Anthony Elanga,Newcastle United,Delantero,28
+Suecia,Benjamin Nygren,Celtic,Delantero,9
+Suecia,Alexander Bernhardsson,Holstein Kiel,Delantero,9
+Suecia,Gustaf Nilsson,Club Brugge,Delantero,8
+Suecia,Taha Ali,Malmö FF,Delantero,1
+Túnez,Aymen Dahmen,CS Sfaxien,Portero,37
+Túnez,Sabri Ben Hessen,Étoile du Sahel,Portero,2
+Túnez,Mouhib Chamakh,Club Africain,Portero,1
+Túnez,Montassar Talbi,Lorient,Defensa,62
+Túnez,Dylan Bronn,Servette,Defensa,52
+Túnez,Ali Abdi,Nice,Defensa,45
+Túnez,Yan Valery,Young Boys,Defensa,21
+Túnez,Mohamed Amine Ben Hamida,ES Tunis,Defensa,12
+Túnez,Moutaz Neffati,IFK Norrköping,Defensa,5
+Túnez,Omar Rekik,Maribor,Defensa,4
+Túnez,Adem Arous,Kasımpaşa,Defensa,1
+Túnez,Raed Chikhaoui,US Monastir,Defensa,0
+Túnez,Ellyes Skhiri,Eintracht Frankfurt,Mediocampista,81
+Túnez,Hannibal Mejbri,Burnley,Mediocampista,44
+Túnez,Anis Ben Slimane,Norwich City,Mediocampista,39
+Túnez,Mortadha Ben Ouanes,Kasımpaşa,Mediocampista,17
+Túnez,Ismaël Gharbi,Augsburg,Mediocampista,15
+Túnez,Hadj Mahmoud,Lugano,Mediocampista,7
+Túnez,Rani Khedira,Union Berlin,Mediocampista,2
+Túnez,Elias Achouri,Copenhagen,Delantero,29
+Túnez,Firas Chaouat,Club Africain,Delantero,28
+Túnez,Hazem Mastouri,Dynamo Makhachkala,Delantero,18
+Túnez,Elias Saad,Hannover 96,Delantero,14
+Túnez,Sebastian Tounekti,Celtic,Delantero,10
+Túnez,Khalil Ayari,PSG,Delantero,2
+Túnez,Rayan Elloumi,Vancouver Whitecaps,Delantero,2
+Bélgica,Thibaut Courtois,Real Madrid,Portero,107
+Bélgica,Senne Lammens,Manchester United,Portero,2
+Bélgica,Mike Penders,Strasbourg,Portero,0
+Bélgica,Thomas Meunier,Lille,Defensa,78
+Bélgica,Timothy Castagne,Fulham,Defensa,62
+Bélgica,Arthur Theate,Eintracht Frankfurt,Defensa,32
+Bélgica,Zeno Debast,Sporting CP,Defensa,26
+Bélgica,Maxim De Cuyper,Brighton & Hove Albion,Defensa,17
+Bélgica,Brandon Mechele,Club Brugge,Defensa,7
+Bélgica,Koni De Winter,AC Milan,Defensa,7
+Bélgica,Joaquin Seys,Club Brugge,Defensa,4
+Bélgica,Nathan Ngoy,Lille,Defensa,2
+Bélgica,Axel Witsel,Girona,Mediocampista,136
+Bélgica,Kevin De Bruyne,Napoli,Mediocampista,117
+Bélgica,Youri Tielemans,Aston Villa,Mediocampista,83
+Bélgica,Hans Vanaken,Club Brugge,Mediocampista,32
+Bélgica,Amadou Onana,Aston Villa,Mediocampista,27
+Bélgica,Nicolas Raskin,Rangers,Mediocampista,11
+Bélgica,Romelu Lukaku,Napoli,Delantero,124
+Bélgica,Leandro Trossard,Arsenal,Delantero,50
+Bélgica,Jérémy Doku,Manchester City,Delantero,41
+Bélgica,Dodi Lukébakio,Benfica,Delantero,29
+Bélgica,Charles De Ketelaere,Atalanta,Delantero,28
+Bélgica,Alexis Saelemaekers,Milan,Delantero,23
+Bélgica,Diego Moreira,Strasbourg,Delantero,2
+Bélgica,Matias Fernandez-Pardo,Lille,Delantero,0
+Egipto,Mohamed El Shenawy,Al Ahly,Portero,76
+Egipto,Mostafa Shobeir,Al Ahly,Portero,8
+Egipto,Mohamed Alaa,El Gouna,Portero,0
+Egipto,El Mahdy Soliman,Zamalek,Portero,0
+Egipto,Hamdy Fathy,Al-Wakrah,Defensa,62
+Egipto,Ramy Rabia,Al-Ain,Defensa,44
+Egipto,Mohamed Hany,Al Ahly,Defensa,41
+Egipto,Ahmed Fatouh,Zamalek,Defensa,38
+Egipto,Mohamed Abdelmonem,OGC Nice,Defensa,35
+Egipto,Yasser Ibrahim,Al Ahly,Defensa,16
+Egipto,Hossam Abdelmaguid,Zamalek,Defensa,13
+Egipto,Karim Hafez,Pyramids,Defensa,2
+Egipto,Tarek Alaa,ZED,Defensa,2
+Egipto,Marwan Attia,Al Ahly,Mediocampista,33
+Egipto,Emam Ashour,Al Ahly,Mediocampista,28
+Egipto,Mohanad Lasheen,Pyramids,Mediocampista,32
+Egipto,Mahmoud Saber,ZED,Mediocampista,15
+Egipto,Mostafa Ziko,Al-Najma,Mediocampista,1
+Egipto,Ibrahim Adel,Nordsjælland,Mediocampista,23
+Egipto,Mohamed Salah,Liverpool,Delantero,116
+Egipto,Trézéguet,Al Ahly,Delantero,95
+Egipto,Zizo,Al Ahly,Delantero,62
+Egipto,Omar Marmoush,Manchester City,Delantero,48
+Egipto,Haissem Hassan,Real Oviedo,Delantero,3
+Egipto,Hamza Abdel Karim,Barcelona B,Delantero,1
+Egipto,Aktay Abdallah,ENPPI,Delantero,0
+Irán,Alireza Beiranvand,Tractor,Portero,85
+Irán,Payam Niazmand,Persepolis,Portero,15
+Irán,Hossein Hosseini,Sepahan,Portero,13
+Irán,Ehsan Hajsafi,Sepahan,Defensa,145
+Irán,Milad Mohammadi,Persepolis,Defensa,75
+Irán,Ramin Rezaeian,Foolad,Defensa,73
+Irán,Hossein Kanaanizadegan,Persepolis,Defensa,64
+Irán,Shojae Khalilzadeh,Tractor,Defensa,57
+Irán,Saleh Hardani,Esteghlal,Defensa,17
+Irán,Ali Nemati,Foolad,Defensa,16
+Irán,Danial Eiri,Malavan,Defensa,0
+Irán,Alireza Jahanbakhsh,Dender,Mediocampista,98
+Irán,Saeid Ezatolahi,Shabab Al Ahli,Mediocampista,82
+Irán,Saman Ghoddos,Kalba,Mediocampista,67
+Irán,Mehdi Torabi,Tractor,Mediocampista,52
+Irán,Rouzbeh Cheshmi,Esteghlal,Mediocampista,40
+Irán,Mohammad Mohebi,Rostov,Mediocampista,36
+Irán,Mehdi Ghayedi,Al Nasr,Mediocampista,29
+Irán,Mohammad Ghorbani,Al Wahda,Mediocampista,15
+Irán,Aria Yousefi,Sepahan,Mediocampista,13
+Irán,Amirmohammad Razzaghinia,Esteghlal,Mediocampista,3
+Irán,Mehdi Taremi,Olympiacos,Delantero,104
+Irán,Shahriyar Moghanlou,Kalba,Delantero,20
+Irán,Amirhossein Hosseinzadeh,Tractor,Delantero,17
+Irán,Ali Alipour,Persepolis,Delantero,13
+Irán,Dennis Eckert,Standard Liège,Delantero,0
+Nueva Zelanda,Max Crocombe,Millwall,Portero,22
+Nueva Zelanda,Alex Paulsen,Lechia Gdánsk,Portero,6
+Nueva Zelanda,Michael Woud,Auckland FC,Portero,6
+Nueva Zelanda,Tim Payne,Wellington Phoenix,Defensa,43
+Nueva Zelanda,Francis de Vries,Auckland FC,Defensa,18
+Nueva Zelanda,Tyler Bindon,Sheffield United,Defensa,23
+Nueva Zelanda,Michael Boxall,Minnesota United,Defensa,61
+Nueva Zelanda,Liberato Cacace,Wrexham,Defensa,35
+Nueva Zelanda,Nando Pijnaker,Auckland FC,Defensa,23
+Nueva Zelanda,Finn Surman,Portland Timbers,Defensa,17
+Nueva Zelanda,Callan Elliot,Auckland FC,Defensa,9
+Nueva Zelanda,Tommy Smith,Braintree Town,Mediocampista,56
+Nueva Zelanda,Joe Bell,Viking,Mediocampista,31
+Nueva Zelanda,Matthew Garbett,Peterborough United,Mediocampista,35
+Nueva Zelanda,Marko Stamenić,Swansea City,Mediocampista,37
+Nueva Zelanda,Sarpreet Singh,Wellington Phoenix,Mediocampista,26
+Nueva Zelanda,Elijah Just,Motherwell,Mediocampista,42
+Nueva Zelanda,Alex Rufer,Wellington Phoenix,Mediocampista,24
+Nueva Zelanda,Ben Old,Saint-Étienne,Mediocampista,22
+Nueva Zelanda,Callum McCowatt,Silkeborg,Mediocampista,30
+Nueva Zelanda,Ryan Thomas,PEC Zwolle,Mediocampista,25
+Nueva Zelanda,Lachlan Bayliss,Newcastle Jets,Delantero,2
+Nueva Zelanda,Chris Wood,Nottingham Forest,Delantero,88
+Nueva Zelanda,Kosta Barbarouses,Western Sydney Wanderers,Delantero,74
+Nueva Zelanda,Ben Waine,Port Vale,Delantero,30
+Nueva Zelanda,Jesse Randall,Auckland FC,Delantero,9
+España,Unai Simón,Athletic Club,Portero,57
+España,David Raya,Arsenal,Portero,12
+España,Joan Garcia,Barcelona,Portero,1
+España,Aymeric Laporte,Athletic Club,Defensa,44
+España,Marc Cucurella,Chelsea,Defensa,23
+España,Marcos Llorente,Atlético Madrid,Defensa,23
+España,Eric García,Barcelona,Defensa,19
+España,Pedro Porro,Tottenham Hotspur,Defensa,16
+España,Álex Grimaldo,Bayer Leverkusen,Defensa,12
+España,Pau Cubarsí,Barcelona,Defensa,11
+España,Marc Pubill,Atlético Madrid,Defensa,0
+España,Rodri,Manchester City,Mediocampista,61
+España,Dani Olmo,Barcelona,Mediocampista,48
+España,Mikel Merino,Arsenal,Mediocampista,41
+España,Fabián Ruiz,PSG,Mediocampista,41
+España,Pedri,Barcelona,Mediocampista,40
+España,Gavi,Barcelona,Mediocampista,28
+España,Martín Zubimendi,Arsenal,Mediocampista,25
+España,Ferran Torres,Barcelona,Delantero,55
+España,Mikel Oyarzabal,Real Sociedad,Delantero,52
+España,Nico Williams,Athletic Club,Delantero,30
+España,Lamine Yamal,Barcelona,Delantero,25
+España,Yéremy Pino,Crystal Palace,Delantero,21
+España,Álex Baena,Atlético Madrid,Delantero,15
+España,Borja Iglesias,Celta Vigo,Delantero,6
+España,Víctor Muñoz,Osasuna,Delantero,2
+Cabo Verde,Vozinha,Chaves,Portero,85
+Cabo Verde,Márcio Rosa,Montana,Portero,10
+Cabo Verde,CJ dos Santos,San Diego,Portero,0
+Cabo Verde,Stopira,Torreense,Defensa,60
+Cabo Verde,Roberto Lopes,Shamrock Rovers,Defensa,44
+Cabo Verde,João Paulo,FCSB,Defensa,40
+Cabo Verde,Diney Borges,Al Bataeh,Defensa,29
+Cabo Verde,Logan Costa,Villarreal,Defensa,26
+Cabo Verde,Steven Moreira,Columbus Crew,Defensa,18
+Cabo Verde,Wagner Pina,Trabzonspor,Defensa,12
+Cabo Verde,Sidny Lopes Cabral,Benfica,Defensa,8
+Cabo Verde,Kelvin Pires,SJK,Defensa,4
+Cabo Verde,Jamiro Monteiro,PEC Zwolle,Mediocampista,53
+Cabo Verde,Kevin Pina,Krasnodar,Mediocampista,30
+Cabo Verde,Deroy Duarte,Ludogorets,Mediocampista,30
+Cabo Verde,Telmo Arcanjo,Vitória de Guimarães,Mediocampista,14
+Cabo Verde,Laros Duarte,Puskás Akadémia,Mediocampista,12
+Cabo Verde,Yannick Semedo,Farense,Mediocampista,10
+Cabo Verde,Ryan Mendes,Iğdır,Delantero,94
+Cabo Verde,Garry Rodrigues,Apollon Limassol,Delantero,59
+Cabo Verde,Willy Semedo,Omonia,Delantero,36
+Cabo Verde,Jovane Cabral,Estrela Amadora,Delantero,25
+Cabo Verde,Gilson Benchimol Tavares,Akron Tolyatti,Delantero,21
+Cabo Verde,Dailon Livramento,Casa Pia,Delantero,20
+Cabo Verde,Hélio Varela,Maccabi Tel Aviv,Delantero,19
+Cabo Verde,Nuno da Costa,İstanbul Başakşehir,Delantero,7
+Uruguay,Fernando Muslera,Estudiantes,Portero,134
+Uruguay,Sergio Rochet,Internacional,Portero,35
+Uruguay,Santiago Mele,Monterrey,Portero,8
+Uruguay,José María Giménez,Atlético Madrid,Defensa,89
+Uruguay,Matías Viña,River Plate,Defensa,43
+Uruguay,Mathías Olivera,Napoli,Defensa,35
+Uruguay,Guillermo Varela,Flamengo,Defensa,28
+Uruguay,Ronald Araújo,Barcelona,Defensa,27
+Uruguay,Sebastián Cáceres,América,Defensa,24
+Uruguay,Joaquín Piquerez,Palmeiras,Defensa,19
+Uruguay,Santiago Bueno,Wolverhampton Wanderers,Defensa,8
+Uruguay,Rodrigo Bentancur,Tottenham Hotspur,Mediocampista,74
+Uruguay,Federico Valverde,Real Madrid,Mediocampista,73
+Uruguay,Giorgian de Arrascaeta,Flamengo,Mediocampista,60
+Uruguay,Facundo Pellistri,Panathinaikos,Mediocampista,39
+Uruguay,Manuel Ugarte,Manchester United,Mediocampista,36
+Uruguay,Nicolás de la Cruz,Flamengo,Mediocampista,34
+Uruguay,Brian Rodríguez,América,Mediocampista,32
+Uruguay,Maximiliano Araújo,Sporting CP,Mediocampista,28
+Uruguay,Agustín Canobbio,Fluminense,Mediocampista,15
+Uruguay,Emiliano Martínez,Palmeiras,Mediocampista,10
+Uruguay,Rodrigo Zalazar,Braga,Mediocampista,8
+Uruguay,Juan Manuel Sanabria,Real Salt Lake,Mediocampista,5
+Uruguay,Darwin Núñez,Al Hilal,Delantero,38
+Uruguay,Federico Viñas,Oviedo,Delantero,11
+Uruguay,Rodrigo Aguirre,Tigres UANL,Delantero,10
+Arabia Saudita,Mohammed Al-Owais,Al Ula,Portero,63
+Arabia Saudita,Nawaf Al-Aqidi,Al Nassr,Portero,22
+Arabia Saudita,Ahmed Al-Kassar,Al Qadsiah,Portero,8
+Arabia Saudita,Saud Abdulhamid,Lens,Defensa,53
+Arabia Saudita,Hassan Al-Tambakti,Al Hilal,Defensa,51
+Arabia Saudita,Abdulelah Al-Amri,Al Nassr,Defensa,41
+Arabia Saudita,Nawaf Boushal,Al Nassr,Defensa,24
+Arabia Saudita,Ali Lajami,Al Hilal,Defensa,20
+Arabia Saudita,Ali Majrashi,Al Ahli,Defensa,20
+Arabia Saudita,Hassan Kadesh,Al Ittihad,Defensa,19
+Arabia Saudita,Moteb Al-Harbi,Al Hilal,Defensa,11
+Arabia Saudita,Jehad Thakri,Al Qadsiah,Defensa,6
+Arabia Saudita,Mohammed Abu Al-Shamat,Al Qadsiah,Defensa,5
+Arabia Saudita,Salem Al-Dawsari,Al Hilal,Mediocampista,108
+Arabia Saudita,Mohamed Kanno,Al Hilal,Mediocampista,75
+Arabia Saudita,Nasser Al-Dawsari,Al Hilal,Mediocampista,42
+Arabia Saudita,Abdullah Al-Khaibari,Al Nassr,Mediocampista,38
+Arabia Saudita,Musab Al-Juwayr,Al Qadsiah,Mediocampista,33
+Arabia Saudita,Ayman Yahya,Al Nassr,Mediocampista,25
+Arabia Saudita,Ziyad Al-Johani,Al Ahli,Mediocampista,11
+Arabia Saudita,Sultan Mandash,Al Hilal,Mediocampista,5
+Arabia Saudita,Alaa Al-Hejji,Neom,Mediocampista,1
+Arabia Saudita,Firas Al-Buraikan,Al Ahli,Delantero,69
+Arabia Saudita,Saleh Al-Shehri,Al Ittihad,Delantero,55
+Arabia Saudita,Abdullah Al-Hamdan,Al Nassr,Delantero,48
+Arabia Saudita,Khalid Al-Ghannam,Al Ettifaq,Delantero,5
+Francia,Mike Maignan,AC Milan,Portero,38
+Francia,Brice Samba,Rennes,Portero,4
+Francia,Robin Risser,Lens,Portero,0
+Francia,Lucas Digne,Aston Villa,Defensa,56
+Francia,Jules Koundé,Barcelona,Defensa,46
+Francia,Théo Hernandez,Al Hilal,Defensa,42
+Francia,Lucas Hernandez,PSG,Defensa,41
+Francia,Dayot Upamecano,Bayern Munich,Defensa,36
+Francia,William Saliba,Arsenal,Defensa,31
+Francia,Ibrahima Konaté,Liverpool,Defensa,27
+Francia,Malo Gusto,Chelsea,Defensa,9
+Francia,Maxence Lacroix,Crystal Palace,Defensa,2
+Francia,N'Golo Kanté,Fenerbahçe,Mediocampista,67
+Francia,Adrien Rabiot,AC Milan,Mediocampista,57
+Francia,Aurélien Tchouaméni,Real Madrid,Mediocampista,44
+Francia,Manu Koné,Roma,Mediocampista,12
+Francia,Warren Zaïre-Emery,PSG,Mediocampista,10
+Francia,Kylian Mbappé,Real Madrid,Delantero,96
+Francia,Ousmane Dembélé,PSG,Delantero,58
+Francia,Marcus Thuram,Inter Milan,Delantero,33
+Francia,Bradley Barcola,PSG,Delantero,18
+Francia,Michael Olise,Bayern Munich,Delantero,15
+Francia,Maghnes Akliouche,Monaco,Delantero,7
+Francia,Désiré Doué,PSG,Delantero,6
+Francia,Rayan Cherki,Manchester City,Delantero,5
+Francia,Jean-Philippe Mateta,Crystal Palace,Delantero,3
+Senegal,Yehvann Diouf,Nice,Portero,2
+Senegal,Édouard Mendy,Al Ahli,Portero,56
+Senegal,Mory Diaw,Le Havre,Portero,5
+Senegal,Mamadou Sarr,Chelsea,Defensa,7
+Senegal,Kalidou Koulibaly,Al Hilal,Defensa,102
+Senegal,Abdoulaye Seck,Maccabi Haifa,Defensa,22
+Senegal,Ismail Jakobs,Galatasaray,Defensa,29
+Senegal,Krépin Diatta,Monaco,Defensa,60
+Senegal,Moussa Niakhaté,Lyon,Defensa,30
+Senegal,Antoine Mendy,Nice,Defensa,6
+Senegal,El Hadji Malick Diouf,West Ham,Defensa,16
+Senegal,Idrissa Gueye,Everton,Mediocampista,130
+Senegal,Pathé Ciss,Rayo Vallecano,Mediocampista,29
+Senegal,Lamine Camara,Monaco,Mediocampista,32
+Senegal,Pape Matar Sarr,Tottenham,Mediocampista,39
+Senegal,Habib Diarra,Sunderland,Mediocampista,20
+Senegal,Bara Sapoko Ndiaye,Bayern Munich,Mediocampista,1
+Senegal,Pape Gueye,Villarreal,Mediocampista,41
+Senegal,Assane Diao,Como,Mediocampista,5
+Senegal,Bamba Dieng,Lorient,Delantero,22
+Senegal,Sadio Mané,Al Nassr,Delantero,127
+Senegal,Nicolas Jackson,Bayern Munich,Delantero,32
+Senegal,Cherif Ndiaye,Samsunspor,Delantero,18
+Senegal,Iliman Ndiaye,Everton,Delantero,39
+Senegal,Ismaïla Sarr,Crystal Palace,Delantero,82
+Senegal,Ibrahim Mbaye,PSG,Delantero,10
+Iraq,Jalal Hassan,Al Zawraa,Portero,100
+Iraq,Fahad Talib,Al Talaba,Portero,21
+Iraq,Ahmed Basil,Al Shorta,Portero,14
+Iraq,Rebin Sulaka,Port,Defensa,54
+Iraq,Manaf Younis,Al Shorta,Defensa,32
+Iraq,Merchas Doski,Viktoria Plzeň,Defensa,30
+Iraq,Zaid Tahseen,Pakhtakor,Defensa,26
+Iraq,Frans Putros,Persib,Defensa,26
+Iraq,Hussein Ali,Pogoń Szczecin,Defensa,25
+Iraq,Ahmed Yahya,Al Shorta,Defensa,19
+Iraq,Mustafa Saadoon,Al Shorta,Defensa,15
+Iraq,Akam Hashim,Al Shorta,Defensa,12
+Iraq,Ibrahim Bayesh,Al Dhafra,Mediocampista,74
+Iraq,Amir Al-Ammari,Cracovia,Mediocampista,49
+Iraq,Ali Jasim,Al Najma,Mediocampista,35
+Iraq,Youssef Amyn,AEK Larnaca,Mediocampista,25
+Iraq,Zidane Iqbal,Utrecht,Mediocampista,23
+Iraq,Marko Farji,Venezia,Mediocampista,10
+Iraq,Kevin Yakob,AGF,Mediocampista,7
+Iraq,Aimar Sher,Sarpsborg,Mediocampista,6
+Iraq,Zaid Ismail,Al Talaba,Mediocampista,5
+Iraq,Ahmed Qasem,Nashville SC,Mediocampista,1
+Iraq,Aymen Hussein,Al Karma,Delantero,93
+Iraq,Mohanad Ali,Dibba,Delantero,71
+Iraq,Ali Al-Hamadi,Luton Town,Delantero,18
+Iraq,Ali Yousif,Al Talaba,Delantero,6
+Noruega,Ørjan Nyland,Sevilla,Portero,69
+Noruega,Egil Selvik,Watford,Portero,6
+Noruega,Sander Tangvik,Hamburg,Portero,0
+Noruega,Kristoffer Ajer,Brentford,Defensa,50
+Noruega,Julian Ryerson,Borussia Dortmund,Defensa,41
+Noruega,Leo Østigård,Genoa,Defensa,36
+Noruega,Marcus Holmgren Pedersen,Torino,Defensa,31
+Noruega,David Møller Wolfe,Wolverhampton Wanderers,Defensa,20
+Noruega,Fredrik André Bjørkan,Bodø/Glimt,Defensa,19
+Noruega,Torbjørn Heggem,Bologna,Defensa,13
+Noruega,Sondre Langås,Derby County,Defensa,2
+Noruega,Henrik Falchener,Viking,Defensa,1
+Noruega,Martin Ødegaard,Arsenal,Mediocampista,67
+Noruega,Sander Berge,Fulham,Mediocampista,64
+Noruega,Patrick Berg,Bodø/Glimt,Mediocampista,41
+Noruega,Kristian Thorstvedt,Sassuolo,Mediocampista,35
+Noruega,Morten Thorsby,Cremonese,Mediocampista,30
+Noruega,Antonio Nusa,RB Leipzig,Mediocampista,22
+Noruega,Fredrik Aursnes,Benfica,Mediocampista,20
+Noruega,Oscar Bobb,Fulham,Mediocampista,18
+Noruega,Jens Petter Hauge,Bodø/Glimt,Mediocampista,14
+Noruega,Andreas Schjelderup,Benfica,Mediocampista,10
+Noruega,Thelo Aasgaard,Rangers,Mediocampista,6
+Noruega,Alexander Sørloth,Atlético Madrid,Delantero,70
+Noruega,Erling Haaland,Manchester City,Delantero,49
+Noruega,Jørgen Strand Larsen,Crystal Palace,Delantero,26
+Argentina,Emiliano Martínez,Aston Villa,Portero,59
+Argentina,Gerónimo Rulli,Marseille,Portero,7
+Argentina,Juan Musso,Hamburg,Portero,11
+Argentina,Leonardo Balerdi,Marseille,Defensa,50
+Argentina,Nicolás Tagliafico,Lyon,Defensa,75
+Argentina,Gonzalo Montiel,River Plate,Defensa,38
+Argentina,Lisandro Martínez,Manchester United,Defensa,26
+Argentina,Cristian Romero,Tottenham Hotspur,Defensa,49
+Argentina,Nicolás Otamendi,Benfica,Defensa,130
+Argentina,Facundo Medina,Marseille,Defensa,7
+Argentina,Nahuel Molina,Atlético Madrid,Defensa,58
+Argentina,Leandro Paredes,Boca Juniors,Mediocampista,77
+Argentina,Rodrigo De Paul,Inter Miami,Mediocampista,85
+Argentina,Valentín Barco,Strasbourg,Mediocampista,2
+Argentina,Giovani Lo Celso,Real Betis,Mediocampista,65
+Argentina,Exequiel Palacios,Bayer Leverkusen,Mediocampista,38
+Argentina,Alexis Mac Allister,Liverpool,Mediocampista,44
+Argentina,Enzo Fernández,Chelsea,Mediocampista,40
+Argentina,Julián Alvarez,Atlético Madrid,Delantero,51
+Argentina,Lionel Messi,Inter Miami,Delantero,198
+Argentina,Nicolás González,Atlético Madrid,Delantero,50
+Argentina,Thiago Almada,Atlético Madrid,Delantero,10
+Argentina,Giuliano Simeone,Atlético Madrid,Delantero,11
+Argentina,Nico Paz,Como,Delantero,8
+Argentina,José Manuel López,Palmeiras,Delantero,3
+Argentina,Lautaro Martínez,Inter Milan,Delantero,75
+Argelia,Luca Zidane,Granada,Portero,6
+Argelia,Oussama Benbot,USM Alger,Portero,2
+Argelia,Melvin Mastil,Stade Nyonnais,Portero,1
+Argelia,Aïssa Mandi,Lille,Defensa,116
+Argelia,Ramy Bensebaini,Borussia Dortmund,Defensa,81
+Argelia,Mohamed Amine Tougai,ES Tunis,Defensa,28
+Argelia,Rayan Aït-Nouri,Manchester City,Defensa,27
+Argelia,Jaouen Hadjam,Young Boys,Defensa,16
+Argelia,Rafik Belghali,Hellas Verona,Defensa,11
+Argelia,Zineddine Belaïd,JS Kabylie,Defensa,9
+Argelia,Achref Abada,USM Alger,Defensa,6
+Argelia,Samir Chergui,Paris FC,Defensa,4
+Argelia,Nabil Bentaleb,Lille,Mediocampista,58
+Argelia,Ramiz Zerrouki,Twente,Mediocampista,51
+Argelia,Hicham Boudaoui,Nice,Mediocampista,32
+Argelia,Farès Chaïbi,Eintracht Frankfurt,Mediocampista,28
+Argelia,Houssem Aouar,Al Ittihad,Mediocampista,19
+Argelia,Ibrahim Maza,Bayer Leverkusen,Mediocampista,15
+Argelia,Yacine Titraoui,Charleroi,Mediocampista,5
+Argelia,Riyad Mahrez,Al Ahli,Delantero,113
+Argelia,Mohamed Amoura,Wolfsburg,Delantero,44
+Argelia,Amine Gouiri,Marseille,Delantero,21
+Argelia,Anis Hadj Moussa,Feyenoord,Delantero,13
+Argelia,Adil Boulbina,Al Duhail,Delantero,10
+Argelia,Nadhir Benbouali,Györ,Delantero,2
+Argelia,Farès Ghedjemis,Frosinone,Delantero,1
+Jordania,Yazeed Abulaila,Al Hussein,Portero,75
+Jordania,Nour Bani Attiah,Al Faisaly,Portero,4
+Jordania,Abdallah Al-Fakhouri,Al Wehdat,Portero,11
+Jordania,Mohammad Abu Hashish,Al Karma,Defensa,55
+Jordania,Abdallah Nasib,Al Zawraa,Defensa,64
+Jordania,Husam Abu Dahab,Al Faisaly,Defensa,17
+Jordania,Yazan Al-Arab,FC Seoul,Defensa,79
+Jordania,Mo Abualnadi,Selangor,Defensa,17
+Jordania,Salim Obaid,Al Hussein,Defensa,10
+Jordania,Saed Al-Rosan,Al Hussein,Defensa,20
+Jordania,Ihsan Haddad,Al Hussein,Mediocampista,91
+Jordania,Anas Badawi,Al Faisaly,Mediocampista,1
+Jordania,Amer Jamous,Al Zawraa,Mediocampista,18
+Jordania,Noor Al-Rawabdeh,Selangor,Mediocampista,67
+Jordania,Rajaei Ayed,Al Hussein,Mediocampista,72
+Jordania,Ibrahim Sadeh,Al Karma,Mediocampista,56
+Jordania,Mohannad Abu Taha,Al-Quwa Al-Jawiya,Mediocampista,28
+Jordania,Nizar Al-Rashdan,Qatar SC,Mediocampista,46
+Jordania,Mohammad Al-Dawoud,Al Wehdat,Mediocampista,12
+Jordania,Mohammad Abu Zrayq,Raja Casablanca,Delantero,40
+Jordania,Ali Olwan,Al Sailiya,Delantero,65
+Jordania,Musa Al-Taamari,Rennes,Delantero,91
+Jordania,Odeh Al-Fakhouri,Pyramids,Delantero,9
+Jordania,Mahmoud Al-Mardi,Al Hussein,Delantero,88
+Jordania,Ibrahim Sabra,Lokomotiva Zagreb,Delantero,9
+Jordania,Ali Azaizeh,Al Shabab,Delantero,3
+Austria,Alexander Schlager,RB Salzburg,Portero,25
+Austria,Patrick Pentz,Brøndby,Portero,18
+Austria,Florian Wiegele,Viktoria Plzen,Portero,1
+Austria,David Alaba,Real Madrid,Defensa,112
+Austria,Stefan Posch,Mainz 05,Defensa,51
+Austria,Philipp Lienhart,Freiburg,Defensa,40
+Austria,Kevin Danso,Tottenham Hotspur,Defensa,31
+Austria,Phillipp Mwene,Mainz 05,Defensa,29
+Austria,Alexander Prass,Hoffenheim,Defensa,18
+Austria,Marco Friedl,Werder Bremen,Defensa,10
+Austria,Michael Svoboda,Venezia,Defensa,4
+Austria,David Affengruber,Elche,Defensa,1
+Austria,Marcel Sabitzer,Borussia Dortmund,Mediocampista,97
+Austria,Christoph Baumgartner,RB Leipzig,Mediocampista,58
+Austria,Florian Grillitsch,Braga,Mediocampista,58
+Austria,Konrad Laimer,Bayern Munich,Mediocampista,56
+Austria,Xaver Schlager,RB Leipzig,Mediocampista,50
+Austria,Nicolas Seiwald,RB Leipzig,Mediocampista,46
+Austria,Alessandro Schöpf,Wolfsberger AC,Mediocampista,35
+Austria,Romano Schmid,Werder Bremen,Mediocampista,33
+Austria,Patrick Wimmer,Wolfsburg,Mediocampista,30
+Austria,Carney Chukwuemeka,Borussia Dortmund,Mediocampista,2
+Austria,Paul Wanner,PSV Eindhoven,Mediocampista,2
+Austria,Marko Arnautović,Red Star Belgrade,Delantero,132
+Austria,Michael Gregoritsch,Augsburg,Delantero,74
+Austria,Saša Kalajdžić,LASK,Delantero,21
+Portugal,Diogo Costa,Porto,Portero,42
+Portugal,José Sá,Wolverhampton Wanderers,Portero,4
+Portugal,Rui Silva,Sporting CP,Portero,2
+Portugal,Rúben Dias,Manchester City,Defensa,74
+Portugal,João Cancelo,Barcelona,Defensa,66
+Portugal,Nélson Semedo,Fenerbahçe,Defensa,48
+Portugal,Nuno Mendes,Paris Saint-Germain,Defensa,43
+Portugal,Diogo Dalot,Manchester United,Defensa,33
+Portugal,Gonçalo Inácio,Sporting CP,Defensa,20
+Portugal,Matheus Nunes,Manchester City,Defensa,19
+Portugal,Renato Veiga,Villarreal,Defensa,11
+Portugal,Tomás Araújo,Benfica,Defensa,3
+Portugal,Bernardo Silva,Manchester City,Mediocampista,107
+Portugal,Bruno Fernandes,Manchester United,Mediocampista,87
+Portugal,Rúben Neves,Al Hilal,Mediocampista,65
+Portugal,Vitinha,Paris Saint-Germain,Mediocampista,37
+Portugal,João Neves,Paris Saint-Germain,Mediocampista,21
+Portugal,Samú Costa,Mallorca,Mediocampista,4
+Portugal,Cristiano Ronaldo,Al Nassr,Delantero,226
+Portugal,João Félix,Al Nassr,Delantero,52
+Portugal,Rafael Leão,Milan,Delantero,43
+Portugal,Gonçalo Guedes,Real Sociedad,Delantero,33
+Portugal,Gonçalo Ramos,Paris Saint-Germain,Delantero,24
+Portugal,Pedro Neto,Chelsea,Delantero,23
+Portugal,Francisco Trincão,Sporting CP,Delantero,17
+Portugal,Francisco Conceição,Juventus,Delantero,15
+Congo,Lionel Mpasi,Le Havre,Portero,27
+Congo,Timothy Fayulu,Noah,Portero,3
+Congo,Matthieu Epolo,Standard Liège,Portero,1
+Congo,Chancel Mbemba,Lille,Defensa,107
+Congo,Arthur Masuaku,Lens,Defensa,44
+Congo,Gédéon Kalulu,Aris Limassol,Defensa,27
+Congo,Joris Kayembe,Genk,Defensa,24
+Congo,Dylan Batubinsika,AEL,Defensa,14
+Congo,Axel Tuanzebe,Burnley,Defensa,12
+Congo,Aaron Wan-Bissaka,West Ham United,Defensa,10
+Congo,Steve Kapuadi,Widzew Łódź,Defensa,3
+Congo,Meschak Elia,Alanyaspor,Mediocampista,68
+Congo,Samuel Moutoussamy,Atromitos,Mediocampista,56
+Congo,Edo Kayembe,Watford,Mediocampista,41
+Congo,Charles Pickel,Espanyol,Mediocampista,33
+Congo,Gaël Kakuta,AEL,Mediocampista,30
+Congo,Noah Sadiki,Sunderland,Mediocampista,18
+Congo,Nathanaël Mbuku,Montpellier,Mediocampista,17
+Congo,Aaron Tshibola,Kilmarnock,Mediocampista,16
+Congo,Ngal'ayel Mukau,Lille,Mediocampista,12
+Congo,Brian Cipenga,Castellón,Delantero,7
+Congo,Cédric Bakambu,Real Betis,Delantero,68
+Congo,Théo Bongonda,Spartak Moscow,Delantero,37
+Congo,Fiston Mayele,Pyramids,Delantero,37
+Congo,Yoane Wissa,Newcastle United,Delantero,36
+Congo,Simon Banza,Al Jazira,Delantero,14
+Uzbekistán,Utkir Yusupov,Navbahor,Portero,39
+Uzbekistán,Abduvohid Nematov,Nasaf,Portero,7
+Uzbekistán,Botirali Ergashev,Neftchi,Portero,2
+Uzbekistán,Abdukodir Khusanov,Manchester City,Defensa,25
+Uzbekistán,Khojiakbar Alijonov,Pakhtakor,Defensa,40
+Uzbekistán,Farrukh Sayfiev,Neftchi,Defensa,44
+Uzbekistán,Rustam Ashurmatov,Esteghlal,Defensa,47
+Uzbekistán,Sherzod Nasrullaev,Nasaf,Defensa,29
+Uzbekistán,Umar Eshmurodov,Nasaf,Defensa,29
+Uzbekistán,Abdulla Abdullaev,Dibba,Defensa,16
+Uzbekistán,Bekhruz Karimov,Surkhon,Defensa,2
+Uzbekistán,Avazbek Ulmasaliev,AGMK,Defensa,0
+Uzbekistán,Jakhongir Urozov,Dinamo Samarquand,Mediocampista,2
+Uzbekistán,Akmal Mozgovoy,Pakhtakor,Mediocampista,23
+Uzbekistán,Otabek Shukurov,Baniyas,Mediocampista,82
+Uzbekistán,Jamshid Iskanderov,Neftchi,Mediocampista,37
+Uzbekistán,Odiljon Hamrobekov,Tractor,Mediocampista,71
+Uzbekistán,Jaloliddin Masharipov,Esteghlal,Mediocampista,74
+Uzbekistán,Oston Urunov,Persepolis,Mediocampista,40
+Uzbekistán,Dostonbek Khamdamov,Pakhtakor,Mediocampista,33
+Uzbekistán,Azizjon Ganiev,Al Bataeh,Mediocampista,18
+Uzbekistán,Abbosbek Fayzullaev,İstanbul Başakşehir,Delantero,30
+Uzbekistán,Sherzod Esanov,Bukhara,Delantero,0
+Uzbekistán,Eldor Shomurodov,İstanbul Başakşehir,Delantero,90
+Uzbekistán,Azizbek Amonov,Bukhara,Delantero,11
+Uzbekistán,Igor Sergeev,Persepolis,Delantero,81
+Colombia,David Ospina,Atlético Nacional,Portero,129
+Colombia,Camilo Vargas,Atlas,Portero,40
+Colombia,Álvaro Montero,Vélez Sarsfield,Portero,11
+Colombia,Davinson Sánchez,Galatasaray,Defensa,77
+Colombia,Santiago Arias,Independiente,Defensa,66
+Colombia,Yerry Mina,Cagliari,Defensa,52
+Colombia,Daniel Muñoz,Crystal Palace,Defensa,44
+Colombia,Johan Mojica,Mallorca,Defensa,43
+Colombia,Jhon Lucumi,Bologna,Defensa,35
+Colombia,Deiver Machado,Nantes,Defensa,14
+Colombia,Willer Ditta,Cruz Azul,Defensa,3
+Colombia,James Rodríguez,Minnesota United,Mediocampista,124
+Colombia,Jefferson Lerma,Crystal Palace,Mediocampista,64
+Colombia,Juan Fernando Quintero,River Plate,Mediocampista,47
+Colombia,Jhon Arias,Palmeiras,Mediocampista,36
+Colombia,Richard Ríos,Benfica,Mediocampista,30
+Colombia,Kevin Castaño,River Plate,Mediocampista,24
+Colombia,Jorge Carrascal,Flamengo,Mediocampista,22
+Colombia,Jaminton Campaz,Rosario Central,Mediocampista,9
+Colombia,Juan Portilla,Athletico Paranaense,Mediocampista,8
+Colombia,Gustavo Puerta,Racing Santander,Mediocampista,4
+Colombia,Luis Díaz,Bayern Munich,Delantero,72
+Colombia,Jhon Córdoba,Krasnodar,Delantero,21
+Colombia,Luis Suárez,Sporting CP,Delantero,10
+Colombia,Cucho Hernández,Real Betis,Delantero,7
+Colombia,Andrés Gómez,Vasco da Gama,Delantero,6
+Inglaterra,Jordan Pickford,Everton,Portero,82
+Inglaterra,Dean Henderson,Crystal Palace,Portero,4
+Inglaterra,James Trafford,Manchester City,Portero,1
+Inglaterra,John Stones,Manchester City,Defensa,87
+Inglaterra,Marc Guéhi,Manchester City,Defensa,27
+Inglaterra,Reece James,Chelsea,Defensa,22
+Inglaterra,Ezri Konsa,Aston Villa,Defensa,18
+Inglaterra,Dan Burn,Newcastle United,Defensa,6
+Inglaterra,Tino Livramento,Newcastle United,Defensa,5
+Inglaterra,Djed Spence,Tottenham Hotspur,Defensa,4
+Inglaterra,Nico O'Reilly,Manchester City,Defensa,3
+Inglaterra,Jarell Quansah,Bayer Leverkusen,Defensa,1
+Inglaterra,Jordan Henderson,Brentford,Mediocampista,89
+Inglaterra,Declan Rice,Arsenal,Mediocampista,72
+Inglaterra,Jude Bellingham,Real Madrid,Mediocampista,46
+Inglaterra,Morgan Rogers,Aston Villa,Mediocampista,13
+Inglaterra,Kobbie Mainoo,Manchester United,Mediocampista,12
+Inglaterra,Elliot Anderson,Nottingham Forest,Mediocampista,7
+Inglaterra,Harry Kane,Bayern Munich,Delantero,112
+Inglaterra,Marcus Rashford,Barcelona,Delantero,70
+Inglaterra,Bukayo Saka,Arsenal,Delantero,48
+Inglaterra,Ollie Watkins,Aston Villa,Delantero,20
+Inglaterra,Anthony Gordon,Newcastle United,Delantero,17
+Inglaterra,Eberechi Eze,Arsenal,Delantero,16
+Inglaterra,Noni Madueke,Arsenal,Delantero,10
+Inglaterra,Ivan Toney,Al Ahli,Delantero,7
+Croacia,Dominik Livaković,Dinamo Zagreb,Portero,73
+Croacia,Dominik Kotarski,Copenhagen,Portero,3
+Croacia,Ivor Pandur,Hull City,Portero,0
+Croacia,Joško Gvardiol,Manchester City,Defensa,46
+Croacia,Duje Ćaleta-Car,Real Sociedad,Defensa,38
+Croacia,Josip Šutalo,Ajax,Defensa,31
+Croacia,Josip Stanišić,Bayern Munich,Defensa,29
+Croacia,Marin Pongračić,Fiorentina,Defensa,18
+Croacia,Martin Erlić,Midtjylland,Defensa,12
+Croacia,Luka Vušković,Hamburg,Defensa,4
+Croacia,Luka Modrić,AC Milan,Mediocampista,196
+Croacia,Mateo Kovačić,Manchester City,Mediocampista,111
+Croacia,Mario Pašalić,Atalanta,Mediocampista,83
+Croacia,Nikola Vlašić,Torino,Mediocampista,61
+Croacia,Luka Sučić,Real Sociedad,Mediocampista,19
+Croacia,Martin Baturina,Como,Mediocampista,17
+Croacia,Kristijan Jakić,Augsburg,Mediocampista,16
+Croacia,Petar Sučić,Inter Milan,Mediocampista,15
+Croacia,Nikola Moro,Bologna,Mediocampista,9
+Croacia,Toni Fruk,Rijeka,Mediocampista,7
+Croacia,Ivan Perišić,PSV Eindhoven,Delantero,152
+Croacia,Andrej Kramarić,Hoffenheim,Delantero,114
+Croacia,Ante Budimir,Osasuna,Delantero,36
+Croacia,Marco Pašalić,Orlando City,Delantero,13
+Croacia,Petar Musa,FC Dallas,Delantero,10
+Croacia,Igor Matanović,Freiburg,Delantero,8
+Ghana,Lawrence Ati-Zigi,St. Gallen,Portero,28
+Ghana,Joseph Anang,St. Patrick's Athletic,Portero,1
+Ghana,Benjamin Asare,Hearts of Oak,Portero,10
+Ghana,Alidu Seidu,Rennes,Defensa,23
+Ghana,Jonas Adjetey,Wolfsburg,Defensa,9
+Ghana,Abdul Mumin,Rayo Vallecano,Defensa,4
+Ghana,Gideon Mensah,Auxerre,Defensa,39
+Ghana,Abdul Rahman Baba,PAOK,Defensa,52
+Ghana,Jerome Opoku,İstanbul Başakşehir,Defensa,10
+Ghana,Kojo Peprah Oppong,Nice,Defensa,4
+Ghana,Derrick Luckassen,Pafos,Defensa,1
+Ghana,Marvin Senaya,Auxerre,Defensa,1
+Ghana,Caleb Yirenkyi,Nordsjælland,Mediocampista,10
+Ghana,Thomas Partey,Villarreal,Mediocampista,56
+Ghana,Kwasi Sibo,Real Oviedo,Mediocampista,7
+Ghana,Antoine Semenyo,Manchester City,Mediocampista,34
+Ghana,Elisha Owusu,Auxerre,Mediocampista,19
+Ghana,Augustine Boakye,St. Etienné,Mediocampista,0
+Ghana,Abdul Fatawu,Leicester,Delantero,27
+Ghana,Jordan Ayew,Leicester,Delantero,117
+Ghana,Brandon Thomas-Asante,Coventry,Delantero,7
+Ghana,Christopher Bonsu Baah,Al Qadsiah,Delantero,8
+Ghana,Iñaki Williams,Athletic Club,Delantero,25
+Ghana,Kamaldeen Sulemana,Atalanta,Delantero,27
+Ghana,Ernest Nuamah,Lyon,Delantero,18
+Ghana,Prince Kwabena Adu,Viktoria Plzeň,Delantero,4
+Panamá,Luis Mejía,Nacional,Portero,56
+Panamá,Orlando Mosquera,Al Fayha,Portero,46
+Panamá,César Samudio,Marathón,Portero,4
+Panamá,Eric Davis,Plaza Amador,Defensa,104
+Panamá,Fidel Escobar,Saprissa,Defensa,96
+Panamá,Michael Amir Murillo,Beşiktaş,Defensa,91
+Panamá,Roderick Miller,Turan Tovuz,Defensa,48
+Panamá,Andrés Andrade,LASK,Defensa,47
+Panamá,César Blackman,Slovan Bratislava,Defensa,37
+Panamá,José Córdoba,Norwich City,Defensa,30
+Panamá,Jiovany Ramos,Puerto Cabello,Defensa,20
+Panamá,Jorge Gutiérrez,Deportivo La Guaira,Defensa,17
+Panamá,Edgardo Fariña,Pari Nizhny Novgorod,Defensa,15
+Panamá,Aníbal Godoy,San Diego FC,Mediocampista,159
+Panamá,Alberto Quintero,Plaza Amador,Mediocampista,140
+Panamá,Yoel Bárcenas,Mazatlán,Mediocampista,101
+Panamá,Adalberto Carrasquilla,UNAM,Mediocampista,73
+Panamá,José Luis Rodríguez,Juárez,Mediocampista,67
+Panamá,Cristian Martínez,Ironi Kiryat Shmona,Mediocampista,63
+Panamá,César Yanis,Cobresal,Mediocampista,55
+Panamá,Carlos Harvey,Minnesota United,Mediocampista,25
+Panamá,Azarias Londoño,Universidad Católica,Mediocampista,10
+Panamá,José Fajardo,Universidad Católica,Delantero,65
+Panamá,Ismael Díaz,Club León,Delantero,54
+Panamá,Cecilio Waterman,Universidad de Concepción,Delantero,52
+Panamá,Tomás Rodríguez,Saprissa,Delantero,11
