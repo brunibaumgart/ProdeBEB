@@ -5,6 +5,8 @@ import { Toaster } from 'sonner'
 import './globals.css'
 import 'flag-icons/css/flag-icons.min.css'
 
+import { getSiteUrl } from '@/lib/site-url'
+
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
@@ -17,7 +19,7 @@ const bebasNeue = Bebas_Neue({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: 'ProdeBEB — Mundial 2026',
     template: '%s · ProdeBEB',
