@@ -1,15 +1,13 @@
-const BEBAS_NEUE_URL =
-  'https://fonts.gstatic.com/s/bebasneue/v14/JTUSjIg69CK48gW7PXoo9Wlhyw.woff2'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
+const BEBAS_NEUE_PATH = join(process.cwd(), 'src/lib/brand/fonts/BebasNeue-Regular.ttf')
 
 export async function getBebasNeueFont() {
-  const response = await fetch(BEBAS_NEUE_URL)
-  if (!response.ok) {
-    throw new Error('No se pudo cargar la fuente Bebas Neue para el ícono.')
-  }
-  return response.arrayBuffer()
+  return readFile(BEBAS_NEUE_PATH)
 }
 
-export const prodebebIconFonts = (data: ArrayBuffer) =>
+export const prodebebIconFonts = (data: Buffer) =>
   [{ name: 'Bebas Neue', data, style: 'normal' as const, weight: 400 as const }]
 
 export const prodebebBrandColors = {
