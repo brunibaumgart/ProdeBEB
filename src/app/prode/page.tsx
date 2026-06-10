@@ -115,7 +115,7 @@ export default async function ProdePage() {
     {
       href: '/prode/completo',
       title: 'Prode Completo',
-      description: 'Bracket completo: grupos, eliminatorias y campeón.',
+      description: 'Grupos (victoria/empate), eliminatorias y campeón.',
       status: completoStatus,
       statusClass: completoStatusClass,
       icon: Trophy,

@@ -65,7 +65,8 @@ export default async function ProdeCompletoPage() {
       <div className="mb-6">
         <h1 className="font-heading text-3xl tracking-wide">PRODE COMPLETO</h1>
         <p className="mt-2 text-muted-foreground">
-          Grupos, eliminatorias y campeón · editable hasta {BRACKET_LOCK_LABEL}
+          Grupos con victoria/empate, eliminatorias eligiendo quién avanza y campeón · editable hasta{' '}
+          {BRACKET_LOCK_LABEL}
         </p>
       </div>
 

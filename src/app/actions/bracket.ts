@@ -260,7 +260,7 @@ export async function lockBracket(): Promise<BracketActionResult> {
     if (incompleteKnockout.length > 0) {
       return {
         ok: false,
-        error: `Faltan ${incompleteKnockout.length} eliminatorias (revisá empates en 90' con prórroga/penales).`,
+        error: `Faltan ${incompleteKnockout.length} eliminatorias (elegí quién avanza en cada cruce).`,
       }
     }
 

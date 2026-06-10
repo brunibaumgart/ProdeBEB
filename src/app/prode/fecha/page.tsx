@@ -4,8 +4,6 @@ import { auth } from '@clerk/nextjs/server'
 
 import { AppShell } from '@/components/layout/app-shell'
 import { FechaView } from '@/components/prode/fecha-view'
-import { SyncGroupStageButton } from '@/components/prode/sync-group-stage-button'
-import { getGroupStageSyncStats } from '@/app/actions/sync-predictions'
 import { canAccessTestContent } from '@/lib/auth/test-access'
 import {
   canEditPrediction,
@@ -52,12 +50,11 @@ export default async function ProdeFechaPage() {
   const includeTestMatches = await canAccessTestContent(clerkId)
   const matchQueryOptions = { includeTestMatches }
 
-  const [allMatches, predictionsMap, finishedPredictions, syncStats, globalTournament] =
+  const [allMatches, predictionsMap, finishedPredictions, globalTournament] =
     await Promise.all([
       getPredictableMatches(matchQueryOptions),
       getUserPredictionsMap(user.id),
       getFinishedPredictions(user.id, matchQueryOptions),
-      getGroupStageSyncStats(user.id),
       prisma.tournament.findUnique({
         where: { code: 'GLOBAL' },
         select: { modeScorers: true },
@@ -155,13 +152,6 @@ export default async function ProdeFechaPage() {
           {scorersEnabled && ' · goleadores opcionales'}
         </p>
       </div>
-
-      <SyncGroupStageButton
-        direction="complete-to-matchday"
-        sourceCount={syncStats.completeCount}
-        totalGroupMatches={syncStats.totalGroupMatches}
-        className="mb-6"
-      />
 
       <FechaView
         upcomingSections={upcomingSections}

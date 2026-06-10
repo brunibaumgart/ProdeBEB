@@ -50,11 +50,16 @@ export function calculateBracketSlotPoints(
   let points = COMPLETE_POINTS_CORRECT_MATCHUP
 
   const predictedWinnerTeamId =
+    slot.predAdvancesTeamId ??
+    (slot.predHomeScore != null &&
+    slot.predAwayScore != null &&
     slot.predHomeScore > slot.predAwayScore
       ? match.homeTeamId
-      : slot.predAwayScore > slot.predHomeScore
+      : slot.predAwayScore != null &&
+          slot.predHomeScore != null &&
+          slot.predAwayScore > slot.predHomeScore
         ? match.awayTeamId
-        : slot.predAdvancesTeamId
+        : null)
 
   if (!predictedWinnerTeamId) return points
 

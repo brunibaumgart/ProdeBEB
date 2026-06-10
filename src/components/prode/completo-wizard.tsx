@@ -5,14 +5,15 @@ import { Check, Lock, Trophy } from 'lucide-react'
 
 import { lockBracket, saveBracketChampion } from '@/app/actions/bracket'
 import { BracketMatchRow } from '@/components/prode/bracket-match-row'
+import { KnockoutBracketView } from '@/components/prode/knockout-bracket-view'
 import { SyncGroupStageButton } from '@/components/prode/sync-group-stage-button'
 import { FlagIcon } from '@/components/ui-mundial/flag-icon'
 import { GroupTable } from '@/components/ui-mundial/group-table'
 import { resolveGroupStandingsFromPredictions } from '@/lib/bracket'
-import { isKnockoutRoundUnlocked, resolvePredictedBracket } from '@/lib/bracket/predicted-bracket'
+import { getDownstreamKnockoutMatchIds } from '@/lib/bracket/knockout-bracket-layout'
+import { resolvePredictedBracket } from '@/lib/bracket/predicted-bracket'
 import { BRACKET_LOCK_LABEL } from '@/lib/bracket/lock'
 import type { BracketSlotPrediction } from '@/lib/queries/bracket'
-import { ROUND_LABELS, type MatchRound } from '@/types'
 import { cn } from '@/lib/utils'
 
 type SerializableTeam = {
@@ -47,14 +48,6 @@ interface CompletoWizardProps {
 }
 
 const GROUPS = 'ABCDEFGHIJKL'.split('')
-const KNOCKOUT_ROUNDS: { round: MatchRound; ids: number[] }[] = [
-  { round: 'Round of 32', ids: Array.from({ length: 16 }, (_, i) => 73 + i) },
-  { round: 'Round of 16', ids: Array.from({ length: 8 }, (_, i) => 89 + i) },
-  { round: 'Quarterfinals', ids: [97, 98, 99, 100] },
-  { round: 'Semifinals', ids: [101, 102] },
-  { round: '3rd Place', ids: [103] },
-  { round: 'Final', ids: [104] },
-]
 
 const STEPS = [
   { id: 1, label: 'Grupos' },
@@ -142,10 +135,14 @@ export function CompletoWizard({
         for (const id of Object.keys(next).map(Number)) {
           if (id >= 73) delete next[id]
         }
+      } else {
+        for (const id of getDownstreamKnockoutMatchIds(matchId)) {
+          delete next[id]
+        }
       }
       return next
     })
-    if (matchId <= 72) setChampionId(null)
+    if (matchId <= 72 || matchId !== 103) setChampionId(null)
   }
 
   async function handleChampionSelect(teamId: string) {
@@ -169,11 +166,6 @@ export function CompletoWizard({
     if (result.ok) window.location.reload()
   }
 
-  function getPreviousRoundIds(roundIndex: number): number[] {
-    if (roundIndex <= 0) return []
-    return KNOCKOUT_ROUNDS[roundIndex - 1].ids
-  }
-
   return (
     <div>
       {(locked || globallyLocked) && (
@@ -195,7 +187,7 @@ export function CompletoWizard({
               'flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
               step === s.id
                 ? 'border-primary bg-primary/15 text-primary'
-                : 'border-border text-muted-foreground hover:text-foreground'
+                : 'border-border text-muted-foreground hover:text-foreground',
             )}
           >
             <span className="flex size-5 items-center justify-center rounded-full bg-muted text-xs">
@@ -219,7 +211,8 @@ export function CompletoWizard({
       {step === 1 && (
         <div>
           <p className="mb-4 text-sm text-muted-foreground">
-            Predecí los 72 partidos de fase de grupos. La tabla se actualiza en tiempo real.
+            Elegí victoria local, empate o victoria visitante en cada partido. La tabla se actualiza
+            en tiempo real según esos resultados.
           </p>
 
           {editable && (
@@ -246,7 +239,7 @@ export function CompletoWizard({
                     selectedGroup === group
                       ? 'border-primary bg-primary/15 text-primary'
                       : 'border-border text-muted-foreground hover:text-foreground',
-                    done === groupMatchIds.length && done > 0 && 'border-brand-green/40'
+                    done === groupMatchIds.length && done > 0 && 'border-brand-green/40',
                   )}
                 >
                   {group} ({done}/{groupMatchIds.length})
@@ -301,101 +294,15 @@ export function CompletoWizard({
       )}
 
       {step === 2 && (
-        <div className="space-y-8">
-          <p className="text-sm text-muted-foreground">
-            Los cruces se arman según tus resultados de grupos. En eliminatorias no puede haber
-            empate.
-          </p>
-
-          {groupProgress.done < groupProgress.total && (
-            <p className="rounded-lg border border-brand-gold/30 bg-brand-gold/10 px-4 py-3 text-sm">
-              Completá la fase de grupos ({groupProgress.done}/{groupProgress.total}) para
-              desbloquear todos los cruces.
-            </p>
-          )}
-
-          {KNOCKOUT_ROUNDS.map((roundConfig, roundIndex) => {
-            const roundMatches = knockoutMatches.filter((m) => roundConfig.ids.includes(m.id))
-            const unlocked = isKnockoutRoundUnlocked(
-              roundConfig.ids,
-              getPreviousRoundIds(roundIndex),
-              predictions
-            )
-
-            return (
-              <section key={roundConfig.round}>
-                <h2 className="mb-3 font-heading text-xl tracking-wide text-primary">
-                  {ROUND_LABELS[roundConfig.round].toUpperCase()}
-                </h2>
-
-                {!unlocked && roundIndex > 0 && (
-                  <p className="mb-3 text-xs text-muted-foreground">
-                    Completá la ronda anterior para desbloquear estos partidos.
-                  </p>
-                )}
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {roundMatches.map((match) => {
-                    const resolved = resolvedKnockout.get(match.id)
-                    const homeTeam = resolved?.homeTeamId
-                      ? teams.find((t) => t.id === resolved.homeTeamId)
-                      : null
-                    const awayTeam = resolved?.awayTeamId
-                      ? teams.find((t) => t.id === resolved.awayTeamId)
-                      : null
-                    const canPlay =
-                      editable &&
-                      unlocked &&
-                      groupProgress.done === groupProgress.total &&
-                      Boolean(homeTeam && awayTeam)
-
-                    if (!homeTeam || !awayTeam) {
-                      return (
-                        <div
-                          key={match.id}
-                          className="rounded-lg border border-dashed border-border bg-muted/20 p-4 text-center text-sm text-muted-foreground"
-                        >
-                          Partido #{match.id} — equipos por definir
-                        </div>
-                      )
-                    }
-
-                    return (
-                      <BracketMatchRow
-                        key={match.id}
-                        matchId={match.id}
-                        home={{
-                          name: homeTeam.nameEs,
-                          iso2: homeTeam.iso2,
-                          flagEmoji: homeTeam.flagEmoji,
-                        }}
-                        away={{
-                          name: awayTeam.nameEs,
-                          iso2: awayTeam.iso2,
-                          flagEmoji: awayTeam.flagEmoji,
-                        }}
-                        homeTeamId={homeTeam.id}
-                        awayTeamId={awayTeam.id}
-                        initialHome={predictions[match.id]?.predHome ?? null}
-                        initialAway={predictions[match.id]?.predAway ?? null}
-                        initialAdvancesTeamId={predictions[match.id]?.predAdvancesTeamId ?? null}
-                        initialDecidedIn={
-                          (predictions[match.id]?.predDecidedIn as
-                            | 'regulation'
-                            | 'extra_time'
-                            | 'penalties'
-                            | null) ?? null
-                        }
-                        editable={canPlay ?? false}
-                        knockout
-                        onSaved={(prediction) => handlePredictionSaved(match.id, prediction)}
-                      />
-                    )
-                  })}
-                </div>
-              </section>
-            )
-          })}
+        <div className="space-y-6">
+          <KnockoutBracketView
+            teams={teams}
+            resolvedKnockout={resolvedKnockout}
+            predictions={predictions}
+            editable={editable}
+            groupsComplete={groupProgress.done === groupProgress.total}
+            onPredictionSaved={handlePredictionSaved}
+          />
 
           <div className="flex justify-between">
             <button
