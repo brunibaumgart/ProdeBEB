@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '',
     '/fixture',
     '/grupos',
+    '/estadisticas',
     '/selecciones',
     '/prode',
     '/prode/fecha',

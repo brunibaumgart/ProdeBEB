@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { CalendarDays, Grid3x3, MapPin, Users } from 'lucide-react'
+import { BarChart3, CalendarDays, Grid3x3, MapPin, Users } from 'lucide-react'
 import { auth } from '@clerk/nextjs/server'
 
 import { AppShell } from '@/components/layout/app-shell'
@@ -44,6 +44,7 @@ export default async function HomePage() {
   const quickLinks = [
     { href: '/fixture', label: 'Fixture', icon: CalendarDays, description: '104 partidos' },
     { href: '/grupos', label: 'Grupos', icon: Grid3x3, description: '12 grupos' },
+    { href: '/estadisticas', label: 'Estadísticas', icon: BarChart3, description: 'Goleadores' },
     { href: '/selecciones', label: 'Selecciones', icon: Users, description: '48 equipos' },
     { href: '/estadios', label: 'Estadios', icon: MapPin, description: '16 sedes' },
   ]

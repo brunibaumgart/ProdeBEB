@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 const publicLinks = [
   { href: '/fixture', label: 'Fixture' },
   { href: '/grupos', label: 'Grupos' },
+  { href: '/estadisticas', label: 'Estadísticas' },
   { href: '/selecciones', label: 'Selecciones' },
   { href: '/estadios', label: 'Estadios' },
 ]
