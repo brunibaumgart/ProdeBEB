@@ -120,7 +120,7 @@ export function AdminMatchRow({ match, action, stats, predictions, showHeader = 
               ) : (
                 <RefreshCw className="size-3.5" aria-hidden />
               )}
-              {action === 'live' ? 'Marcar como en vivo' : 'Recalcular puntos'}
+              {action === 'live' ? 'Marcar en juego' : 'Recalcular puntos'}
             </Button>
           )}
         </div>

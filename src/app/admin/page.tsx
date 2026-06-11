@@ -37,6 +37,7 @@ function toFormMatch(match: MatchWithRelations) {
     id: match.id,
     date: match.date.toISOString(),
     timeArg: match.timeArg,
+    status: match.status,
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
     homeScore: match.homeScore,
@@ -49,15 +50,21 @@ function toFormMatch(match: MatchWithRelations) {
 async function PartidosTab() {
   const overview = await getAdminMatchesOverview()
 
+  const inProgressMatches = [...overview.live, ...overview.readyForResult]
+
   const teamIds = [
     ...new Set(
-      [...overview.live, ...overview.readyForResult].flatMap((match) =>
-        [match.homeTeamId, match.awayTeamId].filter(Boolean)
-      )
+      inProgressMatches.flatMap((match) =>
+        [match.homeTeamId, match.awayTeamId].filter(Boolean),
+      ),
     ),
   ] as string[]
 
-  const players = await getPlayersByTeamIds(teamIds)
+  const [players, matchGoalsByMatchId] = await Promise.all([
+    getPlayersByTeamIds(teamIds),
+    getMatchGoalsByMatchIds(inProgressMatches.map((match) => match.id)),
+  ])
+
   const playersByTeamId = new Map<string, { id: string; name: string; position: string }[]>()
   for (const player of players) {
     const list = playersByTeamId.get(player.teamId) ?? []
@@ -65,35 +72,52 @@ async function PartidosTab() {
     playersByTeamId.set(player.teamId, list)
   }
 
-  const editable = [...overview.live, ...overview.readyForResult]
-
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="mb-3 font-heading text-xl tracking-wide">
-          {overview.live.length > 0 ? 'EN VIVO Y LISTOS PARA CARGAR RESULTADO' : 'LISTOS PARA CARGAR RESULTADO'}
-        </h2>
-        {editable.length === 0 ? (
+        <h2 className="mb-1 font-heading text-xl tracking-wide">EN JUEGO</h2>
+        <p className="mb-3 text-sm text-muted-foreground">
+          Actualizá el marcador parcial mientras se juega. Finalizá solo cuando termine el partido.
+        </p>
+        {inProgressMatches.length === 0 ? (
           <p className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">
-            No hay partidos pendientes de resultado por ahora.
+            No hay partidos en juego por ahora.
           </p>
         ) : (
           <div className="space-y-4">
-            {editable.map((match) => (
-              <AdminMatchForm
-                key={match.id}
-                match={toFormMatch(match)}
-                homePlayers={match.homeTeamId ? (playersByTeamId.get(match.homeTeamId) ?? []) : []}
-                awayPlayers={match.awayTeamId ? (playersByTeamId.get(match.awayTeamId) ?? []) : []}
-              />
-            ))}
+            {inProgressMatches.map((match) => {
+              const goals = matchGoalsByMatchId.get(match.id) ?? { home: [], away: [] }
+
+              return (
+                <AdminMatchForm
+                  key={match.id}
+                  mode="live"
+                  match={toFormMatch(match)}
+                  initialHomeScore={match.homeScore}
+                  initialAwayScore={match.awayScore}
+                  initialHomeScorers={goals.home}
+                  initialAwayScorers={goals.away}
+                  homePlayers={
+                    match.homeTeamId ? (playersByTeamId.get(match.homeTeamId) ?? []) : []
+                  }
+                  awayPlayers={
+                    match.awayTeamId ? (playersByTeamId.get(match.awayTeamId) ?? []) : []
+                  }
+                />
+              )
+            })}
           </div>
         )}
       </section>
 
       <section>
         <div className="mb-3 flex items-baseline justify-between gap-2">
-          <h2 className="font-heading text-xl tracking-wide">PRÓXIMOS</h2>
+          <div>
+            <h2 className="font-heading text-xl tracking-wide">PRÓXIMOS</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Marcá un partido como en juego antes del kick-off si querés cargar el marcador en vivo.
+            </p>
+          </div>
           {overview.upcomingTotal > overview.upcoming.length && (
             <span className="text-xs text-muted-foreground">
               Mostrando {overview.upcoming.length} de {overview.upcomingTotal}

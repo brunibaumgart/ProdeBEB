@@ -13,7 +13,7 @@ import {
   recalculateScorerPointsForMatch,
   saveMatchGoals,
 } from '@/lib/scoring/scorers-engine'
-import { validateScorerCounts } from '@/lib/scoring/scorers'
+import { adjustScorersToCount, validateScorerCounts } from '@/lib/scoring/scorers'
 import {
   advanceKnockoutTeams,
   recalculateMatchdayPointsForMatch,
@@ -127,6 +127,74 @@ export async function setMatchResult(
 
   await recalculateCompleteScoringForMatch(matchId)
 
+  revalidateAdminMatchPaths()
+
+  return { ok: true, message: `Resultado guardado: ${homeScore} - ${awayScore}` }
+}
+
+export async function updateMatchLiveScore(
+  matchId: number,
+  homeScore: number,
+  awayScore: number,
+  scorers?: { homePlayerIds: string[]; awayPlayerIds: string[] },
+): Promise<SetMatchResultResponse> {
+  try {
+    await assertAdmin()
+  } catch {
+    return { ok: false, error: 'No tenés permisos de administrador.' }
+  }
+
+  if (homeScore < 0 || homeScore > 20 || awayScore < 0 || awayScore > 20) {
+    return { ok: false, error: 'Resultados inválidos.' }
+  }
+
+  const match = await getMatchById(matchId, { includeTestMatches: true })
+  if (!match) return { ok: false, error: 'Partido no encontrado.' }
+  if (match.status === 'finished') {
+    return { ok: false, error: 'El partido ya está finalizado.' }
+  }
+
+  const homeScorerIds = adjustScorersToCount(scorers?.homePlayerIds ?? [], homeScore)
+  const awayScorerIds = adjustScorersToCount(scorers?.awayPlayerIds ?? [], awayScore)
+
+  if (homeScorerIds.length + awayScorerIds.length > 0) {
+    const allIds = [...homeScorerIds, ...awayScorerIds]
+    const players = await prisma.player.findMany({
+      where: { id: { in: allIds } },
+      select: { id: true, teamId: true },
+    })
+    const byId = new Map(players.map((player) => [player.id, player.teamId]))
+    for (const id of homeScorerIds) {
+      if (byId.get(id) !== match.homeTeamId) {
+        return { ok: false, error: 'Goleador local inválido.' }
+      }
+    }
+    for (const id of awayScorerIds) {
+      if (byId.get(id) !== match.awayTeamId) {
+        return { ok: false, error: 'Goleador visitante inválido.' }
+      }
+    }
+  }
+
+  await prisma.match.update({
+    where: { id: matchId },
+    data: {
+      homeScore,
+      awayScore,
+      status: 'live',
+    },
+  })
+
+  if (homeScore + awayScore > 0) {
+    await saveMatchGoals(matchId, homeScorerIds, awayScorerIds)
+  }
+
+  revalidateAdminMatchPaths()
+
+  return { ok: true, message: `Marcador en vivo guardado: ${homeScore} - ${awayScore}` }
+}
+
+function revalidateAdminMatchPaths() {
   revalidatePath('/')
   revalidatePath('/fixture')
   revalidatePath('/grupos')
@@ -136,8 +204,7 @@ export async function setMatchResult(
   revalidatePath('/perfil')
   revalidatePath('/prode/completo')
   revalidatePath('/admin')
-
-  return { ok: true, message: `Resultado guardado: ${homeScore} - ${awayScore}` }
+  revalidatePath('/torneos', 'layout')
 }
 
 export async function setMatchLive(matchId: number): Promise<SetMatchResultResponse> {
@@ -155,11 +222,9 @@ export async function setMatchLive(matchId: number): Promise<SetMatchResultRespo
 
   await prisma.match.update({ where: { id: matchId }, data: { status: 'live' } })
 
-  revalidatePath('/')
-  revalidatePath('/fixture')
-  revalidatePath('/admin')
+  revalidateAdminMatchPaths()
 
-  return { ok: true, message: 'Partido marcado como en vivo.' }
+  return { ok: true, message: 'Partido marcado en juego.' }
 }
 
 export async function recalculateMatchPoints(matchId: number): Promise<SetMatchResultResponse> {
@@ -202,12 +267,7 @@ export async function recalculateMatchPoints(matchId: number): Promise<SetMatchR
   await recalculateMatchdayPointsForMatch(matchId)
   await recalculateCompleteScoringForMatch(matchId)
 
-  revalidatePath('/')
-  revalidatePath('/prode')
-  revalidatePath('/prode/fecha')
-  revalidatePath('/perfil')
-  revalidatePath('/prode/completo')
-  revalidatePath('/admin')
+  revalidateAdminMatchPaths()
 
   return { ok: true, message: 'Puntos recalculados desde cero.' }
 }

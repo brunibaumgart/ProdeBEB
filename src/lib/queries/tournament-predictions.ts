@@ -27,6 +27,7 @@ export type TournamentPredictionMatchView = {
   awayTeam: { nameEs: string; iso2: string; flagEmoji: string } | null
   predictionCount: number
   canReveal: boolean
+  isFinished: boolean
   predictions: TournamentMemberPredictionView[]
 }
 
@@ -105,7 +106,7 @@ export async function getTournamentPredictionsOverview(
       homeTeam: { select: { nameEs: true, iso2: true, flagEmoji: true } },
       awayTeam: { select: { nameEs: true, iso2: true, flagEmoji: true } },
     },
-    orderBy: [{ date: 'desc' }, { id: 'desc' }],
+    orderBy: [{ date: 'asc' }, { id: 'asc' }],
   })
 
   const revealableMatchIds = matches
@@ -163,6 +164,7 @@ export async function getTournamentPredictionsOverview(
         awayTeam: match.awayTeam,
         predictionCount: countByMatchId.get(match.id) ?? 0,
         canReveal,
+        isFinished: match.status === 'finished',
         predictions: canReveal ? (predictionsByMatchId.get(match.id) ?? []) : [],
       }
     }),
