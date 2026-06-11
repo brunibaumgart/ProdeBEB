@@ -12,14 +12,15 @@ function ArgentinaFlag({ width, height }: { width: number; height: number }) {
         width,
         height,
         display: 'flex',
+        flexDirection: 'column',
         overflow: 'hidden',
         borderRadius: 4,
         border: '2px solid rgba(255,255,255,0.25)',
       }}
     >
-      <div style={{ width: '33.33%', height: '100%', background: '#75AADB' }} />
-      <div style={{ width: '33.34%', height: '100%', background: '#FFFFFF' }} />
-      <div style={{ width: '33.33%', height: '100%', background: '#75AADB' }} />
+      <div style={{ flex: 1, background: '#75AADB' }} />
+      <div style={{ flex: 1, background: '#FFFFFF' }} />
+      <div style={{ flex: 1, background: '#75AADB' }} />
     </div>
   )
 }
@@ -28,8 +29,8 @@ export function ProdebebPollitosIcon({ pollitosSrc, variant }: ProdebebPollitosI
   const compact = variant === 'compact'
   const pollitosWidth = compact ? 118 : 280
   const pollitosHeight = compact ? 88 : 210
-  const flagWidth = compact ? 34 : 56
-  const flagHeight = compact ? 22 : 36
+  const flagWidth = compact ? 22 : 38
+  const flagHeight = compact ? 32 : 54
   const bebSize = compact ? 26 : 44
 
   return (

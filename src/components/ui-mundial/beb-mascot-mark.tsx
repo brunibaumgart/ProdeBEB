@@ -1,4 +1,4 @@
-import { FlagIcon } from '@/components/ui-mundial/flag-icon'
+import { ArgentinaFlagMark } from '@/components/ui-mundial/argentina-flag-mark'
 import { cn } from '@/lib/utils'
 
 interface BebMascotMarkProps {
@@ -20,7 +20,7 @@ export function BebMascotMark({
         aria-hidden
         className={cn('h-16 w-auto max-w-[140px] object-contain drop-shadow-sm', imageClassName)}
       />
-      <FlagIcon iso2="AR" size="md" className="rounded-sm shadow-sm" />
+      <ArgentinaFlagMark width={24} height={36} />
       {showLabel ? (
         <span className="font-heading text-lg leading-none tracking-[0.28em] text-brand-gold">
           BEB
