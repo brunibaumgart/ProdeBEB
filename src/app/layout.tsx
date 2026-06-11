@@ -6,6 +6,7 @@ import './globals.css'
 import 'flag-icons/css/flag-icons.min.css'
 
 import { getSiteUrl } from '@/lib/site-url'
+import { PullToRefresh } from '@/components/layout/pull-to-refresh'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -53,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <body className="min-h-full bg-background text-foreground antialiased">
-          {children}
+          <PullToRefresh>{children}</PullToRefresh>
           <Toaster richColors closeButton position="top-center" />
         </body>
       </html>
