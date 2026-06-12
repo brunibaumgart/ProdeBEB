@@ -76,7 +76,7 @@ export async function sendAdminTestPushNotification(): Promise<PushActionResult>
 
   const basePayload =
     (await getDailyReminderPayloadForUser(dbUser.id)) ?? {
-      title: 'ProdeBEB — Notificación de prueba',
+      title: 'Notificación de prueba',
       body: 'Si ves esto, las push funcionan correctamente.',
       url: '/prode/fecha',
     }

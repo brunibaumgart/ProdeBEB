@@ -1,7 +1,7 @@
 self.addEventListener('push', (event) => {
   let payload = {
     title: 'ProdeBEB',
-    body: 'Recordatorio de partidos del día.',
+    body: 'Tenés partidos pendientes.',
     url: '/prode/fecha',
   }
 
@@ -13,14 +13,16 @@ self.addEventListener('push', (event) => {
 
   const icon = payload.icon ?? '/icon'
 
-  event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon,
-      badge: icon,
-      data: { url: payload.url },
-    }),
-  )
+  const options = {
+    body: payload.body,
+    icon,
+    badge: icon,
+    tag: payload.tag ?? 'prodebeb-push',
+    renotify: true,
+    data: { url: payload.url },
+  }
+
+  event.waitUntil(self.registration.showNotification(payload.title, options))
 })
 
 self.addEventListener('notificationclick', (event) => {

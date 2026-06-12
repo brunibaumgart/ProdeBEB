@@ -3,15 +3,9 @@ import { getUserPredictionsForMatchIds } from '@/lib/queries/predictions'
 import { getTodayMatches, type MatchWithRelations } from '@/lib/queries/matches'
 import { deliverPushPayload } from '@/lib/push/delivery'
 import { getPushNotificationIcon } from '@/lib/push/icons'
+import { formatMatchFlagsLine } from '@/lib/push/match-copy'
 import type { PushPayload } from '@/lib/push/web-push-server'
 import { isDbMatchLocked, getArgentinaTodayBounds } from '@/lib/time'
-
-function formatMatchLine(match: MatchWithRelations): string {
-  const home = match.homeTeam?.nameEs ?? 'Local'
-  const away = match.awayTeam?.nameEs ?? 'Visitante'
-  const timeArg = match.timeArg ?? ''
-  return `${home} vs ${away}${timeArg ? ` · ${timeArg}` : ''}`
-}
 
 export function buildDailyReminderPayload(
   matches: MatchWithRelations[],
@@ -19,23 +13,22 @@ export function buildDailyReminderPayload(
 ): PushPayload | null {
   if (matches.length === 0) return null
 
-  const lines = matches.slice(0, 3).map(formatMatchLine)
+  const lines = matches.slice(0, 3).map(formatMatchFlagsLine)
   const remaining = matches.length - lines.length
-  const pendingSuffix =
-    options?.pendingCount != null && options.pendingCount > 0
-      ? ` · Te faltan ${options.pendingCount}`
-      : ''
+  const pendingCount = options?.pendingCount ?? matches.length
 
   const body =
     remaining > 0
-      ? `${lines.join(' · ')} · y ${remaining} más${pendingSuffix}`
-      : `${lines.join(' · ')}${pendingSuffix}`
+      ? `${lines.join(' · ')} · y ${remaining} más`
+      : lines.join(' · ')
+
+  const title =
+    pendingCount === 1
+      ? 'Te falta 1 predicción hoy'
+      : `Te faltan ${pendingCount} predicciones hoy`
 
   return {
-    title:
-      matches.length === 1
-        ? 'ProdeBEB — 1 partido hoy (Fecha a Fecha)'
-        : `ProdeBEB — ${matches.length} partidos hoy (Fecha a Fecha)`,
+    title,
     body,
     url: '/prode/fecha',
   }

@@ -38,6 +38,7 @@ export interface PushPayload {
   body: string
   url: string
   icon?: string
+  tag?: string
 }
 
 export async function sendPushNotification(

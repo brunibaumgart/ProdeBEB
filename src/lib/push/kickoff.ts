@@ -4,20 +4,20 @@ import { matchWithRelations, type MatchWithRelations } from '@/lib/queries/match
 import { getAdminUsersWithPushSubscriptions } from '@/lib/push/admin-recipients'
 import { deliverPushPayload } from '@/lib/push/delivery'
 import { getPushNotificationIcon } from '@/lib/push/icons'
+import { buildKickoffNotificationCopy } from '@/lib/push/match-copy'
 import type { PushPayload } from '@/lib/push/web-push-server'
 
 /** Partidos cuyo kick-off ya pasó pero el cron no corrió a tiempo (máx. 6 h de atraso). */
 export const KICKOFF_MAX_BACKLOG_MS = 6 * 60 * 60 * 1000
 
 export function buildKickoffPayload(match: MatchWithRelations): PushPayload {
-  const home = match.homeTeam?.nameEs ?? match.homeLabel ?? 'Local'
-  const away = match.awayTeam?.nameEs ?? match.awayLabel ?? 'Visitante'
-  const timeArg = match.timeArg ? ` · ${match.timeArg}` : ''
+  const { title, body } = buildKickoffNotificationCopy(match)
 
   return {
-    title: 'ProdeBEB — Arrancó el partido',
-    body: `${home} vs ${away}${timeArg}`,
+    title,
+    body,
     url: `/fixture/${match.id}`,
+    tag: `kickoff-${match.id}`,
   }
 }
 
