@@ -124,6 +124,7 @@ model Match {
   awayScore Int?
   status    String   @default("scheduled")
   isTest    Boolean  @default(false)
+  kickoffPushNotifiedAt DateTime?
 
   predictions  Prediction[]
   bracketSlots BracketSlot[]

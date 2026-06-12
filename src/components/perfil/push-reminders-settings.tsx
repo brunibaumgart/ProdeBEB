@@ -11,19 +11,18 @@ import {
   getNotificationPermission,
   isPushSupported,
   subscribeToPushNotifications,
-  unsubscribeFromPushNotifications,
 } from '@/lib/push/client'
 
 interface PushRemindersSettingsProps {
   pushRemindersEnabled: boolean
   pushSubscriptionCount: number
-  adminOnlyMode?: boolean
+  isAdmin?: boolean
 }
 
 export function PushRemindersSettings({
   pushRemindersEnabled: initialEnabled,
   pushSubscriptionCount,
-  adminOnlyMode = false,
+  isAdmin = false,
 }: PushRemindersSettingsProps) {
   const router = useRouter()
   const [enabled, setEnabled] = useState(initialEnabled)
@@ -38,7 +37,6 @@ export function PushRemindersSettings({
     startTransition(async () => {
       if (enabled) {
         try {
-          await unsubscribeFromPushNotifications()
           const result = await setPushRemindersEnabled(false)
           if (!result.ok) {
             toast.error(result.error)
@@ -56,7 +54,7 @@ export function PushRemindersSettings({
       try {
         await subscribeToPushNotifications()
         setEnabled(true)
-        toast.success('Recordatorio activado. Te avisamos a las 11:00 si hay partidos hoy.')
+        toast.success('Recordatorio activado. Te avisamos a las 11:00 si te faltan predicciones hoy.')
         router.refresh()
       } catch (error) {
         const message =
@@ -76,10 +74,10 @@ export function PushRemindersSettings({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="font-medium text-foreground">Recordatorio diario de partidos</h3>
+              <h3 className="font-medium text-foreground">Recordatorio Fecha a Fecha</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                A las 11:00 (hora Argentina) te avisamos si hay partidos hoy y cuántas predicciones
-                te faltan.
+                A las 11:00 (hora Argentina) te avisamos si hay partidos de hoy en Fecha a Fecha y
+                todavía no cargaste la predicción.
               </p>
             </div>
 
@@ -121,9 +119,10 @@ export function PushRemindersSettings({
             </p>
           ) : null}
 
-          {adminOnlyMode ? (
+          {isAdmin && pushSubscriptionCount > 0 ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Modo prueba: solo admins pueden activar y recibir recordatorios por ahora.
+              Como admin también recibís un aviso automático cuando arranca cada partido, aunque este
+              recordatorio esté apagado.
             </p>
           ) : null}
 

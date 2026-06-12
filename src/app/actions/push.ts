@@ -3,6 +3,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 
+import { deliverPushPayload } from '@/lib/push/delivery'
 import { getPushNotificationIcon } from '@/lib/push/icons'
 import { prisma } from '@/lib/prisma'
 import { ensureDbUser, requireDbUserForAction } from '@/lib/queries/users'
@@ -38,18 +39,14 @@ export async function setPushRemindersEnabled(enabled: boolean): Promise<PushAct
     },
   })
 
-  if (!enabled) {
-    await prisma.pushSubscription.deleteMany({ where: { userId: authResult.user.id } })
-  }
-
   revalidatePath('/perfil')
   revalidatePath('/', 'layout')
 
   return {
     ok: true,
     message: enabled
-      ? 'Recordatorio diario activado.'
-      : 'Recordatorio diario desactivado.',
+      ? 'Recordatorio de las 11:00 activado.'
+      : 'Recordatorio de las 11:00 desactivado.',
   }
 }
 
@@ -76,7 +73,6 @@ export async function sendAdminTestPushNotification(): Promise<PushActionResult>
   }
 
   const { getDailyReminderPayloadForUser } = await import('@/lib/push/daily-reminder')
-  const { sendPushNotification } = await import('@/lib/push/web-push-server')
 
   const basePayload =
     (await getDailyReminderPayloadForUser(dbUser.id)) ?? {
@@ -90,27 +86,7 @@ export async function sendAdminTestPushNotification(): Promise<PushActionResult>
     icon: getPushNotificationIcon({ name: dbUser.name }),
   }
 
-  let sent = 0
-  const errors: string[] = []
-
-  for (const subscription of subscriptions) {
-    try {
-      await sendPushNotification(subscription, payload)
-      sent += 1
-    } catch (error) {
-      const statusCode =
-        error && typeof error === 'object' && 'statusCode' in error
-          ? Number(error.statusCode)
-          : null
-
-      if (statusCode === 404 || statusCode === 410) {
-        await prisma.pushSubscription.delete({ where: { id: subscription.id } }).catch(() => {})
-      }
-
-      errors.push(subscription.id)
-      console.error('Admin test push failed', { subscriptionId: subscription.id, statusCode, error })
-    }
-  }
+  const { sent, failed } = await deliverPushPayload(subscriptions, payload, { userId: dbUser.id })
 
   if (sent === 0) {
     return {
@@ -119,7 +95,7 @@ export async function sendAdminTestPushNotification(): Promise<PushActionResult>
     }
   }
 
-  const suffix = errors.length > 0 ? ` (${errors.length} falló)` : ''
+  const suffix = failed > 0 ? ` (${failed} falló)` : ''
   return {
     ok: true,
     message: `Notificación enviada a ${sent} dispositivo${sent === 1 ? '' : 's'}${suffix}.`,

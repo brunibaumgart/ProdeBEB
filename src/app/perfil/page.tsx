@@ -4,7 +4,7 @@ import { PushRemindersSettings } from '@/components/perfil/push-reminders-settin
 import { SignOutAction } from '@/components/perfil/sign-out-action'
 import { UserInitialAvatar } from '@/components/ui/user-initial-avatar'
 import { prisma } from '@/lib/prisma'
-import { canUsePushReminders, isPushRemindersAdminOnly } from '@/lib/push/config'
+import { isPlatformAdmin } from '@/lib/auth/test-access'
 import { ensureDbUser, getUserProfileStats } from '@/lib/queries/users'
 import { currentUser } from '@clerk/nextjs/server'
 
@@ -43,16 +43,14 @@ export default async function PerfilPage() {
         </div>
       </section>
 
-      {canUsePushReminders(dbUser) ? (
-        <section className="mb-8">
-          <h2 className="mb-4 font-heading text-xl tracking-wide">NOTIFICACIONES</h2>
-          <PushRemindersSettings
-            pushRemindersEnabled={dbUser.pushRemindersEnabled}
-            pushSubscriptionCount={pushSubscriptionCount}
-            adminOnlyMode={isPushRemindersAdminOnly()}
-          />
-        </section>
-      ) : null}
+      <section className="mb-8">
+        <h2 className="mb-4 font-heading text-xl tracking-wide">NOTIFICACIONES</h2>
+        <PushRemindersSettings
+          pushRemindersEnabled={dbUser.pushRemindersEnabled}
+          pushSubscriptionCount={pushSubscriptionCount}
+          isAdmin={isPlatformAdmin({ clerkId: dbUser.clerkId, isAdmin: dbUser.isAdmin })}
+        />
+      </section>
 
       <section className="mb-8">
         <h2 className="mb-4 font-heading text-xl tracking-wide">ESTADÍSTICAS</h2>

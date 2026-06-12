@@ -1,7 +1,7 @@
 import { PREDICTION_LOCK_MINUTES } from '@/lib/matches/availability'
 import { getUserPredictionsForMatchIds } from '@/lib/queries/predictions'
 import { getTodayMatches, type MatchWithRelations } from '@/lib/queries/matches'
-import { pushReminderUserFilter } from '@/lib/push/config'
+import { deliverPushPayload } from '@/lib/push/delivery'
 import { getPushNotificationIcon } from '@/lib/push/icons'
 import type { PushPayload } from '@/lib/push/web-push-server'
 import { isDbMatchLocked, getArgentinaTodayBounds } from '@/lib/time'
@@ -34,8 +34,8 @@ export function buildDailyReminderPayload(
   return {
     title:
       matches.length === 1
-        ? 'ProdeBEB — 1 partido hoy'
-        : `ProdeBEB — ${matches.length} partidos hoy`,
+        ? 'ProdeBEB — 1 partido hoy (Fecha a Fecha)'
+        : `ProdeBEB — ${matches.length} partidos hoy (Fecha a Fecha)`,
     body,
     url: '/prode/fecha',
   }
@@ -70,13 +70,11 @@ export async function getDailyReminderPayloadForUser(userId: string): Promise<Pu
 
 export async function sendDailyPushReminders() {
   const { prisma } = await import('@/lib/prisma')
-  const { sendPushNotification } = await import('@/lib/push/web-push-server')
 
   const users = await prisma.user.findMany({
     where: {
       pushRemindersEnabled: true,
       pushSubscriptions: { some: {} },
-      ...pushReminderUserFilter(),
     },
     include: { pushSubscriptions: true },
   })
@@ -97,29 +95,9 @@ export async function sendDailyPushReminders() {
       icon: getPushNotificationIcon({ name: user.name }),
     }
 
-    for (const subscription of user.pushSubscriptions) {
-      try {
-        await sendPushNotification(subscription, payload)
-        sent += 1
-      } catch (error) {
-        failed += 1
-        const statusCode =
-          error && typeof error === 'object' && 'statusCode' in error
-            ? Number(error.statusCode)
-            : null
-
-        if (statusCode === 404 || statusCode === 410) {
-          await prisma.pushSubscription.delete({ where: { id: subscription.id } }).catch(() => {})
-        }
-
-        console.error('Push send failed', {
-          userId: user.id,
-          subscriptionId: subscription.id,
-          statusCode,
-          error,
-        })
-      }
-    }
+    const result = await deliverPushPayload(user.pushSubscriptions, payload, { userId: user.id })
+    sent += result.sent
+    failed += result.failed
   }
 
   return { sent, failed, skipped, users: users.length }

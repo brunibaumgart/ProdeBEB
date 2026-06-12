@@ -23,7 +23,6 @@ import { getPlayersByTeamIds } from '@/lib/queries/teams'
 import { formatArgentinaDate } from '@/lib/time'
 import { cn } from '@/lib/utils'
 import { isPlatformAdmin } from '@/lib/auth/test-access'
-import { isPushRemindersAdminOnly } from '@/lib/push/config'
 import { getWorldCupStatistics } from '@/lib/queries/world-cup-stats'
 import { ensureDbUser } from '@/lib/queries/users'
 
@@ -318,7 +317,6 @@ async function TesteosTab() {
     <AdminTesteosPanel
       pushRemindersEnabled={dbUser.pushRemindersEnabled}
       pushSubscriptionCount={pushSubscriptionCount}
-      adminOnlyMode={isPushRemindersAdminOnly()}
     />
   )
 }

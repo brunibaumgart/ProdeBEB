@@ -1,7 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-import { canUsePushReminders } from '@/lib/push/config'
 import { prisma } from '@/lib/prisma'
 import { ensureDbUser } from '@/lib/queries/users'
 
@@ -22,10 +21,6 @@ export async function POST(request: Request) {
   const dbUser = await ensureDbUser()
   if (!dbUser) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  if (!canUsePushReminders(dbUser)) {
-    return NextResponse.json({ error: 'Push reminders are not available yet.' }, { status: 403 })
   }
 
   let body: PushSubscriptionBody

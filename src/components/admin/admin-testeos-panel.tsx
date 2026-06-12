@@ -13,13 +13,11 @@ const DELAY_SECONDS = 30
 interface AdminTesteosPanelProps {
   pushRemindersEnabled: boolean
   pushSubscriptionCount: number
-  adminOnlyMode: boolean
 }
 
 export function AdminTesteosPanel({
   pushRemindersEnabled,
   pushSubscriptionCount,
-  adminOnlyMode,
 }: AdminTesteosPanelProps) {
   const [countdown, setCountdown] = useState<number | null>(null)
   const [isSending, setIsSending] = useState(false)
@@ -88,13 +86,14 @@ export function AdminTesteosPanel({
           <div className="min-w-0 flex-1">
             <h2 className="font-heading text-xl tracking-wide">NOTIFICACIONES PUSH</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Programá una notificación de prueba que llega {DELAY_SECONDS} segundos después de
-              activarla. Útil para probar en el celular con la PWA en segundo plano.
+              Como admin recibís automáticamente un aviso cuando arranca cada partido (con la PWA
+              instalada y permiso activo). El recordatorio de las 11:00 es aparte y depende del
+              toggle en perfil.
             </p>
 
             <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
               <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
-                <dt className="text-muted-foreground">Recordatorio en perfil</dt>
+                <dt className="text-muted-foreground">Recordatorio 11:00 en perfil</dt>
                 <dd className="font-medium">{pushRemindersEnabled ? 'Activo' : 'Inactivo'}</dd>
               </div>
               <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
@@ -103,19 +102,13 @@ export function AdminTesteosPanel({
               </div>
             </dl>
 
-            {adminOnlyMode ? (
-              <p className="mt-3 text-xs text-muted-foreground">
-                Modo prueba activo: solo admins ven y reciben push (PUSH_REMINDERS_ADMIN_ONLY).
-              </p>
-            ) : null}
-
             {pushSubscriptionCount === 0 ? (
               <p className="mt-3 text-sm text-muted-foreground">
-                Primero activá las notificaciones en{' '}
+                Activá notificaciones en{' '}
                 <Link href="/perfil#notificaciones" className="font-medium text-primary hover:underline">
                   tu perfil
                 </Link>{' '}
-                desde el dispositivo donde querés recibir la prueba.
+                desde el celular para recibir kick-off y probar envíos.
               </p>
             ) : null}
 
@@ -131,11 +124,7 @@ export function AdminTesteosPanel({
                   </span>
                 </>
               ) : (
-                <Button
-                  type="button"
-                  onClick={scheduleTestPush}
-                  disabled={!canSchedule}
-                >
+                <Button type="button" onClick={scheduleTestPush} disabled={!canSchedule}>
                   {isSending ? 'Enviando…' : `Probar push (${DELAY_SECONDS}s)`}
                 </Button>
               )}
