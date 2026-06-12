@@ -4,6 +4,7 @@ import { AdminMatchRow } from '@/components/admin/admin-match-row'
 import { AdminPredictionsPanel } from '@/components/admin/admin-predictions-panel'
 import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
 import { AdminTabs } from '@/components/admin/admin-tabs'
+import { AdminTesteosPanel } from '@/components/admin/admin-testeos-panel'
 import { AdminUsersPanel } from '@/components/admin/admin-users-panel'
 import { AdminWorldCupStats } from '@/components/admin/admin-world-cup-stats'
 import {
@@ -22,7 +23,9 @@ import { getPlayersByTeamIds } from '@/lib/queries/teams'
 import { formatArgentinaDate } from '@/lib/time'
 import { cn } from '@/lib/utils'
 import { isPlatformAdmin } from '@/lib/auth/test-access'
+import { isPushRemindersAdminOnly } from '@/lib/push/config'
 import { getWorldCupStatistics } from '@/lib/queries/world-cup-stats'
+import { ensureDbUser } from '@/lib/queries/users'
 
 interface AdminPageProps {
   searchParams: Promise<{ tab?: string; matchId?: string; userId?: string }>
@@ -30,7 +33,7 @@ interface AdminPageProps {
 
 import type { MatchWithRelations } from '@/lib/queries/matches'
 
-const TAB_IDS = ['partidos', 'finalizados', 'estadisticas', 'predicciones', 'usuarios', 'torneos']
+const TAB_IDS = ['partidos', 'finalizados', 'estadisticas', 'predicciones', 'usuarios', 'torneos', 'testeos']
 
 function toFormMatch(match: MatchWithRelations) {
   return {
@@ -301,6 +304,25 @@ async function UsuariosTab() {
   return <AdminUsersPanel users={users} />
 }
 
+async function TesteosTab() {
+  const dbUser = await ensureDbUser()
+  if (!dbUser) {
+    return <p className="text-muted-foreground">No se pudo cargar tu usuario.</p>
+  }
+
+  const pushSubscriptionCount = await prisma.pushSubscription.count({
+    where: { userId: dbUser.id },
+  })
+
+  return (
+    <AdminTesteosPanel
+      pushRemindersEnabled={dbUser.pushRemindersEnabled}
+      pushSubscriptionCount={pushSubscriptionCount}
+      adminOnlyMode={isPushRemindersAdminOnly()}
+    />
+  )
+}
+
 async function TorneosTab() {
   const tournaments = await getAdminTournaments()
 
@@ -374,6 +396,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <UsuariosTab />
       ) : tab === 'torneos' ? (
         <TorneosTab />
+      ) : tab === 'testeos' ? (
+        <TesteosTab />
       ) : (
         <PartidosTab />
       )}

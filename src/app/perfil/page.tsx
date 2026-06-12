@@ -1,7 +1,10 @@
 import { AppShell } from '@/components/layout/app-shell'
-import { UserInitialAvatar } from '@/components/ui/user-initial-avatar'
 import { ProfileStats, RecentPredictions } from '@/components/perfil/profile-stats'
+import { PushRemindersSettings } from '@/components/perfil/push-reminders-settings'
 import { SignOutAction } from '@/components/perfil/sign-out-action'
+import { UserInitialAvatar } from '@/components/ui/user-initial-avatar'
+import { prisma } from '@/lib/prisma'
+import { canUsePushReminders, isPushRemindersAdminOnly } from '@/lib/push/config'
 import { ensureDbUser, getUserProfileStats } from '@/lib/queries/users'
 import { currentUser } from '@clerk/nextjs/server'
 
@@ -20,7 +23,10 @@ export default async function PerfilPage() {
     )
   }
 
-  const stats = await getUserProfileStats(dbUser.id)
+  const [stats, pushSubscriptionCount] = await Promise.all([
+    getUserProfileStats(dbUser.id),
+    prisma.pushSubscription.count({ where: { userId: dbUser.id } }),
+  ])
   const email =
     clerkUser.primaryEmailAddress?.emailAddress ??
     clerkUser.emailAddresses[0]?.emailAddress ??
@@ -36,6 +42,17 @@ export default async function PerfilPage() {
           <p className="mt-1 text-sm text-brand-gold">Torneo Global · ProdeBEB</p>
         </div>
       </section>
+
+      {canUsePushReminders(dbUser) ? (
+        <section className="mb-8">
+          <h2 className="mb-4 font-heading text-xl tracking-wide">NOTIFICACIONES</h2>
+          <PushRemindersSettings
+            pushRemindersEnabled={dbUser.pushRemindersEnabled}
+            pushSubscriptionCount={pushSubscriptionCount}
+            adminOnlyMode={isPushRemindersAdminOnly()}
+          />
+        </section>
+      ) : null}
 
       <section className="mb-8">
         <h2 className="mb-4 font-heading text-xl tracking-wide">ESTADÍSTICAS</h2>
