@@ -122,7 +122,7 @@ export function PushOnboardingPrompt({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 sm:items-center">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-4 pb-24 sm:items-center sm:pb-4">
       <div
         role="dialog"
         aria-labelledby="push-onboarding-title"
