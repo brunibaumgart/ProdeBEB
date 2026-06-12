@@ -1,4 +1,3 @@
-import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { cn } from '@/lib/utils'
 
 export function getUserInitial(name: string): string {
@@ -19,13 +18,11 @@ interface UserInitialAvatarProps {
   className?: string
 }
 
-function GenericProdeAvatar({
-  size,
+export function UserInitialAvatar({
+  name: _name,
+  size = 'md',
   className,
-}: {
-  size: keyof typeof sizeClasses
-  className?: string
-}) {
+}: UserInitialAvatarProps) {
   return (
     <span
       aria-hidden
@@ -38,44 +35,4 @@ function GenericProdeAvatar({
       P
     </span>
   )
-}
-
-function PioPollitosAvatar({
-  size,
-  className,
-}: {
-  size: keyof typeof sizeClasses
-  className?: string
-}) {
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        'inline-flex shrink-0 items-center justify-center overflow-hidden border border-border bg-gradient-to-br from-[#1A1A2E] to-[#0D0D1A]',
-        sizeClasses[size],
-        className,
-      )}
-    >
-      <img
-        src="/brand/beb-pollitos.png"
-        alt=""
-        className={cn(
-          'object-contain',
-          size === 'lg' ? 'size-[88%]' : 'size-[92%]',
-        )}
-      />
-    </span>
-  )
-}
-
-export function UserInitialAvatar({
-  name,
-  size = 'md',
-  className,
-}: UserInitialAvatarProps) {
-  if (isPioProfile(name)) {
-    return <PioPollitosAvatar size={size} className={className} />
-  }
-
-  return <GenericProdeAvatar size={size} className={className} />
 }
