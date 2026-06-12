@@ -1,11 +1,15 @@
-# Hobby en Vercel solo permite crons diarios; este workflow dispara el kick-off cada 5 min.
+# Hobby en Vercel solo permite crons diarios; este workflow marca partidos en vivo y envía push cada ~5 min.
 # Requiere el secret CRON_SECRET en GitHub (mismo valor que en Vercel).
 name: Match kickoff push
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # Minutos escalonados (no :00/:05) para reducir demoras de GitHub Actions.
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   trigger:
@@ -13,6 +17,8 @@ jobs:
     steps:
       - name: Ping kickoff cron
         run: |
-          curl -fsS \
+          response=$(curl -fsS \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "https://prode360-three.vercel.app/api/cron/match-kickoff-push"
+            "https://prode360-three.vercel.app/api/cron/match-kickoff-push")
+          echo "$response"
+          echo "$response" | grep -q '"ok":true'

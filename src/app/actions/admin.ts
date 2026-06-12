@@ -14,6 +14,7 @@ import {
   saveMatchGoals,
 } from '@/lib/scoring/scorers-engine'
 import { adjustScorersToCount, validateScorerCounts } from '@/lib/scoring/scorers'
+import { sendKickoffPushForMatch } from '@/lib/push/kickoff'
 import {
   advanceKnockoutTeams,
   recalculateMatchdayPointsForMatch,
@@ -207,24 +208,40 @@ function revalidateAdminMatchPaths() {
   revalidatePath('/torneos', 'layout')
 }
 
-export async function setMatchLive(matchId: number): Promise<SetMatchResultResponse> {
+export async function notifyMatchStarted(matchId: number): Promise<SetMatchResultResponse> {
   try {
     await assertAdmin()
   } catch {
     return { ok: false, error: 'No tenés permisos de administrador.' }
   }
 
-  const match = await prisma.match.findUnique({ where: { id: matchId }, select: { status: true } })
+  const match = await prisma.match.findUnique({
+    where: { id: matchId },
+    select: { status: true, kickoffPushNotifiedAt: true, isTest: true },
+  })
   if (!match) return { ok: false, error: 'Partido no encontrado.' }
-  if (match.status !== 'scheduled') {
-    return { ok: false, error: 'Solo se puede marcar como en vivo un partido programado.' }
+  if (match.isTest) return { ok: false, error: 'No aplica a partidos de prueba.' }
+  if (match.status === 'finished') {
+    return { ok: false, error: 'El partido ya finalizó.' }
+  }
+  if (match.kickoffPushNotifiedAt) {
+    return { ok: false, error: 'El aviso de inicio ya fue enviado.' }
+  }
+  if (match.status !== 'scheduled' && match.status !== 'live') {
+    return { ok: false, error: 'No se puede avisar el inicio de este partido.' }
   }
 
-  await prisma.match.update({ where: { id: matchId }, data: { status: 'live' } })
+  try {
+    const result = await sendKickoffPushForMatch(matchId)
+    if (result.skipped) {
+      return { ok: false, error: 'No se pudo enviar el aviso de inicio.' }
+    }
+  } catch (error) {
+    console.error('Kickoff push failed after notifyMatchStarted', { matchId, error })
+    return { ok: false, error: 'No se pudo enviar el aviso de inicio.' }
+  }
 
-  revalidateAdminMatchPaths()
-
-  return { ok: true, message: 'Partido marcado en juego.' }
+  return { ok: true, message: 'Partido en juego y aviso enviado a los administradores.' }
 }
 
 export async function recalculateMatchPoints(matchId: number): Promise<SetMatchResultResponse> {

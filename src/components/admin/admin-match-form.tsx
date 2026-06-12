@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
-import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Loader2, Radio } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { setMatchResult, updateMatchLiveScore } from '@/app/actions/admin'
+import { notifyMatchStarted, setMatchResult, updateMatchLiveScore } from '@/app/actions/admin'
 import { GoalScorersRow, type GoalScorerPlayer } from '@/components/prode/goal-scorer-picker'
 import { MatchScoreboard } from '@/components/ui-mundial/match-scoreboard'
 import { formatDbMatchKickoff } from '@/lib/time'
@@ -19,6 +21,7 @@ interface AdminMatchFormProps {
     awayTeam: { id: string; nameEs: string; iso2: string; flagEmoji: string } | null
     venue: { name: string }
     isTest?: boolean
+    kickoffPushNotifiedAt?: string | null
   }
   homePlayers: GoalScorerPlayer[]
   awayPlayers: GoalScorerPlayer[]
@@ -48,6 +51,9 @@ export function AdminMatchForm({
   const [awayScorers, setAwayScorers] = useState<string[]>(initialAwayScorers)
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [isNotifyPending, startNotifyTransition] = useTransition()
+  const router = useRouter()
+  const canNotifyKickoff = isLive && !match.isTest && !match.kickoffPushNotifiedAt
 
   useEffect(() => {
     if (mode === 'create') return
@@ -94,6 +100,18 @@ export function AdminMatchForm({
         getScorersPayload(),
       )
       setFeedback(result.ok ? result.message : result.error)
+    })
+  }
+
+  function handleNotifyKickoff() {
+    startNotifyTransition(async () => {
+      const result = await notifyMatchStarted(match.id)
+      if (result.ok) {
+        toast.success(result.message)
+        router.refresh()
+      } else {
+        toast.error(result.error)
+      }
     })
   }
 
@@ -218,10 +236,25 @@ export function AdminMatchForm({
           )}
           {isLive ? (
             <div className="ml-auto flex flex-wrap items-center gap-2">
+              {canNotifyKickoff ? (
+                <button
+                  type="button"
+                  onClick={handleNotifyKickoff}
+                  disabled={isNotifyPending || isPending}
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {isNotifyPending ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Radio className="size-4" aria-hidden />
+                  )}
+                  Avisar que el partido ha comenzado
+                </button>
+              ) : null}
               <button
                 type="button"
                 onClick={handleSaveLiveScore}
-                disabled={isPending}
+                disabled={isPending || isNotifyPending}
                 className="inline-flex items-center gap-2 rounded-lg border border-brand-gold/40 bg-brand-gold/10 px-4 py-2 text-sm font-medium text-brand-gold transition-colors hover:bg-brand-gold/20 disabled:opacity-50"
               >
                 {isPending && <Loader2 className="size-4 animate-spin" aria-hidden />}
@@ -230,7 +263,7 @@ export function AdminMatchForm({
               <button
                 type="button"
                 onClick={handleFinalize}
-                disabled={isPending}
+                disabled={isPending || isNotifyPending}
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
               >
                 {isPending && <Loader2 className="size-4 animate-spin" aria-hidden />}

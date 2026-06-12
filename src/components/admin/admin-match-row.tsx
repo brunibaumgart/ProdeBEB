@@ -1,10 +1,11 @@
 'use client'
 
 import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Loader2, RefreshCw, Radio } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { recalculateMatchPoints, setMatchLive } from '@/app/actions/admin'
+import { notifyMatchStarted, recalculateMatchPoints } from '@/app/actions/admin'
 import { AdminMatchPredictions } from '@/components/admin/admin-match-predictions'
 import { Button } from '@/components/ui/button'
 import { FlagIcon } from '@/components/ui-mundial/flag-icon'
@@ -29,8 +30,9 @@ interface AdminMatchRowProps {
     awayScore: number | null
     venue: { name: string }
     isTest?: boolean
+    kickoffPushNotifiedAt?: string | null
   }
-  action?: 'live' | 'recalculate'
+  action?: 'notify-kickoff' | 'recalculate'
   stats?: MatchStatistics
   predictions?: AdminPredictionView[]
   showHeader?: boolean
@@ -66,13 +68,19 @@ function StatBar({ label, value, total, colorClass }: { label: string; value: nu
 
 export function AdminMatchRow({ match, action, stats, predictions, showHeader = true }: AdminMatchRowProps) {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+  const canNotifyKickoff =
+    action === 'notify-kickoff' && !match.isTest && !match.kickoffPushNotifiedAt
 
   function handleAction() {
     startTransition(async () => {
       const result =
-        action === 'live' ? await setMatchLive(match.id) : await recalculateMatchPoints(match.id)
+        action === 'notify-kickoff'
+          ? await notifyMatchStarted(match.id)
+          : await recalculateMatchPoints(match.id)
       if (result.ok) {
         toast.success(result.message)
+        router.refresh()
       } else {
         toast.error(result.error)
       }
@@ -105,22 +113,36 @@ export function AdminMatchRow({ match, action, stats, predictions, showHeader = 
             </div>
           </div>
 
-          {action && (
+          {canNotifyKickoff && (
             <Button
               type="button"
-              variant={action === 'live' ? 'default' : 'outline'}
+              variant="default"
               size="sm"
               onClick={handleAction}
               disabled={isPending}
             >
               {isPending ? (
                 <Loader2 className="size-3.5 animate-spin" aria-hidden />
-              ) : action === 'live' ? (
+              ) : (
                 <Radio className="size-3.5" aria-hidden />
+              )}
+              Avisar que el partido ha comenzado
+            </Button>
+          )}
+          {action === 'recalculate' && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAction}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
               ) : (
                 <RefreshCw className="size-3.5" aria-hidden />
               )}
-              {action === 'live' ? 'Marcar en juego' : 'Recalcular puntos'}
+              Recalcular puntos
             </Button>
           )}
         </div>

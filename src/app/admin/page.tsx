@@ -46,6 +46,7 @@ function toFormMatch(match: MatchWithRelations) {
     awayScore: match.awayScore,
     venue: match.venue,
     isTest: match.isTest,
+    kickoffPushNotifiedAt: match.kickoffPushNotifiedAt?.toISOString() ?? null,
   }
 }
 
@@ -79,7 +80,8 @@ async function PartidosTab() {
       <section>
         <h2 className="mb-1 font-heading text-xl tracking-wide">EN JUEGO</h2>
         <p className="mb-3 text-sm text-muted-foreground">
-          Actualizá el marcador parcial mientras se juega. Finalizá solo cuando termine el partido.
+          Si el aviso automático no llegó, usá &quot;Avisar que el partido ha comenzado&quot;. Actualizá el
+          marcador parcial y finalizá solo cuando termine.
         </p>
         {inProgressMatches.length === 0 ? (
           <p className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">
@@ -117,7 +119,7 @@ async function PartidosTab() {
           <div>
             <h2 className="font-heading text-xl tracking-wide">PRÓXIMOS</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Marcá un partido como en juego antes del kick-off si querés cargar el marcador en vivo.
+              A la hora del partido se marca en juego solo. Podés adelantarlo manualmente si hace falta.
             </p>
           </div>
           {overview.upcomingTotal > overview.upcoming.length && (
@@ -133,7 +135,7 @@ async function PartidosTab() {
         ) : (
           <div className="space-y-3">
             {overview.upcoming.map((match) => (
-              <AdminMatchRow key={match.id} match={toFormMatch(match)} action="live" />
+              <AdminMatchRow key={match.id} match={toFormMatch(match)} action="notify-kickoff" />
             ))}
           </div>
         )}
