@@ -1,3 +1,4 @@
+import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { cn } from '@/lib/utils'
 
 export function getUserInitial(name: string): string {
@@ -14,21 +15,69 @@ const sizeClasses = {
 
 interface UserInitialAvatarProps {
   name: string
+  username?: string | null
   size?: keyof typeof sizeClasses
   className?: string
 }
 
-export function UserInitialAvatar({ name, size = 'md', className }: UserInitialAvatarProps) {
+function GenericProdeAvatar({
+  size,
+  className,
+}: {
+  size: keyof typeof sizeClasses
+  className?: string
+}) {
   return (
     <span
       aria-hidden
       className={cn(
-        'inline-flex shrink-0 items-center justify-center border border-border bg-primary font-medium text-primary-foreground',
+        'inline-flex shrink-0 items-center justify-center border border-border bg-primary font-heading font-medium text-primary-foreground',
         sizeClasses[size],
         className,
       )}
     >
-      {getUserInitial(name)}
+      P
     </span>
   )
+}
+
+function PioPollitosAvatar({
+  size,
+  className,
+}: {
+  size: keyof typeof sizeClasses
+  className?: string
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'inline-flex shrink-0 items-center justify-center overflow-hidden border border-border bg-gradient-to-br from-[#1A1A2E] to-[#0D0D1A]',
+        sizeClasses[size],
+        className,
+      )}
+    >
+      <img
+        src="/brand/beb-pollitos.png"
+        alt=""
+        className={cn(
+          'object-contain',
+          size === 'lg' ? 'size-[88%]' : 'size-[92%]',
+        )}
+      />
+    </span>
+  )
+}
+
+export function UserInitialAvatar({
+  name,
+  username,
+  size = 'md',
+  className,
+}: UserInitialAvatarProps) {
+  if (isPioProfile({ name, username })) {
+    return <PioPollitosAvatar size={size} className={className} />
+  }
+
+  return <GenericProdeAvatar size={size} className={className} />
 }

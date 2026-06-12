@@ -8,6 +8,10 @@ export function getPioReunionTargetDate(): Date {
 
 export const PIO_REUNION_TARGET_ISO = getPioReunionTargetDate().toISOString()
 
-export function isPioProfile(user: { name: string }): boolean {
-  return user.name.trim().toLowerCase() === 'pio'
+export function isPioProfile(user: { name: string; username?: string | null }): boolean {
+  const values = [user.name, user.username]
+    .filter((value): value is string => Boolean(value?.trim()))
+    .map((value) => value.trim().toLowerCase())
+
+  return values.includes('pio')
 }

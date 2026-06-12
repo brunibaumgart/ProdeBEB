@@ -26,7 +26,12 @@ export function UserAvatarLink({ className }: UserAvatarLinkProps) {
         className,
       )}
     >
-      <UserInitialAvatar name={displayName} size="md" className="size-full" />
+      <UserInitialAvatar
+        name={displayName}
+        username={user.username}
+        size="md"
+        className="size-full"
+      />
     </Link>
   )
 }
