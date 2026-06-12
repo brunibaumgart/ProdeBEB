@@ -11,11 +11,13 @@ self.addEventListener('push', (event) => {
     // Keep default payload when push body is invalid.
   }
 
+  const icon = payload.icon ?? '/icon'
+
   event.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
-      icon: '/icon',
-      badge: '/icon',
+      icon,
+      badge: icon,
       data: { url: payload.url },
     }),
   )

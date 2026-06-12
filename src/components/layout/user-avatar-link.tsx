@@ -8,14 +8,15 @@ import { cn } from '@/lib/utils'
 
 interface UserAvatarLinkProps {
   className?: string
+  prodeName?: string | null
 }
 
-export function UserAvatarLink({ className }: UserAvatarLinkProps) {
+export function UserAvatarLink({ className, prodeName }: UserAvatarLinkProps) {
   const { user, isLoaded } = useUser()
 
   if (!isLoaded || !user) return null
 
-  const displayName = user.fullName ?? user.firstName ?? user.username ?? 'Usuario'
+  const displayName = prodeName ?? user.username ?? 'Usuario'
 
   return (
     <Link
@@ -26,12 +27,7 @@ export function UserAvatarLink({ className }: UserAvatarLinkProps) {
         className,
       )}
     >
-      <UserInitialAvatar
-        name={displayName}
-        username={user.username}
-        size="md"
-        className="size-full"
-      />
+      <UserInitialAvatar name={displayName} size="md" className="size-full" />
     </Link>
   )
 }

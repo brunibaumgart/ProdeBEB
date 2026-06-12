@@ -15,7 +15,6 @@ const sizeClasses = {
 
 interface UserInitialAvatarProps {
   name: string
-  username?: string | null
   size?: keyof typeof sizeClasses
   className?: string
 }
@@ -71,11 +70,10 @@ function PioPollitosAvatar({
 
 export function UserInitialAvatar({
   name,
-  username,
   size = 'md',
   className,
 }: UserInitialAvatarProps) {
-  if (isPioProfile({ name, username })) {
+  if (isPioProfile(name)) {
     return <PioPollitosAvatar size={size} className={className} />
   }
 

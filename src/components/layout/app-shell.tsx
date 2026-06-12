@@ -28,7 +28,7 @@ export async function AppShell({ children, pathname }: AppShellProps) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <SiteHeader pathname={pathname} isAdmin={isAdmin} />
+      <SiteHeader pathname={pathname} isAdmin={isAdmin} prodeName={dbUser?.name} />
       {dbUser &&
       canUsePushReminders(dbUser) &&
       !dbUser.pushRemindersEnabled &&

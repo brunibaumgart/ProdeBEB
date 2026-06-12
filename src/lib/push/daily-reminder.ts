@@ -2,6 +2,7 @@ import { PREDICTION_LOCK_MINUTES } from '@/lib/matches/availability'
 import { getUserPredictionsForMatchIds } from '@/lib/queries/predictions'
 import { getTodayMatches, type MatchWithRelations } from '@/lib/queries/matches'
 import { pushReminderUserFilter } from '@/lib/push/config'
+import { getPushNotificationIcon } from '@/lib/push/icons'
 import type { PushPayload } from '@/lib/push/web-push-server'
 import { isDbMatchLocked, getArgentinaTodayBounds } from '@/lib/time'
 
@@ -85,10 +86,15 @@ export async function sendDailyPushReminders() {
   let skipped = 0
 
   for (const user of users) {
-    const payload = await getDailyReminderPayloadForUser(user.id)
-    if (!payload) {
+    const basePayload = await getDailyReminderPayloadForUser(user.id)
+    if (!basePayload) {
       skipped += 1
       continue
+    }
+
+    const payload: PushPayload = {
+      ...basePayload,
+      icon: getPushNotificationIcon({ name: user.name }),
     }
 
     for (const subscription of user.pushSubscriptions) {

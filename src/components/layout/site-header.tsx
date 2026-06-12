@@ -16,9 +16,10 @@ const publicLinks = [
 interface SiteHeaderProps {
   pathname?: string
   isAdmin?: boolean
+  prodeName?: string | null
 }
 
-export function SiteHeader({ pathname = '/', isAdmin = false }: SiteHeaderProps) {
+export function SiteHeader({ pathname = '/', isAdmin = false, prodeName }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
@@ -113,7 +114,7 @@ export function SiteHeader({ pathname = '/', isAdmin = false }: SiteHeaderProps)
             </SignInButton>
           </Show>
           <Show when="signed-in">
-            <UserAvatarLink />
+            <UserAvatarLink prodeName={prodeName} />
           </Show>
         </div>
       </div>

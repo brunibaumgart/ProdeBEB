@@ -3,6 +3,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { revalidatePath } from 'next/cache'
 
+import { getPushNotificationIcon } from '@/lib/push/icons'
 import { prisma } from '@/lib/prisma'
 import { ensureDbUser, requireDbUserForAction } from '@/lib/queries/users'
 
@@ -77,12 +78,17 @@ export async function sendAdminTestPushNotification(): Promise<PushActionResult>
   const { getDailyReminderPayloadForUser } = await import('@/lib/push/daily-reminder')
   const { sendPushNotification } = await import('@/lib/push/web-push-server')
 
-  const payload =
+  const basePayload =
     (await getDailyReminderPayloadForUser(dbUser.id)) ?? {
       title: 'ProdeBEB — Notificación de prueba',
       body: 'Si ves esto, las push funcionan correctamente.',
       url: '/prode/fecha',
     }
+
+  const payload = {
+    ...basePayload,
+    icon: getPushNotificationIcon({ name: dbUser.name }),
+  }
 
   let sent = 0
   const errors: string[] = []

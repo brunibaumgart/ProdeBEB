@@ -1,9 +1,11 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { BebMascotMark } from '@/components/ui-mundial/beb-mascot-mark'
+import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { cn } from '@/lib/utils'
 
 const PULL_THRESHOLD = 72
@@ -11,12 +13,40 @@ const MAX_PULL = 120
 
 interface PullToRefreshProps {
   children: React.ReactNode
+  prodeName?: string | null
 }
 
-export function PullToRefresh({ children }: PullToRefreshProps) {
+function RefreshIndicator({
+  refreshing,
+  showPioMascot,
+}: {
+  refreshing: boolean
+  showPioMascot: boolean
+}) {
+  if (showPioMascot) {
+    return (
+      <BebMascotMark
+        imageClassName={cn(refreshing && 'animate-bounce')}
+        className="gap-1"
+      />
+    )
+  }
+
+  return (
+    <div className="flex size-14 items-center justify-center rounded-2xl border border-primary/25 bg-primary/10">
+      <Loader2
+        className={cn('size-7 text-primary', refreshing && 'animate-spin')}
+        aria-hidden
+      />
+    </div>
+  )
+}
+
+export function PullToRefresh({ children, prodeName }: PullToRefreshProps) {
   const router = useRouter()
   const [pullDistance, setPullDistance] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
+  const showPioMascot = isPioProfile(prodeName)
   const startYRef = useRef<number | null>(null)
   const pullingRef = useRef(false)
   const pullDistanceRef = useRef(0)
@@ -128,10 +158,7 @@ export function PullToRefresh({ children }: PullToRefreshProps) {
             opacity: 0.35 + progress * 0.65,
           }}
         >
-          <BebMascotMark
-            imageClassName={cn(refreshing && 'animate-bounce')}
-            className="gap-1"
-          />
+          <RefreshIndicator refreshing={refreshing} showPioMascot={showPioMascot} />
         </div>
       </div>
       {children}

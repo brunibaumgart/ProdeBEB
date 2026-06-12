@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 import { Inter, Bebas_Neue } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
 import { Toaster } from 'sonner'
 import './globals.css'
 import 'flag-icons/css/flag-icons.min.css'
 
-import { getSiteUrl } from '@/lib/site-url'
 import { PullToRefresh } from '@/components/layout/pull-to-refresh'
+import { ensureDbUser } from '@/lib/queries/users'
+import { getSiteUrl } from '@/lib/site-url'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -45,7 +47,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { userId } = await auth()
+  const dbUser = userId ? await ensureDbUser() : null
+
   return (
     <ClerkProvider>
       <html
@@ -54,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <body className="min-h-full bg-background text-foreground antialiased">
-          <PullToRefresh>{children}</PullToRefresh>
+          <PullToRefresh prodeName={dbUser?.name}>{children}</PullToRefresh>
           <Toaster richColors closeButton position="top-center" />
         </body>
       </html>

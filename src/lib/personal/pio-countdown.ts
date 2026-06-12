@@ -8,10 +8,8 @@ export function getPioReunionTargetDate(): Date {
 
 export const PIO_REUNION_TARGET_ISO = getPioReunionTargetDate().toISOString()
 
-export function isPioProfile(user: { name: string; username?: string | null }): boolean {
-  const values = [user.name, user.username]
-    .filter((value): value is string => Boolean(value?.trim()))
-    .map((value) => value.trim().toLowerCase())
-
-  return values.includes('pio')
+/** Solo el usuario de Prode con nombre exacto "pio" (no el nombre de Clerk). */
+export function isPioProfile(user: { name?: string | null } | string | null | undefined): boolean {
+  const name = typeof user === 'string' ? user : user?.name
+  return name?.trim().toLowerCase() === 'pio'
 }
