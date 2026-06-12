@@ -1,5 +1,11 @@
 'use client'
 
+export interface PushSubscribePreferences {
+  reminders: boolean
+  kickoff: boolean
+  surprise: boolean
+}
+
 export function isPushSupported() {
   return (
     typeof window !== 'undefined' &&
@@ -50,14 +56,14 @@ async function fetchVapidPublicKey() {
   return data.publicKey
 }
 
-export async function subscribeToPushNotifications() {
+export async function subscribeToPushNotifications(preferences?: PushSubscribePreferences) {
   if (!isPushSupported()) {
     throw new Error('Tu navegador no soporta notificaciones push.')
   }
 
   const permission = await Notification.requestPermission()
   if (permission !== 'granted') {
-    throw new Error('Necesitamos permiso para enviarte recordatorios.')
+    throw new Error('Necesitamos permiso para enviarte notificaciones.')
   }
 
   const registration = await getPushServiceWorkerRegistration()
@@ -80,7 +86,14 @@ export async function subscribeToPushNotifications() {
   const response = await fetch('/api/push/subscribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(subscription.toJSON()),
+    body: JSON.stringify({
+      ...subscription.toJSON(),
+      preferences: preferences ?? {
+        reminders: true,
+        kickoff: false,
+        surprise: false,
+      },
+    }),
   })
 
   if (!response.ok) {

@@ -1,7 +1,7 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 
 import { matchWithRelations, type MatchWithRelations } from '@/lib/queries/matches'
-import { getAdminUsersWithPushSubscriptions } from '@/lib/push/admin-recipients'
+import { getKickoffPushRecipients } from '@/lib/push/admin-recipients'
 import { deliverPushPayload } from '@/lib/push/delivery'
 import { getPushNotificationIcon } from '@/lib/push/icons'
 import { buildKickoffNotificationCopy } from '@/lib/push/match-copy'
@@ -36,7 +36,7 @@ function revalidateMatchPaths() {
 
 async function processKickoffForMatches(matches: MatchWithRelations[]) {
   const { prisma } = await import('@/lib/prisma')
-  const admins = await getAdminUsersWithPushSubscriptions()
+  const admins = await getKickoffPushRecipients()
   let sent = 0
   let failed = 0
   let markedLive = 0
@@ -109,7 +109,7 @@ export async function sendMatchKickoffPushNotifications() {
 
   const now = Date.now()
   const backlogStart = new Date(now - KICKOFF_MAX_BACKLOG_MS)
-  const admins = await getAdminUsersWithPushSubscriptions()
+  const admins = await getKickoffPushRecipients()
 
   const matches = await prisma.match.findMany({
     where: {

@@ -86,14 +86,13 @@ export function AdminTesteosPanel({
           <div className="min-w-0 flex-1">
             <h2 className="font-heading text-xl tracking-wide">NOTIFICACIONES PUSH</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Como admin recibís automáticamente un aviso cuando arranca cada partido (con la PWA
-              instalada y permiso activo). El recordatorio de las 11:00 es aparte y depende del
-              toggle en perfil.
+              Configurá qué avisos querés en perfil. Las sorpresas van a quien las tenga activadas
+              (pio y cuentas habilitadas).
             </p>
 
             <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
               <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
-                <dt className="text-muted-foreground">Recordatorio 11:00 en perfil</dt>
+                <dt className="text-muted-foreground">Recordatorio 11:00</dt>
                 <dd className="font-medium">{pushRemindersEnabled ? 'Activo' : 'Inactivo'}</dd>
               </div>
               <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2">

@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "db:seed": "npx tsx prisma/seed.ts",
     "seed:test-matches": "npx tsx scripts/seed-test-matches.ts",
+    "seed:ai-predictions": "npx tsx scripts/seed-ai-fecha-predictions.ts",
     "verify:tournament-quotas": "npx tsx scripts/verify-tournament-quotas.ts",
     "db:push": "npx prisma db push",
     "db:studio": "npx prisma studio"

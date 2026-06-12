@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
+import { canReceiveSurprisePush } from '@/lib/push/preferences'
 import { prisma } from '@/lib/prisma'
 import { ensureDbUser } from '@/lib/queries/users'
 
@@ -9,6 +10,11 @@ interface PushSubscriptionBody {
   keys?: {
     p256dh?: string
     auth?: string
+  }
+  preferences?: {
+    reminders?: boolean
+    kickoff?: boolean
+    surprise?: boolean
   }
 }
 
@@ -38,6 +44,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid push subscription payload' }, { status: 400 })
   }
 
+  const prefs = body.preferences ?? {}
+  const pushRemindersEnabled = prefs.reminders ?? true
+  const pushKickoffEnabled = prefs.kickoff ?? false
+  const eligibleForSurprise = canReceiveSurprisePush({
+    name: dbUser.name,
+    email: dbUser.email,
+    isAdmin: dbUser.isAdmin,
+    clerkId: dbUser.clerkId,
+  })
+  const pushSurpriseEnabled = eligibleForSurprise ? (prefs.surprise ?? false) : false
+
   await prisma.pushSubscription.upsert({
     where: { endpoint },
     create: {
@@ -56,8 +73,11 @@ export async function POST(request: Request) {
   await prisma.user.update({
     where: { id: dbUser.id },
     data: {
-      pushRemindersEnabled: true,
+      pushRemindersEnabled,
+      pushKickoffEnabled,
+      pushSurpriseEnabled,
       pushReminderPromptSeenAt: new Date(),
+      pushSetupPromptSeenAt: new Date(),
     },
   })
 

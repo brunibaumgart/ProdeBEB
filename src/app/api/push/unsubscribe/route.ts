@@ -38,7 +38,11 @@ export async function POST(request: Request) {
   if (remaining === 0) {
     await prisma.user.update({
       where: { id: dbUser.id },
-      data: { pushRemindersEnabled: false },
+      data: {
+        pushRemindersEnabled: false,
+        pushKickoffEnabled: false,
+        pushSurpriseEnabled: false,
+      },
     })
   }
 

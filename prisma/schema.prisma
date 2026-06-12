@@ -16,7 +16,10 @@ model User {
   isAdmin            Boolean  @default(false)
   isTester                Boolean   @default(false)
   pushRemindersEnabled    Boolean   @default(false)
+  pushKickoffEnabled      Boolean   @default(false)
+  pushSurpriseEnabled     Boolean   @default(false)
   pushReminderPromptSeenAt DateTime?
+  pushSetupPromptSeenAt   DateTime?
   createdAt               DateTime  @default(now())
 
   pushSubscriptions  PushSubscription[]

@@ -1,10 +1,12 @@
 import { AppShell } from '@/components/layout/app-shell'
 import { ProfileStats, RecentPredictions } from '@/components/perfil/profile-stats'
-import { PushRemindersSettings } from '@/components/perfil/push-reminders-settings'
+import { ParaOsitoPanel } from '@/components/perfil/para-osito-panel'
+import { PushNotificationSettings } from '@/components/perfil/push-notification-settings'
+import { canReceiveSurprisePush } from '@/lib/push/preferences'
+import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { SignOutAction } from '@/components/perfil/sign-out-action'
 import { UserInitialAvatar } from '@/components/ui/user-initial-avatar'
 import { prisma } from '@/lib/prisma'
-import { isPlatformAdmin } from '@/lib/auth/test-access'
 import { ensureDbUser, getUserProfileStats } from '@/lib/queries/users'
 import { currentUser } from '@clerk/nextjs/server'
 
@@ -45,12 +47,25 @@ export default async function PerfilPage() {
 
       <section className="mb-8">
         <h2 className="mb-4 font-heading text-xl tracking-wide">NOTIFICACIONES</h2>
-        <PushRemindersSettings
+        <PushNotificationSettings
           pushRemindersEnabled={dbUser.pushRemindersEnabled}
+          pushKickoffEnabled={dbUser.pushKickoffEnabled}
+          pushSurpriseEnabled={dbUser.pushSurpriseEnabled}
           pushSubscriptionCount={pushSubscriptionCount}
-          isAdmin={isPlatformAdmin({ clerkId: dbUser.clerkId, isAdmin: dbUser.isAdmin })}
+          showSurpriseOption={canReceiveSurprisePush({
+            name: dbUser.name,
+            email: dbUser.email,
+            isAdmin: dbUser.isAdmin,
+            clerkId: dbUser.clerkId,
+          })}
         />
       </section>
+
+      {isPioProfile(dbUser) ? (
+        <section className="mb-8">
+          <ParaOsitoPanel />
+        </section>
+      ) : null}
 
       <section className="mb-8">
         <h2 className="mb-4 font-heading text-xl tracking-wide">ESTADÍSTICAS</h2>

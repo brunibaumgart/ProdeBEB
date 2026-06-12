@@ -3,9 +3,9 @@ import { redirect } from 'next/navigation'
 
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { PioCountdownBanner } from '@/components/layout/pio-countdown-banner'
-import { PushReminderPrompt } from '@/components/layout/push-reminder-prompt'
+import { PushOnboardingPrompt } from '@/components/layout/push-onboarding-prompt'
 import { SiteHeader } from '@/components/layout/site-header'
-import { isAdminClerkId } from '@/lib/auth/test-access'
+import { isAdminClerkId, isPlatformAdmin } from '@/lib/auth/test-access'
 import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { ensureDbUser } from '@/lib/queries/users'
 
@@ -28,8 +28,13 @@ export async function AppShell({ children, pathname }: AppShellProps) {
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader pathname={pathname} isAdmin={isAdmin} prodeName={dbUser?.name} />
-      {dbUser && !dbUser.pushRemindersEnabled && !dbUser.pushReminderPromptSeenAt ? (
-        <PushReminderPrompt show />
+      {dbUser && !dbUser.pushSetupPromptSeenAt ? (
+        <PushOnboardingPrompt
+          show
+          userName={dbUser.name}
+          userEmail={dbUser.email}
+          isAdmin={isPlatformAdmin({ clerkId: dbUser.clerkId, isAdmin: dbUser.isAdmin })}
+        />
       ) : null}
       {dbUser && isPioProfile(dbUser) ? <PioCountdownBanner /> : null}
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-24 pt-6 md:pb-8">{children}</main>
