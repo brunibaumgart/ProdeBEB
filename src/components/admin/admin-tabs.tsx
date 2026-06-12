@@ -12,6 +12,7 @@ const TABS = [
   { id: 'predicciones', label: 'Predicciones' },
   { id: 'usuarios', label: 'Usuarios' },
   { id: 'torneos', label: 'Torneos' },
+  { id: 'notificaciones', label: 'Notificaciones' },
   { id: 'testeos', label: 'Testeos' },
 ] as const
 

@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/app-shell'
 import { AdminMatchForm } from '@/components/admin/admin-match-form'
 import { AdminMatchRow } from '@/components/admin/admin-match-row'
 import { AdminPredictionsPanel } from '@/components/admin/admin-predictions-panel'
+import { AdminPushNotificationsPanel } from '@/components/admin/admin-push-notifications-panel'
 import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
 import { AdminTabs } from '@/components/admin/admin-tabs'
 import { AdminTesteosPanel } from '@/components/admin/admin-testeos-panel'
@@ -14,6 +15,7 @@ import {
   getAdminPredictionsByMatchIds,
   getAdminTournaments,
   getAdminUserPredictions,
+  getAdminPushNotificationOverview,
   getAdminUsers,
   getMatchGoalsByMatchIds,
   getMatchStatistics,
@@ -32,7 +34,7 @@ interface AdminPageProps {
 
 import type { MatchWithRelations } from '@/lib/queries/matches'
 
-const TAB_IDS = ['partidos', 'finalizados', 'estadisticas', 'predicciones', 'usuarios', 'torneos', 'testeos']
+const TAB_IDS = ['partidos', 'finalizados', 'estadisticas', 'predicciones', 'usuarios', 'torneos', 'notificaciones', 'testeos']
 
 function toFormMatch(match: MatchWithRelations) {
   return {
@@ -305,6 +307,24 @@ async function UsuariosTab() {
   return <AdminUsersPanel users={users} />
 }
 
+async function NotificacionesTab() {
+  const rawUsers = await getAdminPushNotificationOverview()
+
+  const users = rawUsers.map((user) => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    pushRemindersEnabled: user.pushRemindersEnabled,
+    pushKickoffEnabled: user.pushKickoffEnabled,
+    pushSurpriseEnabled: user.pushSurpriseEnabled,
+    pushSetupPromptSeenAt: user.pushSetupPromptSeenAt,
+    subscriptionCount: user._count.pushSubscriptions,
+    lastSubscriptionAt: user.pushSubscriptions[0]?.updatedAt ?? null,
+  }))
+
+  return <AdminPushNotificationsPanel users={users} />
+}
+
 async function TesteosTab() {
   const dbUser = await ensureDbUser()
   if (!dbUser) {
@@ -396,6 +416,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <UsuariosTab />
       ) : tab === 'torneos' ? (
         <TorneosTab />
+      ) : tab === 'notificaciones' ? (
+        <NotificacionesTab />
       ) : tab === 'testeos' ? (
         <TesteosTab />
       ) : (

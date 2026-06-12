@@ -244,3 +244,24 @@ export async function getAdminUserPredictions(userId: string) {
     orderBy: { match: { date: 'desc' } },
   })
 }
+
+export async function getAdminPushNotificationOverview() {
+  return prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      pushRemindersEnabled: true,
+      pushKickoffEnabled: true,
+      pushSurpriseEnabled: true,
+      pushSetupPromptSeenAt: true,
+      _count: { select: { pushSubscriptions: true } },
+      pushSubscriptions: {
+        select: { updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 1,
+      },
+    },
+    orderBy: { name: 'asc' },
+  })
+}
