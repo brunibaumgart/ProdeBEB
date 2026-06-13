@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useOptimistic, useState, useTransition } from 'react'
-import { Loader2, Pencil } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useOptimistic, useRef, useState, useTransition } from 'react'
+import { ExternalLink, Loader2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { savePrediction } from '@/app/actions/predictions'
@@ -52,6 +53,7 @@ interface MatchPredictionCardProps {
   homePlayers?: GoalScorerPlayer[]
   awayPlayers?: GoalScorerPlayer[]
   scorersEnabled?: boolean
+  autoOpenEdit?: boolean
 }
 
 type EditMode = 'idle' | 'full' | 'scorers'
@@ -75,7 +77,9 @@ export function MatchPredictionCard({
   homePlayers = [],
   awayPlayers = [],
   scorersEnabled = true,
+  autoOpenEdit = false,
 }: MatchPredictionCardProps) {
+  const cardRef = useRef<HTMLElement>(null)
   const predictable = isMatchPredictable(match)
   const canEdit = predictable && canEditPrediction(match)
   const isFinished = match.status === 'finished'
@@ -95,9 +99,18 @@ export function MatchPredictionCard({
   const [predAway, setPredAway] = useState<number | null>(prediction?.predAway ?? null)
   const [homeScorers, setHomeScorers] = useState<string[]>(prediction?.homeScorerIds ?? [])
   const [awayScorers, setAwayScorers] = useState<string[]>(prediction?.awayScorerIds ?? [])
-  const [editMode, setEditMode] = useState<EditMode>(() => (prediction ? 'idle' : 'full'))
+  const [editMode, setEditMode] = useState<EditMode>(() => {
+    if (autoOpenEdit && canEdit) return 'full'
+    return prediction ? 'idle' : 'full'
+  })
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  useEffect(() => {
+    if (!autoOpenEdit || !canEdit) return
+    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setEditMode('full')
+  }, [autoOpenEdit, canEdit])
 
   useEffect(() => {
     setSavedPrediction(prediction ?? null)
@@ -105,8 +118,10 @@ export function MatchPredictionCard({
     setPredAway(prediction?.predAway ?? null)
     setHomeScorers(prediction?.homeScorerIds ?? [])
     setAwayScorers(prediction?.awayScorerIds ?? [])
-    setEditMode(prediction ? 'idle' : 'full')
-  }, [prediction])
+    if (!autoOpenEdit || !canEdit) {
+      setEditMode(prediction ? 'idle' : 'full')
+    }
+  }, [prediction, autoOpenEdit, canEdit])
 
   const isEditingScore = editMode === 'full'
   const isEditingScorersOnly = editMode === 'scorers'
@@ -229,6 +244,8 @@ export function MatchPredictionCard({
 
   return (
     <article
+      ref={cardRef}
+      id={`match-${match.id}`}
       className={cn(
         'flex h-full flex-col overflow-visible rounded-xl border',
         friendlyMatchCardClass(friendly)
@@ -251,6 +268,13 @@ export function MatchPredictionCard({
         </div>
         <div className="flex items-center gap-2 text-white/90">
           <span>{formatDbMatchKickoff(match.date, match.timeArg)}</span>
+          <Link
+            href={`/fixture/${match.id}`}
+            className="inline-flex size-7 items-center justify-center rounded-md border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20"
+            aria-label="Ver predicciones del partido y torneos"
+          >
+            <ExternalLink className="size-3.5" aria-hidden />
+          </Link>
           {locked && <PredictionLock reason="Cerrado" />}
           {showHeaderActions && (
             <>

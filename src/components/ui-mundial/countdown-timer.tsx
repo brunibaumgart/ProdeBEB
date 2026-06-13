@@ -34,18 +34,48 @@ function pad(value: number): string {
   return value.toString().padStart(2, '0')
 }
 
+const PLACEHOLDER_UNITS = [
+  { label: 'días' },
+  { label: 'hs' },
+  { label: 'min' },
+  { label: 'seg' },
+] as const
+
 export function CountdownTimer({ targetDate, label, className, onComplete }: CountdownTimerProps) {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => getTimeLeft(targetDate))
+  const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null)
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const tick = () => {
       const next = getTimeLeft(targetDate)
       setTimeLeft(next)
       if (next.total === 0) onComplete?.()
-    }, 1000)
+    }
+
+    tick()
+    const interval = setInterval(tick, 1000)
 
     return () => clearInterval(interval)
   }, [targetDate, onComplete])
+
+  if (timeLeft === null) {
+    return (
+      <div className={cn('flex flex-col items-center gap-3', className)}>
+        {label ? (
+          <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+        ) : null}
+        <div className="flex items-center gap-2 sm:gap-3" aria-hidden>
+          {PLACEHOLDER_UNITS.map((unit) => (
+            <div key={unit.label} className="flex flex-col items-center">
+              <span className="font-heading min-w-[2.5rem] rounded-lg bg-card px-2 py-1 text-center text-2xl tabular-nums text-primary sm:text-3xl">
+                --
+              </span>
+              <span className="mt-1 text-[10px] uppercase text-muted-foreground">{unit.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   const units = [
     { value: timeLeft.days, label: 'días' },

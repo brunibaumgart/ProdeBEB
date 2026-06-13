@@ -63,77 +63,87 @@ export function TodayMatches({ matches, predictionsByMatchId }: TodayMatchesProp
         }
 
         return (
-          <article
+          <Link
             key={match.id}
-            className={cn('overflow-hidden rounded-xl border', friendlyMatchCardClass(isFriendlyMatch(match)))}
+            href={`/fixture/${match.id}`}
+            className={cn(
+              'block overflow-hidden rounded-xl border transition-colors',
+              friendlyMatchCardClass(isFriendlyMatch(match)),
+              'hover:border-primary/40',
+            )}
           >
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 bg-muted/30 px-4 py-2 text-xs text-muted-foreground">
-              <div className="flex flex-wrap items-center gap-2">
-                {isFriendlyMatch(match) ? (
-                  <FriendlyMatchBadge />
-                ) : (
-                  <RoundLabel round={match.round} variant="short" />
-                )}
-                {match.group && (
-                  <span className="rounded-full bg-background px-2 py-0.5 font-medium">
-                    Grupo {match.group}
-                  </span>
-                )}
-                <span>{formatDbMatchKickoff(match.date, match.timeArg)}</span>
-              </div>
-              {isFinished && prediction && (
-                <div className="flex items-center gap-2">
-                  {(prediction.pointsScorers ?? 0) > 0 && (
-                    <span className="font-bold tabular-nums text-brand-gold">
-                      +{prediction.pointsScorers} goles
+            <article>
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 bg-muted/30 px-4 py-2 text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-2">
+                  {isFriendlyMatch(match) ? (
+                    <FriendlyMatchBadge />
+                  ) : (
+                    <RoundLabel round={match.round} variant="short" />
+                  )}
+                  {match.group && (
+                    <span className="rounded-full bg-background px-2 py-0.5 font-medium">
+                      Grupo {match.group}
                     </span>
                   )}
-                  <span
-                    className={cn(
-                      'font-bold tabular-nums',
-                      getPointsColor(prediction.points)
-                    )}
-                  >
-                    {prediction.points != null ? `${prediction.points} pts` : 'Pendiente'}
-                  </span>
+                  <span>{formatDbMatchKickoff(match.date, match.timeArg)}</span>
                 </div>
-              )}
-            </div>
+                <div className="flex items-center gap-2">
+                  {isFinished && prediction && (
+                    <>
+                      {(prediction.pointsScorers ?? 0) > 0 && (
+                        <span className="font-bold tabular-nums text-brand-gold">
+                          +{prediction.pointsScorers} goles
+                        </span>
+                      )}
+                      <span
+                        className={cn(
+                          'font-bold tabular-nums',
+                          getPointsColor(prediction.points)
+                        )}
+                      >
+                        {prediction.points != null ? `${prediction.points} pts` : 'Pendiente'}
+                      </span>
+                    </>
+                  )}
+                  <span className="font-medium text-primary">Ver predicciones</span>
+                </div>
+              </div>
 
-            <div className="space-y-3 p-4">
-              {isFinished && (
+              <div className="space-y-3 p-4">
+                {isFinished && (
+                  <div>
+                    <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Resultado
+                    </p>
+                    <MatchScoreboard
+                      home={home}
+                      away={away}
+                      homeScore={match.homeScore}
+                      awayScore={match.awayScore}
+                    />
+                  </div>
+                )}
+
                 <div>
                   <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Resultado
+                    Tu predicción
                   </p>
-                  <MatchScoreboard
-                    home={home}
-                    away={away}
-                    homeScore={match.homeScore}
-                    awayScore={match.awayScore}
-                  />
+                  {prediction ? (
+                    <MatchScoreboard
+                      home={home}
+                      away={away}
+                      homeScore={prediction.predHome}
+                      awayScore={prediction.predAway}
+                    />
+                  ) : (
+                    <p className="rounded-lg border border-dashed border-border/70 bg-muted/20 px-3 py-2.5 text-sm text-muted-foreground">
+                      Sin predicción
+                    </p>
+                  )}
                 </div>
-              )}
-
-              <div>
-                <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Tu predicción
-                </p>
-                {prediction ? (
-                  <MatchScoreboard
-                    home={home}
-                    away={away}
-                    homeScore={prediction.predHome}
-                    awayScore={prediction.predAway}
-                  />
-                ) : (
-                  <p className="rounded-lg border border-dashed border-border/70 bg-muted/20 px-3 py-2.5 text-sm text-muted-foreground">
-                    Sin predicción
-                  </p>
-                )}
               </div>
-            </div>
-          </article>
+            </article>
+          </Link>
         )
       })}
     </div>

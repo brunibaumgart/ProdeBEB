@@ -5,12 +5,16 @@ import { auth } from '@clerk/nextjs/server'
 import type { Metadata } from 'next'
 
 import { AppShell } from '@/components/layout/app-shell'
+import { MatchPredictionsPanel } from '@/components/fixture/match-predictions-panel'
 import { FlagIcon, RoundLabel } from '@/components/ui-mundial'
 import { FriendlyMatchBadge } from '@/components/ui-mundial/friendly-match-badge'
 import { canAccessTestContent } from '@/lib/auth/test-access'
 import { friendlyMatchCardClass, isFriendlyMatch } from '@/lib/matches/friendly'
+import { canEditPrediction, isMatchPredictable } from '@/lib/matches/availability'
 import { getMatchTitle } from '@/lib/match-label'
+import { getMatchPredictionsContext } from '@/lib/queries/match-predictions-context'
 import { getMatchById, getOfficialMatchIds } from '@/lib/queries/matches'
+import { ensureDbUser } from '@/lib/queries/users'
 import { formatDbMatchKickoff, formatUtcTime, toArgentinaTime } from '@/lib/time'
 import { cn } from '@/lib/utils'
 
@@ -111,10 +115,15 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
   const match = await getMatchById(id, { includeTestMatches })
   if (!match) notFound()
 
+  const dbUser = clerkId ? await ensureDbUser() : null
+  const predictionsContext =
+    dbUser != null ? await getMatchPredictionsContext(id, dbUser.id) : null
+
   const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
   const showScore = isFinished || isLive
   const friendly = isFriendlyMatch(match)
+  const editable = isMatchPredictable(match) && canEditPrediction(match)
 
   return (
     <AppShell pathname="/fixture">
@@ -191,6 +200,23 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
           </div>
         </dl>
       </section>
+
+      {predictionsContext ? (
+        <div className="mt-6">
+          <MatchPredictionsPanel
+            match={match}
+            context={predictionsContext}
+            canEditPrediction={editable}
+          />
+        </div>
+      ) : clerkId ? null : (
+        <section className="mt-6 rounded-xl border border-border bg-card p-4 text-center text-sm text-muted-foreground">
+          <p>Iniciá sesión para ver tu predicción y las de tus torneos privados.</p>
+          <Link href="/prode/fecha" className="mt-2 inline-block font-medium text-primary hover:underline">
+            Ir a Fecha a Fecha
+          </Link>
+        </section>
+      )}
     </AppShell>
   )
 }

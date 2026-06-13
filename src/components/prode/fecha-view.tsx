@@ -41,6 +41,16 @@ interface FechaViewProps {
   predictions: Record<number, SerializablePrediction>
   playersByTeamId: Record<string, GoalScorerPlayer[]>
   scorersEnabled?: boolean
+  focusMatchId?: number | null
+  autoOpenEdit?: boolean
+}
+
+function isMatchInSections(
+  matchId: number | null | undefined,
+  sections: FechaViewProps['upcomingSections'],
+) {
+  if (matchId == null) return false
+  return sections.some((section) => section.matches.some((match) => match.id === matchId))
 }
 
 type PredictionFilter = 'all' | 'pending' | 'done'
@@ -51,8 +61,12 @@ export function FechaView({
   predictions,
   playersByTeamId,
   scorersEnabled = true,
+  focusMatchId = null,
+  autoOpenEdit = false,
 }: FechaViewProps) {
-  const [showHistory, setShowHistory] = useState(false)
+  const [showHistory, setShowHistory] = useState(() =>
+    isMatchInSections(focusMatchId, historySections),
+  )
   const [groupFilter, setGroupFilter] = useState('')
   const [roundFilter, setRoundFilter] = useState('')
   const [predictionFilter, setPredictionFilter] = useState<PredictionFilter>('all')
@@ -228,6 +242,7 @@ export function FechaView({
                     homePlayers={match.homeTeamId ? (playersByTeamId[match.homeTeamId] ?? []) : []}
                     awayPlayers={match.awayTeamId ? (playersByTeamId[match.awayTeamId] ?? []) : []}
                     scorersEnabled={scorersEnabled}
+                    autoOpenEdit={autoOpenEdit && focusMatchId === match.id}
                   />
                 ))}
               </div>

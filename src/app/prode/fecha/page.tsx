@@ -43,9 +43,19 @@ function serializeMatch(
   }
 }
 
-export default async function ProdeFechaPage() {
+export default async function ProdeFechaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ match?: string; edit?: string }>
+}) {
   const user = await ensureDbUser()
   if (!user) return null
+
+  const params = await searchParams
+  const parsedMatchId = params.match ? parseInt(params.match, 10) : null
+  const focusMatchId =
+    parsedMatchId != null && !Number.isNaN(parsedMatchId) ? parsedMatchId : null
+  const autoOpenEdit = params.edit === '1' && focusMatchId != null
 
   const { userId: clerkId } = await auth()
   const includeTestMatches = await canAccessTestContent(clerkId)
@@ -164,6 +174,8 @@ export default async function ProdeFechaPage() {
         predictions={predictions}
         playersByTeamId={playersByTeamId}
         scorersEnabled={scorersEnabled}
+        focusMatchId={focusMatchId}
+        autoOpenEdit={autoOpenEdit}
       />
     </AppShell>
   )
