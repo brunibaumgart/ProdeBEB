@@ -162,13 +162,14 @@ model Prediction {
 }
 
 model PredictionScorer {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   predictionId String
-  playerId     String
+  playerId     String?
   isHome       Boolean
+  isOwnGoal    Boolean @default(false)
 
   prediction Prediction @relation(fields: [predictionId], references: [id], onDelete: Cascade)
-  player     Player     @relation(fields: [playerId], references: [id])
+  player     Player?    @relation(fields: [playerId], references: [id])
 
   @@index([predictionId])
   @@index([playerId])
@@ -233,13 +234,14 @@ model JuryResult {
 }
 
 model MatchGoal {
-  id       String @id @default(cuid())
-  matchId  Int
-  playerId String
-  isHome   Boolean
+  id        String  @id @default(cuid())
+  matchId   Int
+  playerId  String?
+  isHome    Boolean
+  isOwnGoal Boolean @default(false)
 
-  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  player Player @relation(fields: [playerId], references: [id])
+  match  Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player Player? @relation(fields: [playerId], references: [id])
 
   @@index([matchId])
   @@index([playerId])

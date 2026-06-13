@@ -5,7 +5,13 @@ import { createPortal } from 'react-dom'
 import { ChevronDown } from 'lucide-react'
 
 import { PositionBadge } from '@/components/ui-mundial/position-badge'
-import { SCORER_POINTS_BY_POSITION, sortPlayersForScorerPicker } from '@/lib/scoring/scorers'
+import {
+  isOwnGoalSentinel,
+  OWN_GOAL_POINTS,
+  OWN_GOAL_SENTINEL,
+  SCORER_POINTS_BY_POSITION,
+  sortPlayersForScorerPicker,
+} from '@/lib/scoring/scorers'
 import { cn } from '@/lib/utils'
 import type { Position } from '@/types'
 
@@ -46,7 +52,10 @@ function PlayerSelect({
   const containerRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  const selected = players.find((player) => player.id === value)
+  const selected = isOwnGoalSentinel(value)
+    ? null
+    : players.find((player) => player.id === value)
+  const isOwnGoalSelected = isOwnGoalSentinel(value)
 
   useEffect(() => {
     setMounted(true)
@@ -127,6 +136,26 @@ function PlayerSelect({
             className="z-[200] overflow-y-auto overscroll-contain rounded-lg border border-border bg-card p-1 shadow-lg"
             onWheel={(event) => event.stopPropagation()}
           >
+            <button
+              type="button"
+              role="option"
+              aria-selected={isOwnGoalSelected}
+              onClick={() => {
+                onChange(OWN_GOAL_SENTINEL)
+                setOpen(false)
+              }}
+              className={cn(
+                'mb-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-xs transition-colors',
+                'hover:bg-muted',
+                isOwnGoalSelected && 'bg-primary/10 text-primary'
+              )}
+            >
+              <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                AG
+              </span>
+              <span className="min-w-0 flex-1 truncate font-medium">Autogol</span>
+              <span className="shrink-0 tabular-nums text-brand-gold">+{OWN_GOAL_POINTS}</span>
+            </button>
             {players.map((player) => {
               const isSelected = player.id === value
               return (
@@ -174,7 +203,15 @@ function PlayerSelect({
           'disabled:cursor-not-allowed disabled:opacity-50'
         )}
       >
-        {selected ? (
+        {isOwnGoalSelected ? (
+          <>
+            <span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+              AG
+            </span>
+            <span className="min-w-0 flex-1 truncate text-left font-medium">Autogol</span>
+            <span className="shrink-0 tabular-nums text-brand-gold">+{OWN_GOAL_POINTS}</span>
+          </>
+        ) : selected ? (
           <>
             <PositionBadge position={selected.position as Position} />
             <span className="min-w-0 flex-1 truncate text-left font-medium">{selected.name}</span>
@@ -237,6 +274,20 @@ export function GoalScorerSide({
     return (
       <div className={cn('space-y-1', align === 'right' && 'text-right')}>
         {picked.map((playerId, index) => {
+          if (isOwnGoalSentinel(playerId)) {
+            return (
+              <div
+                key={`own-goal-${index}`}
+                className="flex items-center gap-1.5 text-[11px]"
+              >
+                <span className="inline-flex items-center rounded bg-muted px-1 py-0.5 text-[9px] font-bold uppercase text-muted-foreground">
+                  AG
+                </span>
+                <span className="truncate font-medium">Autogol</span>
+              </div>
+            )
+          }
+
           const player = playerById.get(playerId)
           if (!player) return null
           return (

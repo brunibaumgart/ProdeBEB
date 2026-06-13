@@ -6,7 +6,7 @@ export async function getUserPredictionsMap(userId: string) {
   const predictions = await prisma.prediction.findMany({
     where: { userId },
     include: {
-      scorers: { select: { playerId: true, isHome: true } },
+      scorers: { select: { playerId: true, isHome: true, isOwnGoal: true } },
     },
   })
 

@@ -1,3 +1,4 @@
+import { formatScorerSlotLabel, scorerSlotToId } from '@/lib/scoring/scorers'
 import { prisma } from '@/lib/prisma'
 import { GLOBAL_TOURNAMENT_CODE } from '@/lib/tournament/quota-logic'
 import {
@@ -59,7 +60,7 @@ function mapMemberPrediction(prediction: {
   points: number | null
   pointsScorers: number | null
   user: { name: string }
-  scorers: { player: { name: string } }[]
+  scorers: { playerId: string | null; isOwnGoal: boolean; player: { name: string } | null }[]
 }): TournamentMemberPredictionView {
   return {
     id: prediction.id,
@@ -69,7 +70,9 @@ function mapMemberPrediction(prediction: {
     predAway: prediction.predAway,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
-    scorerNames: prediction.scorers.map((scorer) => scorer.player.name),
+    scorerNames: prediction.scorers.map((scorer) =>
+      formatScorerSlotLabel(scorerSlotToId(scorer), scorer.player?.name),
+    ),
   }
 }
 

@@ -20,6 +20,7 @@ import {
   getMatchGoalsByMatchIds,
   getMatchStatistics,
 } from '@/lib/queries/admin'
+import { formatScorerSlotLabel, scorerSlotToId } from '@/lib/scoring/scorers'
 import { prisma } from '@/lib/prisma'
 import { getPlayersByTeamIds } from '@/lib/queries/teams'
 import { formatArgentinaDate } from '@/lib/time'
@@ -265,7 +266,9 @@ async function PrediccionesTab({
     predAway: prediction.predAway,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
-    scorerNames: prediction.scorers.map((scorer) => scorer.player.name),
+    scorerNames: prediction.scorers.map((scorer) =>
+      formatScorerSlotLabel(scorerSlotToId(scorer), scorer.player?.name),
+    ),
     match: {
       id: prediction.match.id,
       date: prediction.match.date.toISOString(),

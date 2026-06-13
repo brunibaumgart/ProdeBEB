@@ -6,6 +6,8 @@ import {
   adjustScorersToCount,
   calculateScorerPoints,
   getScorerPointsForPosition,
+  OWN_GOAL_POINTS,
+  type ScorerGoalEntry,
   validateOptionalScorerCounts,
   validateScorerCounts,
 } from '../src/lib/scoring/scorers'
@@ -29,27 +31,64 @@ const positions = new Map([
   ['p4', 'Delantero'],
 ])
 
-const actual = new Set(['p1', 'p3'])
-const predicted = ['p1', 'p2', 'p3']
+const actualPlayers: ScorerGoalEntry[] = [
+  { playerId: 'p1', isOwnGoal: false, isHome: true },
+  { playerId: 'p3', isOwnGoal: false, isHome: false },
+]
+const predictedPlayers: ScorerGoalEntry[] = [
+  { playerId: 'p1', isOwnGoal: false, isHome: true },
+  { playerId: 'p2', isOwnGoal: false, isHome: true },
+  { playerId: 'p3', isOwnGoal: false, isHome: false },
+]
+
 assert(
-  calculateScorerPoints(predicted, actual, positions) === 12,
+  calculateScorerPoints(predictedPlayers, actualPlayers, positions) === 12,
   'portero + mediocampista acertados = 12'
 )
 
-// Goleadores independientes del resultado: solo importa si el jugador marcó
 assert(
-  calculateScorerPoints(['p4'], new Set(['p4']), positions) === 1,
+  calculateScorerPoints(
+    [{ playerId: 'p4', isOwnGoal: false, isHome: true }],
+    [{ playerId: 'p4', isOwnGoal: false, isHome: true }],
+    positions
+  ) === 1,
   'acierta delantero aunque el marcador sea otro'
 )
 
-// Sin orden: predicho como gol 1, marcó de cualquier forma
 assert(
-  calculateScorerPoints(['p1', 'p2'], new Set(['p2', 'p1']), positions) === 15,
+  calculateScorerPoints(
+    [
+      { playerId: 'p1', isOwnGoal: false, isHome: true },
+      { playerId: 'p2', isOwnGoal: false, isHome: true },
+    ],
+    [
+      { playerId: 'p2', isOwnGoal: false, isHome: true },
+      { playerId: 'p1', isOwnGoal: false, isHome: true },
+    ],
+    positions
+  ) === 15,
   'orden de goles no importa'
 )
+
 assert(
-  calculateScorerPoints(['p1'], new Set(['p1']), positions) === 10,
-  'jugador predicho en gol 1 suma aunque haya sido el segundo gol real'
+  calculateScorerPoints(
+    [{ playerId: null, isOwnGoal: true, isHome: true }],
+    [{ playerId: null, isOwnGoal: true, isHome: true }],
+    positions
+  ) === OWN_GOAL_POINTS,
+  'autogol acertado suma +5'
+)
+
+assert(
+  calculateScorerPoints(
+    [
+      { playerId: null, isOwnGoal: true, isHome: true },
+      { playerId: null, isOwnGoal: true, isHome: true },
+    ],
+    [{ playerId: null, isOwnGoal: true, isHome: true }],
+    positions
+  ) === OWN_GOAL_POINTS,
+  'solo cuenta autogoles reales aunque predigas de más'
 )
 
 assert(
@@ -70,6 +109,10 @@ assert(validateOptionalScorerCounts(2, 1, [], []) === null, 'goleadores opcional
 assert(
   validateOptionalScorerCounts(2, 1, ['a', 'b'], ['c']) === null,
   'goleadores opcionales completos'
+)
+assert(
+  validateOptionalScorerCounts(2, 1, ['__own_goal__', 'a'], []) === null,
+  'autogol cuenta como goleador opcional válido'
 )
 
 console.log('OK: verify-scorers')

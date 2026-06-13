@@ -7,7 +7,7 @@ import { canAccessTestContent } from '@/lib/auth/test-access'
 import { requireDbUserForAction } from '@/lib/queries/users'
 import { canEditPrediction, isMatchPredictable } from '@/lib/matches/availability'
 import { getMatchById } from '@/lib/queries/matches'
-import { validateOptionalScorerCounts } from '@/lib/scoring/scorers'
+import { validateOptionalScorerCounts, isOwnGoalSentinel, scorerSlotFromId } from '@/lib/scoring/scorers'
 import { prisma } from '@/lib/prisma'
 
 export type SavePredictionResult =
@@ -24,13 +24,13 @@ async function upsertPredictionScorers(
   const rows = [
     ...homeScorerIds.filter(Boolean).map((playerId) => ({
       predictionId,
-      playerId,
       isHome: true,
+      ...scorerSlotFromId(playerId),
     })),
     ...awayScorerIds.filter(Boolean).map((playerId) => ({
       predictionId,
-      playerId,
       isHome: false,
+      ...scorerSlotFromId(playerId),
     })),
   ]
 
@@ -83,18 +83,21 @@ export async function savePrediction(
   }
 
   if (homeScorerIds.length > 0 || awayScorerIds.length > 0) {
+    const playerIds = [...homeScorerIds, ...awayScorerIds].filter((id) => !isOwnGoalSentinel(id))
     const players = await prisma.player.findMany({
-      where: { id: { in: [...homeScorerIds, ...awayScorerIds] } },
+      where: { id: { in: playerIds } },
       select: { id: true, teamId: true },
     })
     const playerTeamMap = new Map(players.map((p) => [p.id, p.teamId]))
 
     for (const playerId of homeScorerIds) {
+      if (isOwnGoalSentinel(playerId)) continue
       if (playerTeamMap.get(playerId) !== match.homeTeamId) {
         return { ok: false, error: 'Goleador local inválido para este partido.' }
       }
     }
     for (const playerId of awayScorerIds) {
+      if (isOwnGoalSentinel(playerId)) continue
       if (playerTeamMap.get(playerId) !== match.awayTeamId) {
         return { ok: false, error: 'Goleador visitante inválido para este partido.' }
       }

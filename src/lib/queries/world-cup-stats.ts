@@ -131,6 +131,7 @@ export async function getWorldCupStatistics(): Promise<WorldCupStatistics> {
     prisma.matchGoal.groupBy({
       by: ['playerId'],
       where: {
+        playerId: { not: null },
         match: {
           status: 'finished',
           isTest: false,
@@ -143,6 +144,7 @@ export async function getWorldCupStatistics(): Promise<WorldCupStatistics> {
     prisma.matchGoal.groupBy({
       by: ['playerId'],
       where: {
+        playerId: { not: null },
         match: {
           status: 'finished',
           isTest: false,
@@ -151,7 +153,9 @@ export async function getWorldCupStatistics(): Promise<WorldCupStatistics> {
     }),
   ])
 
-  const playerIds = goalRows.map((row) => row.playerId)
+  const playerIds = goalRows
+    .map((row) => row.playerId)
+    .filter((id): id is string => id != null)
   const players =
     playerIds.length > 0
       ? await prisma.player.findMany({
@@ -171,7 +175,7 @@ export async function getWorldCupStatistics(): Promise<WorldCupStatistics> {
 
   const topScorers: ScorerWorldCupStats[] = goalRows
     .map((row) => {
-      const player = playerById.get(row.playerId)
+      const player = row.playerId ? playerById.get(row.playerId) : undefined
       if (!player) return null
       return {
         playerId: player.id,

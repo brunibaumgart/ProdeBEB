@@ -1,5 +1,6 @@
 import { matchWithRelations } from '@/lib/queries/matches'
 import { prisma } from '@/lib/prisma'
+import { formatScorerSlotLabel, scorerSlotToId } from '@/lib/scoring/scorers'
 
 const UPCOMING_LIMIT = 12
 const FINISHED_LIMIT = 12
@@ -67,13 +68,14 @@ export async function getMatchGoalsByMatchIds(matchIds: number[]) {
   const goals = await prisma.matchGoal.findMany({
     where: { matchId: { in: matchIds } },
     orderBy: [{ isHome: 'desc' }, { id: 'asc' }],
-    select: { matchId: true, playerId: true, isHome: true },
+    select: { matchId: true, playerId: true, isHome: true, isOwnGoal: true },
   })
 
   for (const goal of goals) {
     const entry = map.get(goal.matchId) ?? { home: [], away: [] }
-    if (goal.isHome) entry.home.push(goal.playerId)
-    else entry.away.push(goal.playerId)
+    const slotId = scorerSlotToId(goal)
+    if (goal.isHome) entry.home.push(slotId)
+    else entry.away.push(slotId)
     map.set(goal.matchId, entry)
   }
 
@@ -167,7 +169,7 @@ function mapAdminPrediction(
     points: number | null
     pointsScorers: number | null
     user: { id: string; name: string; email: string }
-    scorers: { player: { name: string } }[]
+    scorers: { playerId: string | null; player: { name: string } | null; isOwnGoal: boolean }[]
   },
 ): AdminPredictionView {
   return {
@@ -179,7 +181,9 @@ function mapAdminPrediction(
     predAway: prediction.predAway,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
-    scorerNames: prediction.scorers.map((scorer) => scorer.player.name),
+    scorerNames: prediction.scorers.map((scorer) =>
+      formatScorerSlotLabel(scorerSlotToId(scorer), scorer.player?.name),
+    ),
   }
 }
 

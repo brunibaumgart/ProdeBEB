@@ -13,7 +13,7 @@ import {
   recalculateScorerPointsForMatch,
   saveMatchGoals,
 } from '@/lib/scoring/scorers-engine'
-import { adjustScorersToCount, validateScorerCounts } from '@/lib/scoring/scorers'
+import { adjustScorersToCount, validateScorerCounts, isOwnGoalSentinel } from '@/lib/scoring/scorers'
 import { sendKickoffPushForMatch } from '@/lib/push/kickoff'
 import {
   advanceKnockoutTeams,
@@ -66,18 +66,20 @@ export async function setMatchResult(
   if (!match) return { ok: false, error: 'Partido no encontrado.' }
 
   if (homeScore + awayScore > 0) {
-    const allIds = [...homeScorerIds, ...awayScorerIds]
+    const allIds = [...homeScorerIds, ...awayScorerIds].filter((id) => !isOwnGoalSentinel(id))
     const players = await prisma.player.findMany({
       where: { id: { in: allIds } },
       select: { id: true, teamId: true },
     })
     const byId = new Map(players.map((p) => [p.id, p.teamId]))
     for (const id of homeScorerIds) {
+      if (isOwnGoalSentinel(id)) continue
       if (byId.get(id) !== match.homeTeamId) {
         return { ok: false, error: 'Goleador local inválido.' }
       }
     }
     for (const id of awayScorerIds) {
+      if (isOwnGoalSentinel(id)) continue
       if (byId.get(id) !== match.awayTeamId) {
         return { ok: false, error: 'Goleador visitante inválido.' }
       }
@@ -159,18 +161,20 @@ export async function updateMatchLiveScore(
   const awayScorerIds = adjustScorersToCount(scorers?.awayPlayerIds ?? [], awayScore)
 
   if (homeScorerIds.length + awayScorerIds.length > 0) {
-    const allIds = [...homeScorerIds, ...awayScorerIds]
+    const allIds = [...homeScorerIds, ...awayScorerIds].filter((id) => !isOwnGoalSentinel(id))
     const players = await prisma.player.findMany({
       where: { id: { in: allIds } },
       select: { id: true, teamId: true },
     })
     const byId = new Map(players.map((player) => [player.id, player.teamId]))
     for (const id of homeScorerIds) {
+      if (isOwnGoalSentinel(id)) continue
       if (byId.get(id) !== match.homeTeamId) {
         return { ok: false, error: 'Goleador local inválido.' }
       }
     }
     for (const id of awayScorerIds) {
+      if (isOwnGoalSentinel(id)) continue
       if (byId.get(id) !== match.awayTeamId) {
         return { ok: false, error: 'Goleador visitante inválido.' }
       }

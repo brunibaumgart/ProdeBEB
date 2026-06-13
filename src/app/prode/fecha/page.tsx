@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { auth } from '@clerk/nextjs/server'
 
 import { AppShell } from '@/components/layout/app-shell'
+import { scorerSlotToId } from '@/lib/scoring/scorers'
 import { FechaView } from '@/components/prode/fecha-view'
 import { canAccessTestContent } from '@/lib/auth/test-access'
 import {
@@ -126,8 +127,12 @@ export default async function ProdeFechaPage() {
         predAway: prediction.predAway,
         points: prediction.points,
         pointsScorers: prediction.pointsScorers,
-        homeScorerIds: prediction.scorers.filter((s) => s.isHome).map((s) => s.playerId),
-        awayScorerIds: prediction.scorers.filter((s) => !s.isHome).map((s) => s.playerId),
+        homeScorerIds: prediction.scorers
+          .filter((s) => s.isHome)
+          .map((s) => scorerSlotToId(s)),
+        awayScorerIds: prediction.scorers
+          .filter((s) => !s.isHome)
+          .map((s) => scorerSlotToId(s)),
       }
     }
   }

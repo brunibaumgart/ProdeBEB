@@ -6,6 +6,9 @@ export const SCORER_POINTS_BY_POSITION: Record<string, number> = {
   Delantero: 1,
 }
 
+export const OWN_GOAL_SENTINEL = '__own_goal__'
+export const OWN_GOAL_POINTS = 5
+
 /** Orden del selector de goleadores: DEL → MED → DEF → POR */
 const SCORER_PICKER_POSITION_ORDER = [
   'Delantero',
@@ -13,6 +16,28 @@ const SCORER_PICKER_POSITION_ORDER = [
   'Defensa',
   'Portero',
 ] as const
+
+export interface ScorerGoalEntry {
+  playerId: string | null
+  isOwnGoal: boolean
+  isHome: boolean
+}
+
+export function isOwnGoalSentinel(value: string): boolean {
+  return value === OWN_GOAL_SENTINEL
+}
+
+export function scorerSlotToId(entry: { playerId: string | null; isOwnGoal: boolean }): string {
+  if (entry.isOwnGoal) return OWN_GOAL_SENTINEL
+  return entry.playerId ?? ''
+}
+
+export function scorerSlotFromId(id: string): Pick<ScorerGoalEntry, 'playerId' | 'isOwnGoal'> {
+  if (isOwnGoalSentinel(id)) {
+    return { playerId: null, isOwnGoal: true }
+  }
+  return { playerId: id, isOwnGoal: false }
+}
 
 export function sortPlayersForScorerPicker<T extends { position: string; name: string }>(
   players: T[]
@@ -39,16 +64,27 @@ export function getScorerPointsForPosition(position: string): number {
 }
 
 export function calculateScorerPoints(
-  predictedPlayerIds: string[],
-  actualPlayerIds: Set<string>,
+  predicted: ScorerGoalEntry[],
+  actual: ScorerGoalEntry[],
   positionByPlayerId: Map<string, string>
 ): number {
   let total = 0
 
-  for (const playerId of predictedPlayerIds) {
-    if (!actualPlayerIds.has(playerId)) continue
-    const position = positionByPlayerId.get(playerId)
+  const actualPlayerIds = new Set(
+    actual.filter((goal) => !goal.isOwnGoal && goal.playerId).map((goal) => goal.playerId!)
+  )
+
+  for (const scorer of predicted) {
+    if (scorer.isOwnGoal || !scorer.playerId) continue
+    if (!actualPlayerIds.has(scorer.playerId)) continue
+    const position = positionByPlayerId.get(scorer.playerId)
     if (position) total += getScorerPointsForPosition(position)
+  }
+
+  for (const isHome of [true, false] as const) {
+    const predictedOwnGoals = predicted.filter((goal) => goal.isOwnGoal && goal.isHome === isHome).length
+    const actualOwnGoals = actual.filter((goal) => goal.isOwnGoal && goal.isHome === isHome).length
+    total += Math.min(predictedOwnGoals, actualOwnGoals) * OWN_GOAL_POINTS
   }
 
   return total
@@ -86,4 +122,9 @@ export function validateOptionalScorerCounts(
     return 'Completá todos los goleadores seleccionados.'
   }
   return null
+}
+
+export function formatScorerSlotLabel(id: string, playerName?: string | null): string {
+  if (isOwnGoalSentinel(id) || !playerName) return 'Autogol'
+  return playerName
 }
