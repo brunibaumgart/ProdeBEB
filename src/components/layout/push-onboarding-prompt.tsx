@@ -11,7 +11,7 @@ import {
   type PushPreferenceValues,
 } from '@/components/perfil/push-preference-fields'
 import { Button } from '@/components/ui/button'
-import { canReceiveSurprisePush } from '@/lib/push/preferences'
+import { shouldShowSurprisePushOption } from '@/lib/push/preferences'
 import { isPushSupported, subscribeToPushNotifications } from '@/lib/push/client'
 import {
   canShowPwaInstallHint,
@@ -43,7 +43,7 @@ export function PushOnboardingPrompt({
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [installed, setInstalled] = useState(false)
 
-  const showSurprise = canReceiveSurprisePush({ name: userName, email: userEmail, isAdmin })
+  const showSurprise = shouldShowSurprisePushOption({ name: userName, email: userEmail, isAdmin })
   const supported = isPushSupported()
 
   const [preferences, setPreferences] = useState<PushPreferenceValues>({

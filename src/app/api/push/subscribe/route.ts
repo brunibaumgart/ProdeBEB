@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
 import { canReceiveSurprisePush } from '@/lib/push/preferences'
+import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { prisma } from '@/lib/prisma'
 import { ensureDbUser } from '@/lib/queries/users'
 
@@ -53,7 +54,11 @@ export async function POST(request: Request) {
     isAdmin: dbUser.isAdmin,
     clerkId: dbUser.clerkId,
   })
-  const pushSurpriseEnabled = eligibleForSurprise ? (prefs.surprise ?? false) : false
+  const pushSurpriseEnabled = eligibleForSurprise
+    ? isPioProfile(dbUser)
+      ? dbUser.pushSurpriseEnabled
+      : (prefs.surprise ?? false)
+    : false
 
   await prisma.pushSubscription.upsert({
     where: { endpoint },

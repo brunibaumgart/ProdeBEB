@@ -19,6 +19,11 @@ export function canReceiveSurprisePush(user: PushPreferenceUser): boolean {
   return isPioProfile(user) || user.email.trim().toLowerCase() === SURPRISE_PUSH_EMAIL
 }
 
+/** UI del perfil / onboarding: pio no ve el toggle (Bruno lo activa desde admin/DB). */
+export function shouldShowSurprisePushOption(user: PushPreferenceUser): boolean {
+  return canReceiveSurprisePush(user) && !isPioProfile(user)
+}
+
 export function hasAnyPushPreferenceEnabled(preferences: PushPreferences): boolean {
   return (
     preferences.pushRemindersEnabled ||

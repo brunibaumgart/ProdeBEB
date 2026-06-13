@@ -7,6 +7,7 @@ import { deliverPushPayload } from '@/lib/push/delivery'
 import { getPushNotificationIcon } from '@/lib/push/icons'
 import {
   canReceiveSurprisePush,
+  shouldShowSurprisePushOption,
   type PushPreferences,
 } from '@/lib/push/preferences'
 import { isPioProfile } from '@/lib/personal/pio-countdown'
@@ -29,15 +30,26 @@ function revalidatePushPaths() {
 }
 
 function sanitizePreferences(
-  user: { name: string; email: string; isAdmin: boolean; clerkId: string },
+  user: {
+    name: string
+    email: string
+    isAdmin: boolean
+    clerkId: string
+    pushSurpriseEnabled: boolean
+  },
   input: PushPreferencesInput,
 ): PushPreferences {
   const eligibleForSurprise = canReceiveSurprisePush(user)
+  const preserveSurpriseFromDb = isPioProfile(user)
 
   return {
     pushRemindersEnabled: input.reminders,
     pushKickoffEnabled: input.kickoff,
-    pushSurpriseEnabled: eligibleForSurprise ? input.surprise : false,
+    pushSurpriseEnabled: eligibleForSurprise
+      ? preserveSurpriseFromDb
+        ? user.pushSurpriseEnabled
+        : input.surprise
+      : false,
   }
 }
 
@@ -85,7 +97,9 @@ export async function updatePushPreferences(
   const activeLabels = [
     preferences.pushRemindersEnabled && 'recordatorio 11:00',
     preferences.pushKickoffEnabled && 'arranque de partidos',
-    preferences.pushSurpriseEnabled && 'sorpresas',
+    preferences.pushSurpriseEnabled &&
+      shouldShowSurprisePushOption(authResult.user) &&
+      'sorpresas',
   ].filter(Boolean)
 
   return {

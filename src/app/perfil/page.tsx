@@ -1,9 +1,7 @@
 import { AppShell } from '@/components/layout/app-shell'
 import { ProfileStats, RecentPredictions } from '@/components/perfil/profile-stats'
-import { ParaOsitoPanel } from '@/components/perfil/para-osito-panel'
 import { PushNotificationSettings } from '@/components/perfil/push-notification-settings'
-import { canReceiveSurprisePush } from '@/lib/push/preferences'
-import { isPioProfile } from '@/lib/personal/pio-countdown'
+import { shouldShowSurprisePushOption } from '@/lib/push/preferences'
 import { SignOutAction } from '@/components/perfil/sign-out-action'
 import { UserInitialAvatar } from '@/components/ui/user-initial-avatar'
 import { prisma } from '@/lib/prisma'
@@ -52,7 +50,7 @@ export default async function PerfilPage() {
           pushKickoffEnabled={dbUser.pushKickoffEnabled}
           pushSurpriseEnabled={dbUser.pushSurpriseEnabled}
           pushSubscriptionCount={pushSubscriptionCount}
-          showSurpriseOption={canReceiveSurprisePush({
+          showSurpriseOption={shouldShowSurprisePushOption({
             name: dbUser.name,
             email: dbUser.email,
             isAdmin: dbUser.isAdmin,
@@ -60,12 +58,6 @@ export default async function PerfilPage() {
           })}
         />
       </section>
-
-      {isPioProfile(dbUser) ? (
-        <section className="mb-8">
-          <ParaOsitoPanel />
-        </section>
-      ) : null}
 
       <section className="mb-8">
         <h2 className="mb-4 font-heading text-xl tracking-wide">ESTADÍSTICAS</h2>
