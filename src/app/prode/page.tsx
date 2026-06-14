@@ -173,6 +173,7 @@ export default async function ProdePage() {
           pointsMatchday={stats.pointsMatchday}
           pointsScorers={stats.pointsScorers}
           pointsComplete={stats.pointsComplete}
+          pointsTotal={stats.pointsTotal}
           pointsFriendly={stats.pointsFriendly}
           showFriendly={includeTestMatches}
         />
