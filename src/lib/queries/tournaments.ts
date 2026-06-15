@@ -14,29 +14,26 @@ export async function getUserTournaments(userId: string) {
   })
 
   const ranks = await Promise.all(
-    memberships.map(({ tournamentId }) => getMemberRank(tournamentId, userId))
+    memberships.map(({ tournamentId }) => getMemberRankMatchday(tournamentId, userId))
   )
 
   return memberships.map((membership, index) => ({
     membership,
     tournament: membership.tournament,
     memberCount: membership.tournament._count.members,
-    rank: ranks[index],
+    rankMatchday: ranks[index],
   }))
 }
 
-async function getMemberRank(tournamentId: string, userId: string) {
+async function getMemberRankMatchday(tournamentId: string, userId: string) {
   const member = await prisma.tournamentMember.findUnique({
     where: { userId_tournamentId: { userId, tournamentId } },
-    select: { pointsTotal: true },
+    select: { pointsMatchday: true },
   })
   if (!member) return null
 
   const ahead = await prisma.tournamentMember.count({
-    where: {
-      tournamentId,
-      pointsTotal: { gt: member.pointsTotal },
-    },
+    where: { tournamentId, pointsMatchday: { gt: member.pointsMatchday } },
   })
 
   return ahead + 1

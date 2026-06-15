@@ -7,9 +7,10 @@ interface TournamentCardProps {
   description: string | null
   code: string
   memberCount: number
-  pointsTotal: number
-  rank: number | null
   isOwner: boolean
+  modeMatchday: boolean
+  pointsMatchday: number
+  rankMatchday: number | null
 }
 
 export function TournamentCard({
@@ -18,9 +19,10 @@ export function TournamentCard({
   description,
   code,
   memberCount,
-  pointsTotal,
-  rank,
   isOwner,
+  modeMatchday,
+  pointsMatchday,
+  rankMatchday,
 }: TournamentCardProps) {
   return (
     <Link href={`/torneos/${id}`} className="block">
@@ -40,21 +42,28 @@ export function TournamentCard({
           </span>
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-3">
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Users className="size-4" aria-hidden />
-            {memberCount} {memberCount === 1 ? 'miembro' : 'miembros'}
-          </div>
-          <div className="flex items-center gap-4">
-            {rank != null && (
+        <div className="mt-auto flex flex-col gap-2 pt-3">
+          {modeMatchday && (
+            <div className="flex items-center justify-end gap-4">
+              <p className="mr-auto text-xs uppercase tracking-wide text-muted-foreground">
+                Fecha a fecha
+              </p>
+              {rankMatchday != null && (
+                <div className="text-right">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Posición</p>
+                  <p className="font-heading text-lg tabular-nums">#{rankMatchday}</p>
+                </div>
+              )}
               <div className="text-right">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Posición</p>
-                <p className="font-heading text-lg tabular-nums">#{rank}</p>
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Puntos</p>
+                <p className="font-heading text-lg tabular-nums text-primary">{pointsMatchday}</p>
               </div>
-            )}
-            <div className="text-right">
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">Mis puntos</p>
-              <p className="font-heading text-lg tabular-nums text-primary">{pointsTotal}</p>
+            </div>
+          )}
+          <div className="flex items-center justify-between gap-3 border-t border-border/50 pt-2">
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Users className="size-4" aria-hidden />
+              {memberCount} {memberCount === 1 ? 'miembro' : 'miembros'}
             </div>
             <ArrowRight className="size-4 text-muted-foreground" aria-hidden />
           </div>

@@ -60,7 +60,7 @@ export default async function TorneosPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {tournaments.map(({ tournament, membership, memberCount, rank }) => (
+          {tournaments.map(({ tournament, membership, memberCount, rankMatchday }) => (
             <TournamentCard
               key={tournament.id}
               id={tournament.id}
@@ -68,9 +68,10 @@ export default async function TorneosPage() {
               description={tournament.description}
               code={tournament.code}
               memberCount={memberCount}
-              pointsTotal={membership.pointsTotal}
-              rank={rank}
               isOwner={tournament.createdById === user.id}
+              modeMatchday={tournament.modeMatchday}
+              pointsMatchday={membership.pointsMatchday}
+              rankMatchday={rankMatchday}
             />
           ))}
         </div>
