@@ -46,3 +46,14 @@ export function buildGoalNotificationCopy(
     body: `${formatMatchFlagsVs(match)} · ${homeScore}-${awayScore}`,
   }
 }
+
+export function buildMatchFinishedNotificationCopy(
+  match: Pick<MatchWithRelations, 'homeTeam' | 'awayTeam'>,
+  homeScore: number,
+  awayScore: number,
+): { title: string; body: string } {
+  return {
+    title: `${formatMatchFlagsVs(match)} · Final del partido`,
+    body: `${homeScore}-${awayScore} · Andá a ver cómo te fue en el prode`,
+  }
+}

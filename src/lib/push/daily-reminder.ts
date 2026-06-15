@@ -62,15 +62,9 @@ export async function getDailyReminderPayloadForUser(userId: string): Promise<Pu
 }
 
 export async function sendDailyPushReminders() {
-  const { prisma } = await import('@/lib/prisma')
+  const { getReminderPushRecipients } = await import('@/lib/push/admin-recipients')
 
-  const users = await prisma.user.findMany({
-    where: {
-      pushRemindersEnabled: true,
-      pushSubscriptions: { some: {} },
-    },
-    include: { pushSubscriptions: true },
-  })
+  const users = await getReminderPushRecipients()
 
   let sent = 0
   let failed = 0

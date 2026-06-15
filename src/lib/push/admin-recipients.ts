@@ -33,6 +33,17 @@ export async function getKickoffPushRecipients() {
   })
 }
 
+/** Usuarios con recordatorio 11:00 y suscripción push activa. */
+export async function getReminderPushRecipients() {
+  return prisma.user.findMany({
+    where: {
+      pushRemindersEnabled: true,
+      pushSubscriptions: { some: {} },
+    },
+    include: { pushSubscriptions: true },
+  })
+}
+
 /** Usuarios elegibles (pio / Bruno) con sorpresas activadas. */
 export async function getSurprisePushRecipients() {
   return getOsitoSurpriseEligibleUsers({ requireSurpriseEnabled: true })

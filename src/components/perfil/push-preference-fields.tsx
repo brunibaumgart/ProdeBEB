@@ -69,8 +69,8 @@ export function PushPreferenceFields({
     <div className={cn('grid gap-2', compact ? 'gap-2' : 'gap-2.5')}>
       <PreferenceOption
         id="push-pref-reminders"
-        label="Recordatorio de predicciones"
-        description="A las 11:00 te avisamos si te falta cargar Fecha a Fecha."
+        label="Recordatorio 11:00 y finales"
+        description="A las 11:00 si te faltan predicciones, y cuando termina un partido para ver cómo te fue."
         checked={values.reminders}
         disabled={disabled}
         compact={compact}

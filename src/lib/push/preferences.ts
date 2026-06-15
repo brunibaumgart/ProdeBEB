@@ -36,7 +36,7 @@ export function describePushPreferences(preferences: PushPreferences): string {
   if (!hasAnyPushPreferenceEnabled(preferences)) return 'Sin notificaciones activas'
 
   return [
-    preferences.pushRemindersEnabled && 'Recordatorio 11:00',
+    preferences.pushRemindersEnabled && 'Recordatorio 11:00 y finales',
     preferences.pushKickoffEnabled && 'Arranque y goles en vivo',
     preferences.pushSurpriseEnabled && 'Sorpresas',
   ]

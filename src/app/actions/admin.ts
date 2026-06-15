@@ -17,6 +17,7 @@ import { adjustScorersToCount, validateScorerCounts, isOwnGoalSentinel } from '@
 import { sendKickoffPushForMatch } from '@/lib/push/kickoff'
 import { diffGoalEvents, matchGoalsToScorerIds } from '@/lib/push/goal-events'
 import { sendGoalPushForMatchId } from '@/lib/push/goal'
+import { sendMatchFinishedPushForMatchId } from '@/lib/push/match-finished'
 import {
   advanceKnockoutTeams,
   recalculateMatchdayPointsForMatch,
@@ -66,6 +67,7 @@ export async function setMatchResult(
 
   const match = await getMatchById(matchId, { includeTestMatches: true })
   if (!match) return { ok: false, error: 'Partido no encontrado.' }
+  const justFinished = match.status !== 'finished'
 
   if (homeScore + awayScore > 0) {
     const allIds = [...homeScorerIds, ...awayScorerIds].filter((id) => !isOwnGoalSentinel(id))
@@ -152,6 +154,14 @@ export async function setMatchResult(
   }
 
   await recalculateCompleteScoringForMatch(matchId)
+
+  if (!match.isTest && justFinished) {
+    try {
+      await sendMatchFinishedPushForMatchId(matchId, homeScore, awayScore)
+    } catch (error) {
+      console.error('Match finished push failed', { matchId, error })
+    }
+  }
 
   revalidateAdminMatchPaths()
 
