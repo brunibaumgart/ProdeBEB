@@ -36,6 +36,8 @@ interface KnockoutBracketViewProps {
   editable: boolean
   groupsComplete: boolean
   onPredictionSaved: (matchId: number, prediction: BracketSlotPrediction) => void
+  persistMode?: 'server' | 'local'
+  isMatchLocked?: (matchId: number) => boolean
 }
 
 function getRoundProgress(
@@ -186,6 +188,8 @@ export function KnockoutBracketView({
   editable,
   groupsComplete,
   onPredictionSaved,
+  persistMode = 'server',
+  isMatchLocked,
 }: KnockoutBracketViewProps) {
   const [activeRoundIndex, setActiveRoundIndex] = useState(0)
   const [pendingMatchId, setPendingMatchId] = useState<number | null>(null)
@@ -205,6 +209,23 @@ export function KnockoutBracketView({
     return map
   }, [])
 
+  function advanceRoundIfComplete(
+    matchId: number,
+    roundIndex: number,
+    nextPredictions: Record<number, BracketSlotPrediction>,
+  ) {
+    if (roundIndex < 0) return
+
+    const round = KNOCKOUT_BRACKET_ROUNDS[roundIndex]
+    const nextDone =
+      getRoundProgress(round.matchIds, nextPredictions).done +
+      (predictions[matchId] ? 0 : 1)
+
+    if (nextDone === round.matchIds.length && roundIndex < KNOCKOUT_BRACKET_ROUNDS.length - 1) {
+      setActiveRoundIndex(roundIndex + 1)
+    }
+  }
+
   function pickWinner(
     matchId: number,
     homeTeamId: string,
@@ -212,7 +233,7 @@ export function KnockoutBracketView({
     teamId: string,
     roundIndex: number,
   ) {
-    if (!editable || !groupsComplete) return
+    if (!editable || !groupsComplete || isMatchLocked?.(matchId)) return
 
     const current = predictions[matchId]
     const currentWinner = current
@@ -228,9 +249,25 @@ export function KnockoutBracketView({
     if (currentWinner === teamId) return
 
     setError(null)
-    setPendingMatchId(matchId)
 
     const { predHome, predAway } = encodeKnockoutWinner(teamId, homeTeamId)
+    const prediction: BracketSlotPrediction = {
+      predHome,
+      predAway,
+      predAdvancesTeamId: teamId,
+      predDecidedIn: 'regulation',
+    }
+
+    if (persistMode === 'local') {
+      onPredictionSaved(matchId, prediction)
+      advanceRoundIfComplete(matchId, roundIndex, {
+        ...predictions,
+        [matchId]: prediction,
+      })
+      return
+    }
+
+    setPendingMatchId(matchId)
 
     startTransition(async () => {
       const result = await saveBracketMatchPrediction(matchId, predHome, predAway, {
@@ -244,26 +281,11 @@ export function KnockoutBracketView({
         return
       }
 
-      onPredictionSaved(matchId, {
-        predHome,
-        predAway,
-        predAdvancesTeamId: teamId,
-        predDecidedIn: 'regulation',
+      onPredictionSaved(matchId, prediction)
+      advanceRoundIfComplete(matchId, roundIndex, {
+        ...predictions,
+        [matchId]: prediction,
       })
-
-      if (roundIndex >= 0) {
-        const round = KNOCKOUT_BRACKET_ROUNDS[roundIndex]
-        const nextDone =
-          getRoundProgress(round.matchIds, predictions).done +
-          (predictions[matchId] ? 0 : 1)
-
-        if (
-          nextDone === round.matchIds.length &&
-          roundIndex < KNOCKOUT_BRACKET_ROUNDS.length - 1
-        ) {
-          setActiveRoundIndex(roundIndex + 1)
-        }
-      }
     })
   }
 
@@ -307,13 +329,15 @@ export function KnockoutBracketView({
         )
       : null
 
+    const locked = isMatchLocked?.(matchId) ?? false
+
     return (
       <BracketMatchCard
         matchId={matchId}
         homeTeam={homeTeam}
         awayTeam={awayTeam}
         winnerId={winnerId}
-        editable={canPlay}
+        editable={canPlay && !locked}
         pending={isPending && pendingMatchId === matchId}
         onPick={(teamId) => pickWinner(matchId, homeTeam.id, awayTeam.id, teamId, roundIndex)}
         dense={dense}

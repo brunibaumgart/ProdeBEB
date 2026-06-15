@@ -43,7 +43,7 @@ export default async function HomePage() {
 
   const quickLinks = [
     { href: '/fixture', label: 'Fixture', icon: CalendarDays, description: '104 partidos' },
-    { href: '/grupos', label: 'Grupos', icon: Grid3x3, description: '12 grupos' },
+    { href: '/grupos', label: 'Grupos', icon: Grid3x3, description: 'Tablas y simulador' },
     { href: '/estadisticas', label: 'Estadísticas', icon: BarChart3, description: 'Goleadores' },
     { href: '/selecciones', label: 'Selecciones', icon: Users, description: '48 equipos' },
     { href: '/estadios', label: 'Estadios', icon: MapPin, description: '16 sedes' },
