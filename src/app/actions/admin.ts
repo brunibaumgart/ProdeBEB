@@ -15,6 +15,8 @@ import {
 } from '@/lib/scoring/scorers-engine'
 import { adjustScorersToCount, validateScorerCounts, isOwnGoalSentinel } from '@/lib/scoring/scorers'
 import { sendKickoffPushForMatch } from '@/lib/push/kickoff'
+import { diffGoalEvents, matchGoalsToScorerIds } from '@/lib/push/goal-events'
+import { sendGoalPushForMatchId } from '@/lib/push/goal'
 import {
   advanceKnockoutTeams,
   recalculateMatchdayPointsForMatch,
@@ -95,7 +97,28 @@ export async function setMatchResult(
     },
   })
 
+  const previousScorers = await getExistingMatchGoalScorers(matchId)
+  const wasLive = match.status === 'live'
+
   await saveMatchGoals(matchId, homeScorerIds, awayScorerIds)
+
+  if (!match.isTest && wasLive) {
+    await notifyNewGoalsIfNeeded(
+      matchId,
+      {
+        homeScore: match.homeScore ?? 0,
+        awayScore: match.awayScore ?? 0,
+        homeScorerIds: previousScorers.homeScorerIds,
+        awayScorerIds: previousScorers.awayScorerIds,
+      },
+      {
+        homeScore,
+        awayScore,
+        homeScorerIds,
+        awayScorerIds,
+      },
+    )
+  }
 
   const predictions = await prisma.prediction.findMany({
     where: { matchId },
@@ -181,6 +204,8 @@ export async function updateMatchLiveScore(
     }
   }
 
+  const previousScorers = await getExistingMatchGoalScorers(matchId)
+
   await prisma.match.update({
     where: { id: matchId },
     data: {
@@ -192,6 +217,24 @@ export async function updateMatchLiveScore(
 
   if (homeScore + awayScore > 0) {
     await saveMatchGoals(matchId, homeScorerIds, awayScorerIds)
+  }
+
+  if (!match.isTest) {
+    await notifyNewGoalsIfNeeded(
+      matchId,
+      {
+        homeScore: match.homeScore ?? 0,
+        awayScore: match.awayScore ?? 0,
+        homeScorerIds: previousScorers.homeScorerIds,
+        awayScorerIds: previousScorers.awayScorerIds,
+      },
+      {
+        homeScore,
+        awayScore,
+        homeScorerIds,
+        awayScorerIds,
+      },
+    )
   }
 
   revalidateAdminMatchPaths()
@@ -210,6 +253,51 @@ function revalidateAdminMatchPaths() {
   revalidatePath('/prode/completo')
   revalidatePath('/admin')
   revalidatePath('/torneos', 'layout')
+}
+
+async function notifyNewGoalsIfNeeded(
+  matchId: number,
+  previous: {
+    homeScore: number
+    awayScore: number
+    homeScorerIds: string[]
+    awayScorerIds: string[]
+  },
+  next: {
+    homeScore: number
+    awayScore: number
+    homeScorerIds: string[]
+    awayScorerIds: string[]
+  },
+) {
+  const events = diffGoalEvents({
+    previousHomeScore: previous.homeScore,
+    previousAwayScore: previous.awayScore,
+    previousHomeScorers: previous.homeScorerIds,
+    previousAwayScorers: previous.awayScorerIds,
+    nextHomeScore: next.homeScore,
+    nextAwayScore: next.awayScore,
+    nextHomeScorers: next.homeScorerIds,
+    nextAwayScorers: next.awayScorerIds,
+  })
+
+  if (events.length === 0) return
+
+  try {
+    await sendGoalPushForMatchId(matchId, events, next.homeScore, next.awayScore)
+  } catch (error) {
+    console.error('Goal push failed', { matchId, events, error })
+  }
+}
+
+async function getExistingMatchGoalScorers(matchId: number) {
+  const goals = await prisma.matchGoal.findMany({
+    where: { matchId },
+    orderBy: [{ isHome: 'desc' }, { id: 'asc' }],
+    select: { isHome: true, playerId: true, isOwnGoal: true },
+  })
+
+  return matchGoalsToScorerIds(goals)
 }
 
 export async function notifyMatchStarted(matchId: number): Promise<SetMatchResultResponse> {

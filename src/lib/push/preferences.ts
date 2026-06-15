@@ -37,7 +37,7 @@ export function describePushPreferences(preferences: PushPreferences): string {
 
   return [
     preferences.pushRemindersEnabled && 'Recordatorio 11:00',
-    preferences.pushKickoffEnabled && 'Arranque de partidos',
+    preferences.pushKickoffEnabled && 'Arranque y goles en vivo',
     preferences.pushSurpriseEnabled && 'Sorpresas',
   ]
     .filter(Boolean)

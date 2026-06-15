@@ -78,8 +78,8 @@ export function PushPreferenceFields({
       />
       <PreferenceOption
         id="push-pref-kickoff"
-        label="Arranque de partidos"
-        description="Te avisamos cuando empieza un partido del mundial."
+        label="Arranque y goles en vivo"
+        description="Te avisamos cuando arranca un partido y cada vez que confirmamos un gol."
         checked={values.kickoff}
         disabled={disabled}
         compact={compact}
