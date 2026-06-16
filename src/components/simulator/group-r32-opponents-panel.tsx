@@ -67,30 +67,34 @@ export function GroupR32OpponentsPanel({
 
                 <div className="mt-2 text-xs">
                   {hasOpponent ? (
-                    <div className="flex flex-wrap items-center gap-1.5 text-foreground">
-                      <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
-                        {projection.matchLabel}
-                      </span>
-                      {projection.provisional && (
-                        <span className="rounded bg-brand-gold/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-brand-gold">
-                          Prov.
+                    <div className="flex flex-col gap-1.5 text-foreground sm:flex-row sm:flex-wrap sm:items-center">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="rounded bg-primary/10 px-1.5 py-0.5 font-medium text-primary">
+                          {projection.matchLabel}
                         </span>
-                      )}
-                      <span className="text-muted-foreground">
-                        {projection.isHome ? 'Local vs' : 'Visitante vs'}
-                      </span>
-                      {projection.opponentTeam ? (
-                        <span className="inline-flex items-center gap-1 font-medium">
-                          <FlagIcon
-                            iso2={projection.opponentTeam.iso2}
-                            flagEmoji={projection.opponentTeam.flagEmoji}
-                            size="sm"
-                          />
-                          {projection.opponentDisplay}
+                        {projection.provisional && (
+                          <span className="rounded bg-brand-gold/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-brand-gold">
+                            Prov.
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                        <span className="text-muted-foreground">
+                          {projection.isHome ? 'Local vs' : 'Visitante vs'}
                         </span>
-                      ) : (
-                        <span className="font-medium">{projection.opponentDisplay}</span>
-                      )}
+                        {projection.opponentTeam ? (
+                          <span className="inline-flex min-w-0 items-center gap-1 font-medium">
+                            <FlagIcon
+                              iso2={projection.opponentTeam.iso2}
+                              flagEmoji={projection.opponentTeam.flagEmoji}
+                              size="sm"
+                            />
+                            <span className="truncate">{projection.opponentDisplay}</span>
+                          </span>
+                        ) : (
+                          <span className="font-medium break-words">{projection.opponentDisplay}</span>
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <p

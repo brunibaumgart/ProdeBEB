@@ -28,6 +28,31 @@ export function isSimulatorMatchFinished(match: Pick<SimulatorMatchRef, 'status'
   return match.status === 'finished' && match.homeScore != null && match.awayScore != null
 }
 
+export type GroupMatchNavRef = Pick<
+  SimulatorMatchRef,
+  'id' | 'status' | 'homeScore' | 'awayScore'
+> & {
+  date?: string | Date | null
+}
+
+/** Índice del próximo partido real pendiente; si todos terminaron, el último del grupo. */
+export function findNextGroupMatchIndex(matches: GroupMatchNavRef[]): number {
+  if (matches.length === 0) return 0
+
+  const ordered = [...matches].sort((a, b) => {
+    const timeA = a.date ? new Date(a.date).getTime() : a.id
+    const timeB = b.date ? new Date(b.date).getTime() : b.id
+    if (timeA !== timeB) return timeA - timeB
+    return a.id - b.id
+  })
+
+  const nextMatch = ordered.find((match) => !isSimulatorMatchFinished(match))
+  if (!nextMatch) return matches.length - 1
+
+  const index = matches.findIndex((match) => match.id === nextMatch.id)
+  return index >= 0 ? index : 0
+}
+
 export function buildSimulatorBasePredictions(
   matches: SimulatorMatchRef[],
 ): Record<number, BracketSlotPrediction> {

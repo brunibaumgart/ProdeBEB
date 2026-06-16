@@ -1,13 +1,21 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { RotateCcw, Sparkles, Trophy } from 'lucide-react'
+import { RotateCcw, Target, Trophy } from 'lucide-react'
 
 import { KnockoutBracketView } from '@/components/prode/knockout-bracket-view'
 import { ClassificationScenariosPanel } from '@/components/simulator/classification-scenarios-panel'
+import { SimulatorGroupMatchesNavigator } from '@/components/simulator/simulator-group-matches-navigator'
 import { GroupR32OpponentsPanel } from '@/components/simulator/group-r32-opponents-panel'
 import { SimulatorMatchRow } from '@/components/simulator/simulator-match-row'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { FlagIcon } from '@/components/ui-mundial/flag-icon'
 import { GroupTable } from '@/components/ui-mundial/group-table'
 import { getDownstreamKnockoutMatchIds } from '@/lib/bracket/knockout-bracket-layout'
@@ -20,6 +28,7 @@ import {
   clearSimulatorOverrides,
   getSimulatorBestThirds,
   getSimulatorGroupProgress,
+  findNextGroupMatchIndex,
   loadSimulatorOverrides,
   pruneSimulatorOverrides,
   resolveGroupStandingsHybrid,
@@ -47,6 +56,7 @@ type SerializableMatch = {
   id: number
   round: string
   matchday: number | null
+  date: string
   group: string | null
   status: string
   homeScore: number | null
@@ -147,6 +157,8 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
   )
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [selectedGroup, setSelectedGroup] = useState('A')
+  const [matchIndex, setMatchIndex] = useState(0)
+  const [scenariosModalOpen, setScenariosModalOpen] = useState(false)
 
   const effectiveOverrides = useMemo(
     () => pruneSimulatorOverrides(overrides, pendingMatchIds),
@@ -156,6 +168,10 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
   useEffect(() => {
     saveSimulatorOverrides(effectiveOverrides)
   }, [effectiveOverrides])
+
+  useEffect(() => {
+    setScenariosModalOpen(false)
+  }, [selectedGroup])
 
   const predictions = useMemo(
     () => buildEffectiveSimulatorPredictions(basePredictions, effectiveOverrides),
@@ -239,6 +255,184 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
     [selectedGroup, selectedGroupStandings, groupStandings, groupProgress.done, groupProgress.total],
   )
 
+  const selectedGroupMatchesBase = useMemo(
+    () =>
+      groupMatches
+        .filter((match) => match.group === selectedGroup && match.homeTeam && match.awayTeam)
+        .sort((a, b) => {
+          const timeA = new Date(a.date).getTime()
+          const timeB = new Date(b.date).getTime()
+          if (timeA !== timeB) return timeA - timeB
+          return a.id - b.id
+        })
+        .map((match) => ({
+          id: match.id,
+          status: match.status,
+          date: match.date,
+          homeScore: match.homeScore,
+          awayScore: match.awayScore,
+          home: {
+            name: match.homeTeam!.nameEs,
+            iso2: match.homeTeam!.iso2,
+            flagEmoji: match.homeTeam!.flagEmoji,
+          },
+          away: {
+            name: match.awayTeam!.nameEs,
+            iso2: match.awayTeam!.iso2,
+            flagEmoji: match.awayTeam!.flagEmoji,
+          },
+        })),
+    [groupMatches, selectedGroup],
+  )
+
+  const selectedGroupMatchItems = useMemo(
+    () =>
+      selectedGroupMatchesBase.map((match) => ({
+        ...match,
+        prediction: predictions[match.id],
+      })),
+    [selectedGroupMatchesBase, predictions],
+  )
+
+  useEffect(() => {
+    setMatchIndex(findNextGroupMatchIndex(selectedGroupMatchesBase))
+  }, [selectedGroup, selectedGroupMatchesBase])
+
+  function renderGroupPicker(compact: boolean) {
+    return (
+      <div
+        className={cn(
+          compact
+            ? 'grid grid-cols-4 gap-1.5 sm:grid-cols-6'
+            : 'grid grid-cols-3 gap-2 sm:grid-cols-4 xl:grid-cols-6',
+        )}
+        role="tablist"
+        aria-label="Seleccionar grupo"
+      >
+        {GROUPS.map((group) => {
+          const standings = groupStandings.get(group) ?? []
+          const leader = standings[0]
+          const isSelected = selectedGroup === group
+          const groupIds = groupMatchRefs.filter((match) => match.group === group).map((match) => match.id)
+          const done = groupIds.filter((id) => predictions[id] != null).length
+          const complete = done === groupIds.length && done > 0
+
+          if (compact) {
+            return (
+              <Button
+                key={group}
+                type="button"
+                variant="outline"
+                role="tab"
+                aria-selected={isSelected}
+                onClick={() => setSelectedGroup(group)}
+                className={cn(
+                  'h-9 w-full rounded-lg px-0 font-heading text-sm tracking-wide',
+                  isSelected && 'border-primary bg-primary/15 text-primary',
+                  complete && !isSelected && 'border-brand-green/30',
+                )}
+              >
+                {group}
+              </Button>
+            )
+          }
+
+          return (
+            <Button
+              key={group}
+              type="button"
+              variant="outline"
+              role="tab"
+              aria-selected={isSelected}
+              onClick={() => setSelectedGroup(group)}
+              className={cn(
+                'h-auto w-full min-w-0 flex-col items-stretch rounded-xl p-2.5 text-left sm:p-3',
+                isSelected && 'border-primary bg-primary/10',
+                complete && 'border-brand-green/30',
+              )}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-heading text-sm tracking-wide text-primary">GRUPO {group}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {done}/{groupIds.length}
+                </span>
+              </div>
+              {leader?.team ? (
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <FlagIcon iso2={leader.team.iso2} flagEmoji={leader.team.flagEmoji} size="sm" />
+                  <span className="min-w-0 truncate text-xs font-medium sm:text-sm">
+                    {leader.team.nameEs}
+                  </span>
+                  <span className="ml-auto shrink-0 text-[10px] text-muted-foreground sm:text-xs">
+                    {leader.points} pts
+                  </span>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">Sin datos aún</p>
+              )}
+            </Button>
+          )
+        })}
+      </div>
+    )
+  }
+
+  function renderClassificationPanel(
+    embedded = false,
+    options?: { showHeader?: boolean; modal?: boolean },
+  ) {
+    return (
+      <ClassificationScenariosPanel
+        key={selectedGroup}
+        embedded={embedded}
+        showHeader={options?.showHeader ?? true}
+        modal={options?.modal ?? false}
+        group={selectedGroup}
+        teams={selectedGroupTeams}
+        standings={selectedGroupStandings}
+        allTeams={teams}
+        groupMatchRefs={selectedGroupMatchRefs}
+        allGroupMatchRefs={groupMatchRefs}
+        baseOverrides={effectiveOverrides}
+        onApplyScenario={handleApplyClassificationScenario}
+      />
+    )
+  }
+
+  function renderGroupSidePanels(showR32Panel = true) {
+    return (
+      <>
+        {showR32Panel && (
+          <GroupR32OpponentsPanel
+            group={selectedGroup}
+            standings={selectedGroupStandings}
+            projections={selectedGroupR32}
+            allGroupsComplete={groupProgress.done === groupProgress.total}
+          />
+        )}
+        {renderClassificationPanel()}
+      </>
+    )
+  }
+
+  function renderDesktopMatchList() {
+    return selectedGroupMatchItems.map((match) => (
+      <SimulatorMatchRow
+        key={match.id}
+        matchId={match.id}
+        status={match.status}
+        homeScore={match.homeScore}
+        awayScore={match.awayScore}
+        home={match.home}
+        away={match.away}
+        simulatedHome={match.prediction?.predHome ?? null}
+        simulatedAway={match.prediction?.predAway ?? null}
+        onOutcomeChange={handleGroupOutcomeChange}
+        onScoreChange={handleGroupScoreChange}
+      />
+    ))
+  }
+
   function applyGroupOverride(matchId: number, prediction: BracketSlotPrediction | null) {
     setOverrides((prev) => {
       const next = { ...prev }
@@ -296,6 +490,8 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
 
       return next
     })
+
+    setScenariosModalOpen(false)
   }
 
   function handleKnockoutPredictionSaved(matchId: number, prediction: BracketSlotPrediction) {
@@ -317,20 +513,16 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl border border-brand-gold/25 bg-gradient-to-br from-brand-gold/10 via-card to-primary/5 p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="mb-1 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-brand-gold">
-              <Sparkles className="size-3.5" aria-hidden />
-              Escenario hipotético
-            </p>
+    <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
+      <div className="hidden rounded-2xl border border-brand-gold/25 bg-gradient-to-br from-brand-gold/10 via-card to-primary/5 p-4 sm:p-5 lg:block">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <p className="max-w-2xl text-sm text-muted-foreground">
               Los partidos finalizados quedan bloqueados con el resultado real. Editá los pendientes
               y mirá cómo cambian las tablas, los mejores terceros y la llave.
             </p>
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={handleReset}>
+          <Button type="button" variant="outline" size="sm" onClick={handleReset} className="w-full sm:w-auto">
             <RotateCcw data-icon="inline-start" aria-hidden />
             Limpiar simulaciones
           </Button>
@@ -343,7 +535,10 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
         </div>
       </div>
 
-      <nav className="flex flex-wrap gap-2">
+      <nav
+        className="-mx-1 flex gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1"
+        aria-label="Pasos del simulador"
+      >
         {STEPS.map((entry) => (
           <Button
             key={entry.id}
@@ -351,16 +546,16 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
             variant="outline"
             onClick={() => setStep(entry.id)}
             className={cn(
-              'h-auto gap-2 rounded-full px-4 py-2',
+              'h-auto shrink-0 gap-1.5 rounded-full px-3 py-2 text-xs sm:gap-2 sm:px-4 sm:text-sm',
               step === entry.id
                 ? 'border-primary bg-primary/15 text-primary'
                 : 'text-muted-foreground',
             )}
           >
-            <span className="flex size-5 items-center justify-center rounded-full bg-muted text-xs">
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-xs">
               {entry.id}
             </span>
-            {entry.label}
+            <span className="whitespace-nowrap">{entry.label}</span>
             {entry.id === 1 && (
               <span className="text-xs opacity-70">
                 {groupProgress.done}/{groupProgress.total}
@@ -377,52 +572,112 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
 
       {step === 1 && (
         <div className="space-y-6">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {GROUPS.map((group) => {
-              const standings = groupStandings.get(group) ?? []
-              const leader = standings[0]
-              const isSelected = selectedGroup === group
-              const groupIds = groupMatchRefs.filter((match) => match.group === group).map((match) => match.id)
-              const done = groupIds.filter((id) => predictions[id] != null).length
+          {/* Móvil: grupo, partidos abajo y escenarios en modal */}
+          <div className="space-y-3 lg:hidden">
+            {renderGroupPicker(true)}
 
-              return (
-                <Button
-                  key={group}
-                  type="button"
-                  variant="outline"
-                  onClick={() => setSelectedGroup(group)}
-                  className={cn(
-                    'h-auto w-full flex-col items-stretch rounded-xl p-3 text-left',
-                    isSelected && 'border-primary bg-primary/10',
-                    done === groupIds.length && done > 0 && 'border-brand-green/30',
-                  )}
-                >
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="font-heading text-sm tracking-wide text-primary">GRUPO {group}</span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {done}/{groupIds.length}
-                    </span>
-                  </div>
-                  {leader?.team ? (
-                    <div className="flex items-center gap-2">
-                      <FlagIcon
-                        iso2={leader.team.iso2}
-                        flagEmoji={leader.team.flagEmoji}
-                        size="sm"
-                      />
-                      <span className="truncate text-sm font-medium">{leader.team.nameEs}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">{leader.points} pts</span>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">Sin datos aún</p>
-                  )}
-                </Button>
-              )
-            })}
+            <div className="overflow-hidden rounded-xl border border-border bg-card">
+              <GroupTable
+                group={selectedGroup}
+                standings={selectedGroupStandings}
+                compact
+                embedded
+                r32Projections={selectedGroupR32}
+                headerAction={
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 shrink-0 gap-1.5 border border-primary/25 bg-primary/10 px-2.5 text-[11px] font-semibold leading-tight text-primary hover:bg-primary/15"
+                    onClick={() => setScenariosModalOpen(true)}
+                  >
+                    <Target className="size-3.5 shrink-0" aria-hidden />
+                    <span>¿Qué tiene que pasar?</span>
+                  </Button>
+                }
+              />
+            </div>
+
+            <SimulatorGroupMatchesNavigator
+              group={selectedGroup}
+              matches={selectedGroupMatchItems}
+              matchIndex={matchIndex}
+              onMatchIndexChange={setMatchIndex}
+              onOutcomeChange={handleGroupOutcomeChange}
+              onScoreChange={handleGroupScoreChange}
+            />
+
+            <Dialog open={scenariosModalOpen} onOpenChange={setScenariosModalOpen}>
+              <DialogContent className="max-h-[min(90vh,48rem)] overflow-y-auto sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="inline-flex items-center gap-2">
+                    <Target className="size-4" aria-hidden />
+                    ¿Qué tiene que pasar?
+                  </DialogTitle>
+                  <DialogDescription>
+                    Buscá escenarios en los partidos pendientes (V/E/L). Desempates con criterio
+                    olímpico.
+                  </DialogDescription>
+                </DialogHeader>
+                {renderClassificationPanel(false, { showHeader: false, modal: true })}
+              </DialogContent>
+            </Dialog>
           </div>
 
+          {/* Desktop */}
+          <div className="hidden space-y-6 lg:block">
+            {renderGroupPicker(false)}
+
+            {bestThirds.length > 0 && (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <h3 className="mb-3 font-heading text-sm tracking-wide text-primary">
+                  MEJORES TERCEROS CLASIFICADOS
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {bestThirds.map((standing) => (
+                    <span
+                      key={standing.teamName}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/30 px-3 py-1 text-xs font-medium"
+                    >
+                      {standing.team ? (
+                        <FlagIcon
+                          iso2={standing.team.iso2}
+                          flagEmoji={standing.team.flagEmoji}
+                          size="sm"
+                        />
+                      ) : null}
+                      {standing.team?.nameEs ?? standing.teamName}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {groupProgress.done < groupProgress.total && (
+              <p className="rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+                Completá los partidos pendientes para ver los mejores terceros y desbloquear la llave
+                completa.
+              </p>
+            )}
+
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+              <div className="min-w-0 space-y-4">
+                <GroupTable group={selectedGroup} standings={selectedGroupStandings} compact />
+                {renderGroupSidePanels()}
+              </div>
+
+              <div className="min-w-0 space-y-2">
+                <h3 className="font-heading text-sm tracking-wide text-primary">
+                  PARTIDOS · GRUPO {selectedGroup}
+                </h3>
+                {renderDesktopMatchList()}
+              </div>
+            </div>
+          </div>
+
+          {/* Mejores terceros en móvil (debajo del flujo principal) */}
           {bestThirds.length > 0 && (
-            <div className="rounded-xl border border-border bg-card p-4">
+            <div className="rounded-xl border border-border bg-card p-4 lg:hidden">
               <h3 className="mb-3 font-heading text-sm tracking-wide text-primary">
                 MEJORES TERCEROS CLASIFICADOS
               </h3>
@@ -447,68 +702,14 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
           )}
 
           {groupProgress.done < groupProgress.total && (
-            <p className="rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+            <p className="rounded-lg border border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground lg:hidden">
               Completá los partidos pendientes para ver los mejores terceros y desbloquear la llave
               completa.
             </p>
           )}
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="space-y-4">
-              <GroupTable group={selectedGroup} standings={selectedGroupStandings} compact />
-              <GroupR32OpponentsPanel
-                group={selectedGroup}
-                standings={selectedGroupStandings}
-                projections={selectedGroupR32}
-                allGroupsComplete={groupProgress.done === groupProgress.total}
-              />
-              <ClassificationScenariosPanel
-                key={selectedGroup}
-                group={selectedGroup}
-                teams={selectedGroupTeams}
-                standings={selectedGroupStandings}
-                allTeams={teams}
-                groupMatchRefs={selectedGroupMatchRefs}
-                allGroupMatchRefs={groupMatchRefs}
-                baseOverrides={effectiveOverrides}
-                onApplyScenario={handleApplyClassificationScenario}
-              />
-            </div>
-
-            <div className="space-y-2">
-              {groupMatches
-                .filter((match) => match.group === selectedGroup)
-                .map((match) => {
-                  const prediction = predictions[match.id]
-                  return (
-                    <SimulatorMatchRow
-                      key={match.id}
-                      matchId={match.id}
-                      status={match.status}
-                      homeScore={match.homeScore}
-                      awayScore={match.awayScore}
-                      home={{
-                        name: match.homeTeam!.nameEs,
-                        iso2: match.homeTeam!.iso2,
-                        flagEmoji: match.homeTeam!.flagEmoji,
-                      }}
-                      away={{
-                        name: match.awayTeam!.nameEs,
-                        iso2: match.awayTeam!.iso2,
-                        flagEmoji: match.awayTeam!.flagEmoji,
-                      }}
-                      simulatedHome={prediction?.predHome ?? null}
-                      simulatedAway={prediction?.predAway ?? null}
-                      onOutcomeChange={handleGroupOutcomeChange}
-                      onScoreChange={handleGroupScoreChange}
-                    />
-                  )
-                })}
-            </div>
-          </div>
-
           <div className="flex justify-end">
-            <Button type="button" onClick={() => setStep(2)}>
+            <Button type="button" onClick={() => setStep(2)} className="w-full sm:w-auto">
               Ver eliminatorias
             </Button>
           </div>
@@ -516,7 +717,7 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
       )}
 
       {step === 2 && (
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <KnockoutBracketView
             teams={teams}
             resolvedKnockout={resolvedKnockout}
@@ -528,11 +729,11 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
             onPredictionSaved={handleKnockoutPredictionSaved}
           />
 
-          <div className="flex justify-between">
-            <Button type="button" variant="outline" onClick={() => setStep(1)}>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+            <Button type="button" variant="outline" onClick={() => setStep(1)} className="w-full sm:w-auto">
               Volver a grupos
             </Button>
-            <Button type="button" onClick={() => setStep(3)}>
+            <Button type="button" onClick={() => setStep(3)} className="w-full sm:w-auto">
               Ver proyección
             </Button>
           </div>

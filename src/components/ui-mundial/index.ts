@@ -1,6 +1,6 @@
 export { CountdownTimer } from './countdown-timer'
 export { FlagIcon } from './flag-icon'
-export { GroupTable } from './group-table'
+export { GroupTable, R32CompactBadge } from './group-table'
 export { MatchCard } from './match-card'
 export { PositionBadge } from './position-badge'
 export { PredictionLock } from './prediction-lock'

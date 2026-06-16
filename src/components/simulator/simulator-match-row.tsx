@@ -48,7 +48,7 @@ function OutcomeButton({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'h-auto w-full justify-center px-3 py-2.5 text-sm font-medium',
+        'h-auto w-full justify-center px-2 py-2.5 text-xs font-medium sm:px-3 sm:text-sm',
         active
           ? 'border-primary bg-primary/15 text-primary hover:bg-primary/20'
           : 'text-muted-foreground hover:text-foreground',
@@ -89,7 +89,7 @@ function ScoreInput({
           if (Number.isNaN(parsed)) return
           onChange(Math.max(0, Math.min(15, parsed)))
         }}
-        className="h-11 text-center text-lg font-semibold tabular-nums"
+        className="h-11 text-center text-base font-semibold tabular-nums md:text-lg"
       />
     </label>
   )
@@ -167,44 +167,58 @@ export function SimulatorMatchRow({
         className,
       )}
     >
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2 text-sm font-medium">
-          {home.iso2 ? <FlagIcon iso2={home.iso2} flagEmoji={home.flagEmoji} size="sm" /> : null}
-          <span className="truncate">{home.name}</span>
+      <div className="mb-3 space-y-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1.5 text-sm font-medium">
+            {home.iso2 ? (
+              <FlagIcon iso2={home.iso2} flagEmoji={home.flagEmoji} size="sm" className="shrink-0" />
+            ) : null}
+            <span className="truncate">{home.name}</span>
+          </div>
+
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            M{matchId}
+          </span>
+
+          <div className="flex min-w-0 items-center justify-end gap-1.5 text-sm font-medium">
+            <span className="truncate text-right">{away.name}</span>
+            {away.iso2 ? (
+              <FlagIcon iso2={away.iso2} flagEmoji={away.flagEmoji} size="sm" className="shrink-0" />
+            ) : null}
+          </div>
         </div>
 
         {locked ? (
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-green/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-green">
-            <Lock className="size-3" aria-hidden />
-            Final
-          </span>
+          <div className="flex justify-center">
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-green/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-green">
+              <Lock className="size-3" aria-hidden />
+              Final
+            </span>
+          </div>
         ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size="xs"
-            onClick={handleModeToggle}
-            className="shrink-0 rounded-full px-2.5"
-            title={inputMode === 'outcome' ? 'Usar marcador exacto' : 'Usar victoria / empate'}
-          >
-            {inputMode === 'outcome' ? (
-              <>
-                <Hash aria-hidden />
-                Exacto
-              </>
-            ) : (
-              <>
-                <ListOrdered aria-hidden />
-                V/E/L
-              </>
-            )}
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              onClick={handleModeToggle}
+              className="rounded-full px-2.5"
+              title={inputMode === 'outcome' ? 'Usar marcador exacto' : 'Usar victoria / empate'}
+            >
+              {inputMode === 'outcome' ? (
+                <>
+                  <Hash aria-hidden />
+                  Exacto
+                </>
+              ) : (
+                <>
+                  <ListOrdered aria-hidden />
+                  V/E/L
+                </>
+              )}
+            </Button>
+          </div>
         )}
-
-        <div className="flex min-w-0 items-center justify-end gap-2 text-sm font-medium">
-          <span className="truncate text-right">{away.name}</span>
-          {away.iso2 ? <FlagIcon iso2={away.iso2} flagEmoji={away.flagEmoji} size="sm" /> : null}
-        </div>
       </div>
 
       {locked && lockedOutcome ? (
@@ -242,12 +256,13 @@ export function SimulatorMatchRow({
           )}
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="grid gap-2 sm:grid-cols-3">
           <OutcomeButton
             active={activeOutcome === 'home_win'}
             onClick={() => handleSelect('home_win')}
           >
-            Victoria {home.name}
+            <span className="sm:hidden">Gana local</span>
+            <span className="hidden sm:inline">Victoria {home.name}</span>
           </OutcomeButton>
           <OutcomeButton active={activeOutcome === 'draw'} onClick={() => handleSelect('draw')}>
             Empate
@@ -256,7 +271,8 @@ export function SimulatorMatchRow({
             active={activeOutcome === 'away_win'}
             onClick={() => handleSelect('away_win')}
           >
-            Victoria {away.name}
+            <span className="sm:hidden">Gana visita</span>
+            <span className="hidden sm:inline">Victoria {away.name}</span>
           </OutcomeButton>
         </div>
       )}

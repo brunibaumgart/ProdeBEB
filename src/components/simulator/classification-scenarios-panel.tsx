@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { FieldSelect } from '@/components/ui/select'
+import { ClassificationScenarioCard } from '@/components/simulator/classification-scenario-card'
 import { FlagIcon } from '@/components/ui-mundial/flag-icon'
 import {
   canUseBestThirdScenario,
@@ -40,6 +41,9 @@ interface ClassificationScenariosPanelProps {
   allGroupMatchRefs: SimulatorGroupMatchRef[]
   baseOverrides: Record<number, BracketSlotPrediction>
   onApplyScenario: (scenario: ClassificationScenario) => void
+  embedded?: boolean
+  showHeader?: boolean
+  modal?: boolean
   className?: string
 }
 
@@ -132,6 +136,9 @@ export function ClassificationScenariosPanel({
   allGroupMatchRefs,
   baseOverrides,
   onApplyScenario,
+  embedded = false,
+  showHeader = true,
+  modal = false,
   className,
 }: ClassificationScenariosPanelProps) {
   const [primary, setPrimary] = useState<ConstraintDraft>(() =>
@@ -198,27 +205,8 @@ export function ClassificationScenariosPanel({
     setAppliedScenarioId(scenario.id)
   }
 
-  return (
-    <div className={cn('overflow-hidden rounded-xl border border-border bg-card', className)}>
-      <div className="border-b border-border bg-muted/40 px-4 py-3">
-        <h3 className="inline-flex items-center gap-2 font-heading text-sm tracking-wide text-primary">
-          <Target className="size-4" aria-hidden />
-          ¿QUÉ TIENE QUE PASAR?
-        </h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Buscá escenarios en los partidos pendientes (victoria / empate / derrota). Desempates con
-          criterio olímpico. Para 8 mejores terceros, compara contra resultados reales de los otros
-          grupos (disponible desde la fecha 2).
-        </p>
-        {!bestThirdAvailable && (
-          <p className="mt-2 text-xs text-muted-foreground">
-            La opción de mejores terceros se habilita cuando terminen todos los partidos de la fecha
-            2.
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-4 px-4 py-4">
+  const panelContent = (
+      <div className={cn('space-y-4', modal ? '' : cn('px-4', embedded ? 'py-3' : 'py-4'))}>
         <ConstraintRow
           label="Objetivo principal"
           teams={teams}
@@ -303,57 +291,62 @@ export function ClassificationScenariosPanel({
 
         {result?.ok && (
           <div className="space-y-3">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               {result.scenarios.length} escenario{result.scenarios.length === 1 ? '' : 's'} ·{' '}
               {result.pendingCount} partido{result.pendingCount === 1 ? '' : 's'} pendiente
-              {result.pendingCount === 1 ? '' : 's'} · {result.explored} combinaciones revisadas
+              {result.pendingCount === 1 ? '' : 's'}
+              <span className="hidden sm:inline">
+                {' '}
+                · {result.explored} combinaciones revisadas
+              </span>
             </p>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {result.scenarios.map((scenario, index) => {
                 const isApplied = appliedScenarioId === scenario.id
                 return (
                   <div
                     key={scenario.id}
                     className={cn(
-                      'rounded-lg border p-3 transition-colors',
+                      'overflow-hidden rounded-xl border transition-colors',
                       isApplied
-                        ? 'border-brand-green/40 bg-brand-green/5'
-                        : 'border-border/70 bg-muted/10',
+                        ? 'border-brand-green/30 bg-card'
+                        : 'border-border/60 bg-card',
                     )}
                   >
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <ClassificationScenarioCard
+                      group={group}
+                      teams={teams}
+                      groupMatchRefs={groupMatchRefs}
+                      scenario={scenario}
+                      className="p-3 pb-2"
+                    />
+
+                    <div className="flex items-center justify-between gap-3 border-t border-border/50 bg-muted/10 px-3 py-2.5">
+                      <span className="text-[11px] text-muted-foreground">
                         Escenario {index + 1}
                         {isApplied ? (
-                          <span className="ml-2 inline-flex items-center gap-1 normal-case text-brand-green">
+                          <span className="ml-1.5 inline-flex items-center gap-1 text-brand-green">
                             <Check className="size-3" aria-hidden />
-                            Aplicado
+                            aplicado
                           </span>
                         ) : null}
                       </span>
                       <Button
                         type="button"
                         size="sm"
+                        variant={isApplied ? 'outline' : 'default'}
                         onClick={() => handleApply(scenario)}
                         disabled={scenario.picks.length === 0}
                         className={cn(
-                          isApplied
-                            ? 'bg-brand-green/80 text-white hover:bg-brand-green/80'
-                            : 'bg-brand-green text-white hover:bg-brand-green/90',
+                          'h-8 shrink-0 px-3 text-xs',
+                          !isApplied && 'bg-brand-green text-white hover:bg-brand-green/90',
+                          isApplied && 'border-brand-green/40 text-brand-green',
                         )}
                       >
-                        {isApplied ? 'Reaplicar' : 'Aplicar al simulador'}
+                        {isApplied ? 'Reaplicar' : 'Aplicar'}
                       </Button>
                     </div>
-
-                    <ul className="space-y-1 text-xs text-foreground">
-                      {scenario.lines.map((line, lineIndex) => (
-                        <li key={`${scenario.id}-${lineIndex}`} className="leading-relaxed">
-                          · {line}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 )
               })}
@@ -361,6 +354,47 @@ export function ClassificationScenariosPanel({
           </div>
         )}
       </div>
+  )
+
+  if (modal) {
+    return <div className={className}>{panelContent}</div>
+  }
+
+  return (
+    <div
+      className={cn(
+        embedded
+          ? 'border-t border-border bg-muted/15'
+          : 'overflow-hidden rounded-xl border border-border bg-card',
+        className,
+      )}
+    >
+      {showHeader && (
+        <div
+          className={cn(
+            'border-border bg-muted/40 px-4',
+            embedded ? 'border-b py-2.5' : 'border-b py-3',
+          )}
+        >
+          <h3 className="inline-flex items-center gap-2 font-heading text-sm tracking-wide text-primary">
+            <Target className="size-4" aria-hidden />
+            ¿QUÉ TIENE QUE PASAR?
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {embedded
+              ? 'Buscá escenarios en los partidos pendientes (V/E/L).'
+              : 'Buscá escenarios en los partidos pendientes (victoria / empate / derrota). Desempates con criterio olímpico. Para 8 mejores terceros, compara contra resultados reales de los otros grupos (disponible desde la fecha 2).'}
+          </p>
+          {!bestThirdAvailable && !embedded && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              La opción de mejores terceros se habilita cuando terminen todos los partidos de la
+              fecha 2.
+            </p>
+          )}
+        </div>
+      )}
+
+      {panelContent}
     </div>
   )
 }

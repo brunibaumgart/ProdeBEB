@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { Show, SignInButton } from '@clerk/nextjs'
 import { ShieldCheck } from 'lucide-react'
 
-import { UserAvatarLink } from '@/components/layout/user-avatar-link'
 import { cn } from '@/lib/utils'
 
 const publicLinks = [
@@ -16,21 +15,36 @@ const publicLinks = [
 interface SiteHeaderProps {
   pathname?: string
   isAdmin?: boolean
-  prodeName?: string | null
 }
 
-export function SiteHeader({ pathname = '/', isAdmin = false, prodeName }: SiteHeaderProps) {
+export function SiteHeader({ pathname = '/', isAdmin = false }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary font-heading text-lg text-primary-foreground">
-            P
-          </span>
-          <span className="hidden font-heading text-xl tracking-wide text-foreground sm:inline">
-            PRODEBEB
-          </span>
-        </Link>
+        <Show when="signed-in">
+          <Link
+            href="/perfil"
+            aria-label="Ir a mi perfil"
+            className="flex shrink-0 items-center gap-2"
+          >
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary font-heading text-lg text-primary-foreground">
+              P
+            </span>
+            <span className="hidden font-heading text-xl tracking-wide text-foreground sm:inline">
+              PRODEBEB
+            </span>
+          </Link>
+        </Show>
+        <Show when="signed-out">
+          <Link href="/" className="flex shrink-0 items-center gap-2">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary font-heading text-lg text-primary-foreground">
+              P
+            </span>
+            <span className="hidden font-heading text-xl tracking-wide text-foreground sm:inline">
+              PRODEBEB
+            </span>
+          </Link>
+        </Show>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Navegación desktop">
           {publicLinks.map(({ href, label }) => {
@@ -112,9 +126,6 @@ export function SiteHeader({ pathname = '/', isAdmin = false, prodeName }: SiteH
                 Ingresar
               </button>
             </SignInButton>
-          </Show>
-          <Show when="signed-in">
-            <UserAvatarLink prodeName={prodeName} />
           </Show>
         </div>
       </div>

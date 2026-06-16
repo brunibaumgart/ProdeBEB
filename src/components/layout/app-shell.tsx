@@ -27,7 +27,7 @@ export async function AppShell({ children, pathname }: AppShellProps) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <SiteHeader pathname={pathname} isAdmin={isAdmin} prodeName={dbUser?.name} />
+      <SiteHeader pathname={pathname} isAdmin={isAdmin} />
       {dbUser && !dbUser.pushSetupPromptSeenAt ? (
         <PushOnboardingPrompt
           show
@@ -37,7 +37,9 @@ export async function AppShell({ children, pathname }: AppShellProps) {
         />
       ) : null}
       {dbUser && isPioProfile(dbUser) ? <PioCountdownBanner /> : null}
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-24 pt-6 md:pb-8">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 overflow-x-clip px-4 pb-24 pt-6 md:pb-8">
+        {children}
+      </main>
       <BottomNav isAdmin={isAdmin} />
     </div>
   )

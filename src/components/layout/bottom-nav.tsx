@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CalendarDays, Grid3x3, Home, ShieldCheck, Trophy, User, Users } from 'lucide-react'
+import { CalendarDays, Grid3x3, Home, ShieldCheck, Trophy, Users } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -12,8 +12,9 @@ const navItems = [
   { href: '/grupos', label: 'Grupos', icon: Grid3x3 },
   { href: '/prode', label: 'Prode', icon: Trophy },
   { href: '/torneos', label: 'Torneos', icon: Users },
-  { href: '/perfil', label: 'Perfil', icon: User },
 ]
+
+const adminItem = { href: '/admin', label: 'Admin', icon: ShieldCheck }
 
 interface BottomNavProps {
   isAdmin?: boolean
@@ -22,13 +23,7 @@ interface BottomNavProps {
 export function BottomNav({ isAdmin = false }: BottomNavProps) {
   const pathname = usePathname()
 
-  const items = isAdmin
-    ? [
-        ...navItems.slice(0, 5),
-        { href: '/admin', label: 'Admin', icon: ShieldCheck },
-        navItems[5],
-      ]
-    : navItems
+  const items = isAdmin ? [...navItems, adminItem] : navItems
 
   return (
     <nav

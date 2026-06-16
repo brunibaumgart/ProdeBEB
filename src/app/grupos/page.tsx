@@ -26,6 +26,7 @@ function serializeMatch(
     status: match.status,
     homeScore: match.homeScore,
     awayScore: match.awayScore,
+    date: match.date.toISOString(),
     homeLabel: match.homeLabel,
     awayLabel: match.awayLabel,
     homeTeam: match.homeTeam
