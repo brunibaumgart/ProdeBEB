@@ -11,7 +11,7 @@ import { syncTournamentMemberPoints } from '@/lib/tournament/points'
 
 import { calculateChampionPoints } from './champion'
 import { recalculateEarlyBonusForEntry } from './early-bonus'
-import { calculateBracketSlotPoints } from './match'
+import { buildPredictedTeamIdsInRound, calculateBracketSlotPoints } from './match'
 import { countPositionPoints } from './positions'
 
 const FINAL_MATCH_ID = 104
@@ -42,7 +42,7 @@ async function buildRealGroupStandings(): Promise<Map<string, Standing[]>> {
 }
 
 async function buildPredictedGroupStandings(
-  entryId: string
+  entryId: string,
 ): Promise<Map<string, Standing[]> | null> {
   const [teams, groupMatches, slots] = await Promise.all([
     getAllTeams(),
@@ -69,7 +69,7 @@ async function buildPredictedGroupStandings(
 
     map.set(
       group,
-      resolveGroupStandingsFromPredictions(groupTeams, matches, predictions, group)
+      resolveGroupStandingsFromPredictions(groupTeams, matches, predictions, group),
     )
   }
 
@@ -78,6 +78,25 @@ async function buildPredictedGroupStandings(
   if (predictedCount < totalGroupMatches) return null
 
   return map
+}
+
+async function loadEntryKnockoutSlots(bracketEntryId: string) {
+  return prisma.bracketSlot.findMany({
+    where: {
+      bracketEntryId,
+      match: { round: { not: 'Group Stage' } },
+    },
+    select: {
+      id: true,
+      matchId: true,
+      predHomeScore: true,
+      predAwayScore: true,
+      predHomeTeamId: true,
+      predAwayTeamId: true,
+      predAdvancesTeamId: true,
+      match: { select: { round: true } },
+    },
+  })
 }
 
 async function recalculatePositionPointsForEntry(entryId: string): Promise<number> {
@@ -114,7 +133,7 @@ async function recalculatePositionPointsForEntry(entryId: string): Promise<numbe
 }
 
 async function recalculateChampionPointsForAllEntries(
-  winnerTeamId: string | null
+  winnerTeamId: string | null,
 ): Promise<string[]> {
   const entries = await prisma.bracketEntry.findMany({
     select: { id: true, userId: true, championId: true },
@@ -173,9 +192,21 @@ export async function recalculateCompleteScoringForMatch(matchId: number): Promi
   }
 
   const affectedEntries = new Map<string, string>()
+  const entrySlotsCache = new Map<
+    string,
+    Awaited<ReturnType<typeof loadEntryKnockoutSlots>>
+  >()
 
   for (const slot of slots) {
-    const points = calculateBracketSlotPoints(slot, matchInput)
+    let entrySlots = entrySlotsCache.get(slot.bracketEntryId)
+    if (!entrySlots) {
+      entrySlots = await loadEntryKnockoutSlots(slot.bracketEntryId)
+      entrySlotsCache.set(slot.bracketEntryId, entrySlots)
+    }
+
+    const predictedTeamsInRound = buildPredictedTeamIdsInRound(entrySlots, match.round)
+    const points = calculateBracketSlotPoints(slot, matchInput, predictedTeamsInRound)
+
     await prisma.bracketSlot.update({
       where: { id: slot.id },
       data: { points },
@@ -217,8 +248,8 @@ export async function recalculateCompleteScoringForMatch(matchId: number): Promi
 
   await Promise.all(
     [...affectedEntries.entries()].map(([entryId, userId]) =>
-      finalizeEntryScoring(entryId, userId)
-    )
+      finalizeEntryScoring(entryId, userId),
+    ),
   )
 }
 
@@ -236,6 +267,7 @@ export async function recalculateCompleteScoringForUser(userId: string): Promise
   })
 
   const matchById = new Map(finishedMatches.map((m) => [m.id, m]))
+  const entryKnockoutSlots = await loadEntryKnockoutSlots(entry.id)
 
   for (const slot of entry.slots) {
     const match = matchById.get(slot.matchId)
@@ -244,15 +276,22 @@ export async function recalculateCompleteScoringForUser(userId: string): Promise
       continue
     }
 
-    const points = calculateBracketSlotPoints(slot, {
-      round: match.round,
-      homeScore: match.homeScore,
-      awayScore: match.awayScore,
-      homeTeamId: match.homeTeamId,
-      awayTeamId: match.awayTeamId,
-      homeTeamName: match.homeTeam?.name ?? null,
-      awayTeamName: match.awayTeam?.name ?? null,
-    })
+    if (match.round === 'Group Stage') continue
+
+    const predictedTeamsInRound = buildPredictedTeamIdsInRound(entryKnockoutSlots, match.round)
+    const points = calculateBracketSlotPoints(
+      slot,
+      {
+        round: match.round,
+        homeScore: match.homeScore,
+        awayScore: match.awayScore,
+        homeTeamId: match.homeTeamId,
+        awayTeamId: match.awayTeamId,
+        homeTeamName: match.homeTeam?.name ?? null,
+        awayTeamName: match.awayTeam?.name ?? null,
+      },
+      predictedTeamsInRound,
+    )
 
     await prisma.bracketSlot.update({ where: { id: slot.id }, data: { points } })
   }
@@ -283,7 +322,7 @@ export async function recalculateCompleteScoringForUser(userId: string): Promise
   await finalizeEntryScoring(entry.id, userId)
 }
 
-/** Llamar al confirmar bracket (lock) para aplicar bonus temprano. */
+/** Llamar al confirmar bracket (lock) para sincronizar torneos. */
 export async function onBracketLocked(userId: string): Promise<void> {
   const entry = await prisma.bracketEntry.findUnique({ where: { userId } })
   if (!entry) return

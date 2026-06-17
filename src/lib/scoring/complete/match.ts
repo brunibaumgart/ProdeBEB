@@ -1,8 +1,4 @@
-import {
-  COMPLETE_POINTS_CORRECT_MATCHUP,
-  COMPLETE_POINTS_KNOCKOUT_WINNER_BASE,
-  getCompleteRoundMultiplier,
-} from '@/lib/points'
+import { getCompleteKnockoutRoundScoring } from './rules'
 
 export interface BracketSlotScoreInput {
   predHomeScore: number | null
@@ -24,7 +20,7 @@ export interface FinishedMatchScoreInput {
 
 function isMatchupCorrect(
   slot: BracketSlotScoreInput,
-  match: FinishedMatchScoreInput
+  match: FinishedMatchScoreInput,
 ): boolean {
   if (!match.homeTeamId || !match.awayTeamId) return false
   if (!slot.predHomeTeamId || !slot.predAwayTeamId) return false
@@ -34,45 +30,78 @@ function isMatchupCorrect(
   )
 }
 
+function predictedWinnerTeamId(
+  slot: BracketSlotScoreInput,
+  match: FinishedMatchScoreInput,
+): string | null {
+  if (slot.predAdvancesTeamId) return slot.predAdvancesTeamId
+  if (slot.predHomeScore == null || slot.predAwayScore == null) return null
+  if (slot.predHomeScore > slot.predAwayScore) return match.homeTeamId
+  if (slot.predAwayScore > slot.predHomeScore) return match.awayTeamId
+  return null
+}
+
+function actualWinnerTeamId(match: FinishedMatchScoreInput): string | null {
+  if (match.homeScore == null || match.awayScore == null) return null
+  if (match.homeScore > match.awayScore) return match.homeTeamId
+  if (match.awayScore > match.homeScore) return match.awayTeamId
+  return null
+}
+
+export function buildPredictedTeamIdsInRound(
+  slots: Array<{
+    predHomeTeamId: string | null
+    predAwayTeamId: string | null
+    match: { round: string }
+  }>,
+  round: string,
+): Set<string> {
+  const ids = new Set<string>()
+
+  for (const slot of slots) {
+    if (slot.match.round !== round) continue
+    if (slot.predHomeTeamId) ids.add(slot.predHomeTeamId)
+    if (slot.predAwayTeamId) ids.add(slot.predAwayTeamId)
+  }
+
+  return ids
+}
+
 export function calculateBracketSlotPoints(
   slot: BracketSlotScoreInput,
-  match: FinishedMatchScoreInput
+  match: FinishedMatchScoreInput,
+  predictedTeamsInRound: Set<string>,
 ): number | null {
   if (match.homeScore == null || match.awayScore == null) return null
-
   if (match.round === 'Group Stage') return null
+
+  const roundScoring = getCompleteKnockoutRoundScoring(match.round)
+  if (!roundScoring) return null
 
   if (slot.predHomeScore == null || slot.predAwayScore == null) return null
   if (!match.homeTeamName || !match.awayTeamName) return null
 
-  if (!isMatchupCorrect(slot, match)) return 0
+  let points = 0
 
-  let points = COMPLETE_POINTS_CORRECT_MATCHUP
+  if (roundScoring.perTeam > 0) {
+    if (match.homeTeamId && predictedTeamsInRound.has(match.homeTeamId)) {
+      points += roundScoring.perTeam
+    }
+    if (match.awayTeamId && predictedTeamsInRound.has(match.awayTeamId)) {
+      points += roundScoring.perTeam
+    }
+  }
 
-  const predictedWinnerTeamId =
-    slot.predAdvancesTeamId ??
-    (slot.predHomeScore != null &&
-    slot.predAwayScore != null &&
-    slot.predHomeScore > slot.predAwayScore
-      ? match.homeTeamId
-      : slot.predAwayScore != null &&
-          slot.predHomeScore != null &&
-          slot.predAwayScore > slot.predHomeScore
-        ? match.awayTeamId
-        : null)
+  if (roundScoring.exactMatchup > 0 && isMatchupCorrect(slot, match)) {
+    points += roundScoring.exactMatchup
+  }
 
-  if (!predictedWinnerTeamId) return points
-
-  const realWinnerTeamId =
-    match.homeScore > match.awayScore
-      ? match.homeTeamId
-      : match.awayScore > match.homeScore
-        ? match.awayTeamId
-        : null
-
-  if (realWinnerTeamId && predictedWinnerTeamId === realWinnerTeamId) {
-    const multiplier = getCompleteRoundMultiplier(match.round)
-    points += Math.round(COMPLETE_POINTS_KNOCKOUT_WINNER_BASE * multiplier)
+  if (roundScoring.winnerBonus) {
+    const predictedWinner = predictedWinnerTeamId(slot, match)
+    const realWinner = actualWinnerTeamId(match)
+    if (predictedWinner && realWinner && predictedWinner === realWinner) {
+      points += roundScoring.winnerBonus
+    }
   }
 
   return points

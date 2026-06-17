@@ -25,10 +25,7 @@ export async function syncTournamentMemberPoints(userId: string) {
   const slotPoints =
     bracketEntry?.slots.reduce((sum, slot) => sum + (slot.points ?? 0), 0) ?? 0
   const pointsComplete =
-    slotPoints +
-    (bracketEntry?.pointsPositions ?? 0) +
-    (bracketEntry?.pointsChampion ?? 0) +
-    (bracketEntry?.pointsEarlyBonus ?? 0)
+    slotPoints + (bracketEntry?.pointsPositions ?? 0) + (bracketEntry?.pointsChampion ?? 0)
 
   const memberships = await prisma.tournamentMember.findMany({
     where: { userId },

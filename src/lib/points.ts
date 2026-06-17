@@ -40,38 +40,36 @@ export function calculateMatchdayPoints(pred: Prediction, result: MatchResult): 
   return points
 }
 
-// ─── Prode Completo (sistema distinto — anticipación y bracket) ────────────
+// ─── Prode Completo (sistema anticipado — ver src/lib/scoring/complete/rules.ts) ─
 
-/** Posición exacta en grupo (1.º, 2.º, 3.º o 4.º) por equipo. */
-export const COMPLETE_POINTS_EXACT_POSITION = 4
+export {
+  COMPLETE_POINTS_CHAMPION,
+  COMPLETE_POINTS_EXACT_GROUP_POSITION,
+  COMPLETE_POINTS_R32_QUALIFIER,
+  COMPLETE_POINTS_THIRD_PLACE_WINNER,
+  COMPLETE_KNOCKOUT_ROUND_SCORING,
+} from '@/lib/scoring/complete/rules'
 
-/** Ambos equipos del cruce de eliminatoria son los que predijiste. */
-export const COMPLETE_POINTS_CORRECT_MATCHUP = 6
+/** @deprecated Ya no hay bonus temprano. */
+export const COMPLETE_EARLY_BONUS_RATE = 0
 
-/** Base por acertar ganador en eliminatoria (se multiplica por ronda). */
-export const COMPLETE_POINTS_KNOCKOUT_WINNER_BASE = 4
+/** @deprecated Usar COMPLETE_KNOCKOUT_ROUND_SCORING. */
+export const COMPLETE_POINTS_CORRECT_MATCHUP = 0
 
-/** Campeón correcto (predicción antes del torneo). */
-export const COMPLETE_POINTS_CHAMPION = 25
+/** @deprecated Usar COMPLETE_KNOCKOUT_ROUND_SCORING. */
+export const COMPLETE_POINTS_KNOCKOUT_WINNER_BASE = 0
 
-/** Bonus por confirmar el bracket antes del cierre global (15 % del subtotal). */
-export const COMPLETE_EARLY_BONUS_RATE = 0.15
+/** @deprecated Usar COMPLETE_POINTS_EXACT_GROUP_POSITION y COMPLETE_POINTS_R32_QUALIFIER. */
+export const COMPLETE_POINTS_EXACT_POSITION = 2
 
-/** Multiplicador por ronda — a más avanzada la etapa, más vale acertar. */
-export const COMPLETE_ROUND_MULTIPLIER: Record<string, number> = {
-  'Round of 32': 1,
-  'Round of 16': 1.5,
-  Quarterfinals: 2,
-  Semifinals: 2.5,
-  '3rd Place': 1.5,
-  Final: 4,
+/** @deprecated Ya no hay multiplicadores por ronda. */
+export const COMPLETE_ROUND_MULTIPLIER: Record<string, number> = {}
+
+export function getCompleteRoundMultiplier(_round: string): number {
+  return 1
 }
 
-export function getCompleteRoundMultiplier(round: string): number {
-  return COMPLETE_ROUND_MULTIPLIER[round] ?? 1
-}
-
-export function calculateEarlyBonusPoints(subtotal: number): number {
-  if (subtotal <= 0) return 0
-  return Math.floor(subtotal * COMPLETE_EARLY_BONUS_RATE)
+/** @deprecated Ya no hay bonus temprano. */
+export function calculateEarlyBonusPoints(_subtotal: number): number {
+  return 0
 }

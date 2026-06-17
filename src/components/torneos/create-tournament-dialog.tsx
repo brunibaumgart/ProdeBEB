@@ -39,10 +39,10 @@ const MODE_OPTIONS = [
     label: 'Prode Completo',
     description: 'Predecí de antemano todo el bracket: grupos, cruces y campeón.',
     scoring: [
-      'Posición exacta de cada equipo en su grupo: 4 puntos por equipo.',
-      'Cruces y ganadores acertados en cada ronda eliminatoria suman puntos crecientes según la instancia.',
-      'Bonus extra por acertar al campeón del torneo.',
-      'Si confirmás tu bracket antes del cierre de la fecha 1, sumás un 15% extra sobre tu puntaje total.',
+      '1 punto por cada equipo que acertás entre los 32 de dieciseisavos.',
+      '+2 extra si acertás la posición exacta en el grupo.',
+      'Eliminatorias: puntos por equipo en la ronda y bonus por cruce exacto (más en instancias finales).',
+      'Campeón: 50 puntos. Tercero: 30 puntos.',
     ],
   },
   {

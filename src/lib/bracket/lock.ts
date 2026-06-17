@@ -1,20 +1,13 @@
 import { matchDateUTC } from '@/lib/time'
 
-/** Duración estimada del último partido de fecha 1 para calcular el cierre. */
-const MATCHDAY_1_END_BUFFER_MINUTES = 105
-
 /**
- * Último partido de fecha 1: M24 — 2026-06-17 23:00 ARG.
- * El Prode Completo se puede editar hasta el final de esa fecha.
+ * El Prode Completo se puede editar hasta el 20 de junio de 2026 (fin del día, hora ARG).
  */
-const LAST_MATCHDAY_1 = { date: '2026-06-17', time_arg: '23:00' } as const
+const BRACKET_LOCK_DAY = { date: '2026-06-20', time_arg: '23:59' } as const
 
-export const BRACKET_LOCK_DATE = new Date(
-  matchDateUTC(LAST_MATCHDAY_1.date, LAST_MATCHDAY_1.time_arg).getTime() +
-    MATCHDAY_1_END_BUFFER_MINUTES * 60_000
-)
+export const BRACKET_LOCK_DATE = matchDateUTC(BRACKET_LOCK_DAY.date, BRACKET_LOCK_DAY.time_arg)
 
-export const BRACKET_LOCK_LABEL = '17 jun 2026, 23:00 ARG (fin de la fecha 1)'
+export const BRACKET_LOCK_LABEL = '20 jun 2026'
 
 export function isBracketGloballyLocked(): boolean {
   return new Date() >= BRACKET_LOCK_DATE
