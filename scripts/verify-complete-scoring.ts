@@ -24,6 +24,10 @@ function assert(condition: boolean, message: string) {
 }
 
 assert(calculateMatchdayPoints({ predHome: 2, predAway: 1 }, { homeScore: 2, awayScore: 1 }) === 3, 'fecha exacto')
+assert(calculateMatchdayPoints({ predHome: 2, predAway: 1 }, { homeScore: 3, awayScore: 2 }) === 2, 'fecha ganador + dif')
+assert(calculateMatchdayPoints({ predHome: 2, predAway: 0 }, { homeScore: 1, awayScore: 0 }) === 1, 'fecha solo ganador')
+assert(calculateMatchdayPoints({ predHome: 0, predAway: 0 }, { homeScore: 1, awayScore: 1 }) === 1, 'fecha empate sin bonus DG')
+assert(calculateMatchdayPoints({ predHome: 1, predAway: 1 }, { homeScore: 0, awayScore: 0 }) === 1, 'fecha empate distinto marcador')
 
 const standing = (team: string, pts: number): Standing => ({
   teamName: team,

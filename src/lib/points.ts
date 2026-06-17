@@ -29,9 +29,12 @@ export function calculateMatchdayPoints(pred: Prediction, result: MatchResult): 
   if (predOutcome === realOutcome) {
     points += 1
 
-    const predDiff = pred.predHome - pred.predAway
-    const realDiff = result.homeScore - result.awayScore
-    if (predDiff === realDiff) points += 1
+    // En empates la diferencia siempre es 0: el bonus de DG no aplica (solo 1 pt sin exacto).
+    if (predOutcome !== 'draw') {
+      const predDiff = pred.predHome - pred.predAway
+      const realDiff = result.homeScore - result.awayScore
+      if (predDiff === realDiff) points += 1
+    }
   }
 
   return points

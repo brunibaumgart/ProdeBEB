@@ -3,6 +3,7 @@ import { AdminMatchForm } from '@/components/admin/admin-match-form'
 import { AdminMatchRow } from '@/components/admin/admin-match-row'
 import { AdminPredictionsPanel } from '@/components/admin/admin-predictions-panel'
 import { AdminPushNotificationsPanel } from '@/components/admin/admin-push-notifications-panel'
+import { AdminScoringAdjustmentPanel } from '@/components/admin/admin-scoring-adjustment-panel'
 import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
 import { AdminTabs } from '@/components/admin/admin-tabs'
 import { AdminTesteosPanel } from '@/components/admin/admin-testeos-panel'
@@ -325,7 +326,12 @@ async function NotificacionesTab() {
     lastSubscriptionAt: user.pushSubscriptions[0]?.updatedAt ?? null,
   }))
 
-  return <AdminPushNotificationsPanel users={users} />
+  return (
+    <div className="space-y-6">
+      <AdminScoringAdjustmentPanel />
+      <AdminPushNotificationsPanel users={users} />
+    </div>
+  )
 }
 
 async function TesteosTab() {

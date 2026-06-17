@@ -1,7 +1,9 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
 import { BottomNav } from '@/components/layout/bottom-nav'
+import { MatchdayScoringNoticeModal } from '@/components/layout/matchday-scoring-notice-modal'
 import { PioCountdownBanner } from '@/components/layout/pio-countdown-banner'
 import { PushOnboardingPrompt } from '@/components/layout/push-onboarding-prompt'
 import { SiteHeader } from '@/components/layout/site-header'
@@ -28,7 +30,12 @@ export async function AppShell({ children, pathname }: AppShellProps) {
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader pathname={pathname} isAdmin={isAdmin} />
-      {dbUser && !dbUser.pushSetupPromptSeenAt ? (
+      {dbUser ? (
+        <Suspense fallback={null}>
+          <MatchdayScoringNoticeModal noticeSeenAt={dbUser.matchdayDrawScoringNoticeSeenAt} />
+        </Suspense>
+      ) : null}
+      {dbUser && !dbUser.pushSetupPromptSeenAt && dbUser.matchdayDrawScoringNoticeSeenAt ? (
         <PushOnboardingPrompt
           show
           userName={dbUser.name}
