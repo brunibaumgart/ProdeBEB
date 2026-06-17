@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/app-shell'
 import { AdminMatchForm } from '@/components/admin/admin-match-form'
 import { AdminMatchRow } from '@/components/admin/admin-match-row'
 import { AdminPredictionsPanel } from '@/components/admin/admin-predictions-panel'
+import { AdminManualPushRemindersPanel } from '@/components/admin/admin-manual-push-reminders-panel'
 import { AdminPushNotificationsPanel } from '@/components/admin/admin-push-notifications-panel'
 import { AdminScoringAdjustmentPanel } from '@/components/admin/admin-scoring-adjustment-panel'
 import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
@@ -328,6 +329,7 @@ async function NotificacionesTab() {
 
   return (
     <div className="space-y-6">
+      <AdminManualPushRemindersPanel />
       <AdminScoringAdjustmentPanel />
       <AdminPushNotificationsPanel users={users} />
     </div>

@@ -274,3 +274,51 @@ export async function sendSurprisePushNotification(
     message: `Sorpresa enviada a ${recipients.length} usuario${recipients.length === 1 ? '' : 's'} (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
   }
 }
+
+export async function adminSendManualDailyPredictionsReminderPush(): Promise<PushActionResult> {
+  const { userId } = await auth()
+  if (!userId || userId !== process.env.ADMIN_USER_ID) {
+    return { ok: false, error: 'No autorizado.' }
+  }
+
+  const { getReminderPushRecipients } = await import('@/lib/push/admin-recipients')
+  const { getDailyReminderPayloadForUser } = await import('@/lib/push/daily-reminder')
+
+  const recipients = await getReminderPushRecipients()
+  if (recipients.length === 0) {
+    return {
+      ok: false,
+      error: 'Nadie tiene recordatorio 11:00 activo con push suscripto.',
+    }
+  }
+
+  const title = '¿Ya cargaste tus resultados de hoy?'
+  const fallbackBody = 'Entrá a Fecha a Fecha y cargá tus predicciones antes del cierre.'
+
+  let sent = 0
+  let failed = 0
+
+  for (const user of recipients) {
+    const personalized = await getDailyReminderPayloadForUser(user.id)
+    const payload = {
+      title,
+      body: personalized?.body ?? fallbackBody,
+      url: personalized?.url ?? '/prode/fecha',
+      icon: getPushNotificationIcon({ name: user.name }),
+      tag: 'prodebeb-manual-daily-reminder',
+    }
+    const result = await deliverPushPayload(user.pushSubscriptions, payload, { userId: user.id })
+    sent += result.sent
+    failed += result.failed
+  }
+
+  if (sent === 0) {
+    return { ok: false, error: 'No se pudo enviar a ningún dispositivo.' }
+  }
+
+  const suffix = failed > 0 ? ` (${failed} falló)` : ''
+  return {
+    ok: true,
+    message: `Recordatorio enviado a ${recipients.length} usuario${recipients.length === 1 ? '' : 's'} (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
+  }
+}
