@@ -11,6 +11,7 @@ interface GroupTableProps {
   standings: Standing[]
   compact?: boolean
   embedded?: boolean
+  orderOnly?: boolean
   r32Projections?: R32OpponentProjection[]
   headerAction?: ReactNode
   className?: string
@@ -72,11 +73,12 @@ export function GroupTable({
   standings,
   compact = false,
   embedded = false,
+  orderOnly = false,
   r32Projections,
   headerAction,
   className,
 }: GroupTableProps) {
-  const showR32 = compact && r32Projections != null
+  const showR32 = compact && r32Projections != null && !orderOnly
   return (
     <div
       className={cn(
@@ -103,6 +105,8 @@ export function GroupTable({
               <th className={cn('py-2 text-left font-medium', compact ? 'px-2' : 'px-3')}>
                 Equipo
               </th>
+              {!orderOnly && (
+                <>
               <th
                 className={cn(
                   'py-2 text-center font-medium',
@@ -126,6 +130,8 @@ export function GroupTable({
               <th className={cn('py-2 text-center font-medium', compact ? 'w-9 px-1' : 'px-2')}>
                 Pts
               </th>
+                </>
+              )}
               {showR32 && (
                 <th className="w-px px-1 py-2 text-center font-medium text-[10px] text-muted-foreground">
                   <span className="sr-only">Dieciseisavos</span>
@@ -164,6 +170,8 @@ export function GroupTable({
                       className={compact ? 'min-w-0' : undefined}
                     />
                   </td>
+                  {!orderOnly && (
+                    <>
                   <td
                     className={cn(
                       'py-2.5 text-center tabular-nums',
@@ -192,6 +200,8 @@ export function GroupTable({
                   >
                     {standing.points}
                   </td>
+                    </>
+                  )}
                   {showR32 && (
                     <td className="px-1 py-2.5 text-center align-middle">
                       {r32Projections[index] ? (

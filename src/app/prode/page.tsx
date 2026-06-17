@@ -48,7 +48,7 @@ export default async function ProdePage() {
   const completoStatus = bracketLocked
     ? 'Cerrado'
     : bracketEntry?.locked
-      ? 'Confirmado'
+      ? 'Confirmado (editable)'
       : bracketInProgress
         ? 'En progreso'
         : 'Disponible'

@@ -1,6 +1,9 @@
 import type { Standing } from '@/lib/bracket'
-import { getBestThirds } from '@/lib/bracket'
 import { isKnockoutPredictionComplete } from '@/lib/bracket/knockout-prediction'
+import {
+  getBestThirdsWithTiebreak,
+  type ThirdPlaceTiebreakOrder,
+} from '@/lib/bracket/third-place-tiebreak'
 import {
   getQualifiedThirdGroupsFromStandings,
   resolveThirdPlaceByAnnexC,
@@ -34,9 +37,10 @@ export interface ResolvedMatchTeams {
 }
 
 function buildThirdPlaceByMatchId(
-  groupStandings: Map<string, Standing[]>
+  groupStandings: Map<string, Standing[]>,
+  thirdPlaceTiebreakOrder?: ThirdPlaceTiebreakOrder | null,
 ): Map<number, string> {
-  const bestThirds = getBestThirds(groupStandings, 8)
+  const bestThirds = getBestThirdsWithTiebreak(groupStandings, thirdPlaceTiebreakOrder, 8)
   const qualifiedGroups = getQualifiedThirdGroupsFromStandings(groupStandings, bestThirds)
 
   if (qualifiedGroups.length !== 8) {
@@ -95,9 +99,10 @@ export function resolvePredictedBracket(
   knockoutMatches: KnockoutMatchRef[],
   groupPredictions: Record<number, PredictionScore>,
   knockoutPredictions: Record<number, PredictionScore>,
-  teamByName: Map<string, TeamRef>
+  teamByName: Map<string, TeamRef>,
+  thirdPlaceTiebreakOrder?: ThirdPlaceTiebreakOrder | null,
 ): Map<number, ResolvedMatchTeams> {
-  const thirdByMatchId = buildThirdPlaceByMatchId(groupStandings)
+  const thirdByMatchId = buildThirdPlaceByMatchId(groupStandings, thirdPlaceTiebreakOrder)
   const winners = new Map<number, string>()
   const resolved = new Map<number, ResolvedMatchTeams>()
 

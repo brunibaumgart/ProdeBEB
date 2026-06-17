@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 
+import { Prisma } from '@prisma/client'
+
 import { canEditBracketEntry, isBracketGloballyLocked, BRACKET_LOCK_LABEL } from '@/lib/bracket/lock'
 import {
   isKnockoutPredictionComplete,
@@ -22,6 +24,12 @@ import { getAllTeams } from '@/lib/queries/teams'
 import { requireDbUserForAction } from '@/lib/queries/users'
 import { prisma } from '@/lib/prisma'
 import { onBracketLocked } from '@/lib/scoring/complete'
+import {
+  isThirdPlaceTiebreakComplete,
+  parseThirdPlaceTiebreakOrder,
+  sanitizeThirdPlaceTiebreakOrder,
+  type ThirdPlaceTiebreakOrder,
+} from '@/lib/bracket/third-place-tiebreak'
 
 export type BracketActionResult =
   | { ok: true; message: string }
@@ -36,6 +44,86 @@ async function assertEditable(userId: string) {
     throw new Error('Tu bracket está bloqueado.')
   }
   return getOrCreateBracketEntry(userId)
+}
+
+async function buildGroupStandingsForUser(
+  userId: string,
+  extraPrediction?: { matchId: number; predHome: number; predAway: number },
+) {
+  const [teams, groupMatches, entry] = await Promise.all([
+    getAllTeams(),
+    getGroupStageMatches(),
+    getOrCreateBracketEntry(userId),
+  ])
+
+  const slots = await prisma.bracketSlot.findMany({ where: { bracketEntryId: entry.id } })
+  const allPredictions = slotsToPredictionsMap(slots)
+  if (extraPrediction) {
+    allPredictions[extraPrediction.matchId] = {
+      predHome: extraPrediction.predHome,
+      predAway: extraPrediction.predAway,
+    }
+  }
+
+  const groupStandings = new Map<string, ReturnType<typeof resolveGroupStandingsFromPredictions>>()
+  const groups = [...new Set(teams.map((t) => t.group))].sort()
+
+  for (const group of groups) {
+    const groupTeams = teams.filter((t) => t.group === group)
+    const groupMatchData = groupMatches
+      .filter((m) => m.group === group)
+      .map((m) => ({
+        matchId: m.id,
+        group: m.group,
+        homeName: m.homeTeam!.name,
+        awayName: m.awayTeam!.name,
+      }))
+
+    groupStandings.set(
+      group,
+      resolveGroupStandingsFromPredictions(groupTeams, groupMatchData, allPredictions, group),
+    )
+  }
+
+  return { groupStandings, entry }
+}
+
+async function syncBracketScoringIfLocked(userId: string, locked: boolean) {
+  if (locked) {
+    await onBracketLocked(userId)
+  }
+}
+
+export async function saveThirdPlaceTiebreakOrder(
+  order: ThirdPlaceTiebreakOrder,
+): Promise<BracketActionResult> {
+  const auth = await requireDbUserForAction()
+  if (!auth.ok) return auth
+  const user = auth.user
+
+  try {
+    const entry = await assertEditable(user.id)
+    const { groupStandings } = await buildGroupStandingsForUser(user.id)
+    const sanitized = sanitizeThirdPlaceTiebreakOrder(groupStandings, order)
+
+    if (!isThirdPlaceTiebreakComplete(groupStandings, sanitized)) {
+      return { ok: false, error: 'El orden de terceros no es válido para los empates actuales.' }
+    }
+
+    await prisma.bracketEntry.update({
+      where: { id: entry.id },
+      data: { thirdPlaceTiebreakOrder: sanitized },
+    })
+
+    await syncBracketScoringIfLocked(user.id, entry.locked)
+
+    revalidatePath('/prode/completo')
+    revalidatePath('/prode')
+
+    return { ok: true, message: 'Orden de terceros guardado.' }
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : 'Error al guardar.' }
+  }
 }
 
 export async function saveBracketMatchPrediction(
@@ -68,38 +156,34 @@ export async function saveBracketMatchPrediction(
     let predDecidedIn: KnockoutDecidedIn | null = null
 
     if (isKnockout) {
-      const [teams, groupMatches, knockoutMatches, slots] = await Promise.all([
+      const [teams, knockoutMatches, slots, entryWithTiebreak] = await Promise.all([
         getAllTeams(),
-        getGroupStageMatches(),
         getKnockoutMatches(),
         prisma.bracketSlot.findMany({ where: { bracketEntryId: entry.id } }),
+        prisma.bracketEntry.findUnique({
+          where: { id: entry.id },
+          select: { thirdPlaceTiebreakOrder: true },
+        }),
       ])
 
       const teamByName = new Map(teams.map((t) => [t.name, t]))
       const allPredictions = slotsToPredictionsMap(slots)
       allPredictions[matchId] = { predHome, predAway }
 
-      const groupStandings = new Map<
-        string,
-        ReturnType<typeof resolveGroupStandingsFromPredictions>
-      >()
-      const groups = [...new Set(teams.map((t) => t.group))].sort()
+      const { groupStandings } = await buildGroupStandingsForUser(user.id, {
+        matchId,
+        predHome,
+        predAway,
+      })
+      const thirdPlaceTiebreakOrder = parseThirdPlaceTiebreakOrder(
+        entryWithTiebreak?.thirdPlaceTiebreakOrder,
+      )
 
-      for (const group of groups) {
-        const groupTeams = teams.filter((t) => t.group === group)
-        const groupMatchData = groupMatches
-          .filter((m) => m.group === group)
-          .map((m) => ({
-            matchId: m.id,
-            group: m.group,
-            homeName: m.homeTeam!.name,
-            awayName: m.awayTeam!.name,
-          }))
-
-        groupStandings.set(
-          group,
-          resolveGroupStandingsFromPredictions(groupTeams, groupMatchData, allPredictions, group)
-        )
+      if (!isThirdPlaceTiebreakComplete(groupStandings, thirdPlaceTiebreakOrder)) {
+        return {
+          ok: false,
+          error: 'Definí el orden de los mejores terceros empatados antes de cargar eliminatorias.',
+        }
       }
 
       const resolved = resolvePredictedBracket(
@@ -111,7 +195,8 @@ export async function saveBracketMatchPrediction(
         })),
         allPredictions,
         allPredictions,
-        teamByName
+        teamByName,
+        thirdPlaceTiebreakOrder,
       )
 
       const teamsForMatch = resolved.get(matchId)
@@ -176,19 +261,45 @@ export async function saveBracketMatchPrediction(
       },
     })
 
-    if (!isKnockout) {
-      await prisma.bracketSlot.deleteMany({
-        where: { bracketEntryId: entry.id, matchId: { gte: 73 } },
+    if (matchId === 104 && predAdvancesTeamId) {
+      await prisma.bracketEntry.update({
+        where: { id: entry.id },
+        data: { championId: predAdvancesTeamId },
       })
+    } else if (isKnockout && matchId < 104) {
       await prisma.bracketEntry.update({
         where: { id: entry.id },
         data: { championId: null },
       })
     }
 
+    if (!isKnockout) {
+      await prisma.bracketSlot.deleteMany({
+        where: { bracketEntryId: entry.id, matchId: { gte: 73 } },
+      })
+      const { groupStandings } = await buildGroupStandingsForUser(user.id, {
+        matchId,
+        predHome,
+        predAway,
+      })
+      const storedOrder = parseThirdPlaceTiebreakOrder(entry.thirdPlaceTiebreakOrder)
+      const sanitized = sanitizeThirdPlaceTiebreakOrder(groupStandings, storedOrder)
+
+      await prisma.bracketEntry.update({
+        where: { id: entry.id },
+        data: {
+          championId: null,
+          thirdPlaceTiebreakOrder:
+            Object.keys(sanitized).length > 0 ? sanitized : Prisma.DbNull,
+        },
+      })
+    }
+
     revalidatePath('/prode/completo')
     revalidatePath('/prode')
     revalidatePath('/perfil')
+
+    await syncBracketScoringIfLocked(user.id, entry.locked)
 
     return { ok: true, message: 'Predicción guardada.' }
   } catch (error) {
@@ -210,6 +321,8 @@ export async function saveBracketChampion(championId: string): Promise<BracketAc
       where: { id: entry.id },
       data: { championId },
     })
+
+    await syncBracketScoringIfLocked(user.id, entry.locked)
 
     revalidatePath('/prode/completo')
     revalidatePath('/prode')
@@ -248,6 +361,15 @@ export async function lockBracket(): Promise<BracketActionResult> {
       }
     }
 
+    const { groupStandings } = await buildGroupStandingsForUser(user.id)
+    const tiebreakOrder = parseThirdPlaceTiebreakOrder(entry.thirdPlaceTiebreakOrder)
+    if (!isThirdPlaceTiebreakComplete(groupStandings, tiebreakOrder)) {
+      return {
+        ok: false,
+        error: 'Definí el orden de los mejores terceros empatados antes de confirmar.',
+      }
+    }
+
     const incompleteKnockout = knockoutMatches.filter((m) => {
       const pred = predictions[m.id]
       if (!pred) return true
@@ -264,13 +386,15 @@ export async function lockBracket(): Promise<BracketActionResult> {
       }
     }
 
-    if (!entry.championId) {
-      return { ok: false, error: 'Elegí un campeón antes de confirmar.' }
+    const finalSlot = slots.find((slot) => slot.matchId === 104)
+    const championId = finalSlot?.predAdvancesTeamId
+    if (!championId) {
+      return { ok: false, error: 'Elegí al campeón en la final antes de confirmar.' }
     }
 
     await prisma.bracketEntry.update({
       where: { id: entry.id },
-      data: { locked: true, lockedAt: new Date() },
+      data: { locked: true, lockedAt: new Date(), championId },
     })
 
     await onBracketLocked(user.id)

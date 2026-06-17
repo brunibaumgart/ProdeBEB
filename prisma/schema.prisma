@@ -252,6 +252,8 @@ model BracketEntry {
   id              String    @id @default(cuid())
   userId          String    @unique
   championId      String?
+  /** Orden manual entre terceros empatados por puntos (Prode Completo). */
+  thirdPlaceTiebreakOrder Json?
   pointsPositions Int       @default(0)
   pointsChampion  Int       @default(0)
   pointsEarlyBonus Int      @default(0)

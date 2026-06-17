@@ -1,5 +1,5 @@
 import {
-  PREDICTION_LOCK_MINUTES,
+  PREDICTION_LOCK_LABEL,
   PREDICTION_REVEAL_MINUTES,
 } from '@/lib/matches/availability'
 import { formatDbMatchKickoff, isDbMatchLocked, toArgentinaTime } from '@/lib/time'
@@ -22,7 +22,7 @@ export function getTournamentPredictionRevealMessage(date: Date, timeArg: string
 }
 
 export function getTournamentPredictionRevealSummary(): string {
-  return `Las predicciones del grupo se revelan ${PREDICTION_REVEAL_LABEL} antes del kick-off. La carga cierra ${PREDICTION_LOCK_MINUTES} min antes, igual que en Fecha a Fecha.`
+  return `Las predicciones del grupo se revelan ${PREDICTION_REVEAL_LABEL} antes del kick-off. La carga cierra ${PREDICTION_LOCK_LABEL} antes, igual que en Fecha a Fecha.`
 }
 
 export function isPrivateTournament(tournament: { code: string; isPublic: boolean }): boolean {

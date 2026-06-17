@@ -1,8 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { Prisma } from '@prisma/client'
 
-import { matchdayScoresToGroupOutcome, outcomeToScores } from '@/lib/bracket/match-outcome'
 import { canEditBracketEntry } from '@/lib/bracket/lock'
 import { getOrCreateBracketEntry, slotsToPredictionsMap } from '@/lib/queries/bracket'
 import { getGroupStageMatches } from '@/lib/queries/matches'
@@ -113,7 +113,7 @@ export async function syncGroupStageFromCompleteToMatchday(): Promise<SyncGroupS
   }
 }
 
-/** Copia resultados W/D/L de fase de grupos del Fecha a Fecha → Prode Completo. */
+/** Copia marcadores de fase de grupos del Fecha a Fecha → Prode Completo. */
 export async function syncGroupStageFromMatchdayToComplete(): Promise<SyncGroupStageResult> {
   const auth = await requireDbUserForAction()
   if (!auth.ok) return auth
@@ -135,9 +135,6 @@ export async function syncGroupStageFromMatchdayToComplete(): Promise<SyncGroupS
   let imported = 0
 
   for (const prediction of predictions) {
-    const outcome = matchdayScoresToGroupOutcome(prediction.predHome, prediction.predAway)
-    const { predHome, predAway } = outcomeToScores(outcome)
-
     await prisma.bracketSlot.upsert({
       where: {
         bracketEntryId_matchId: {
@@ -148,14 +145,14 @@ export async function syncGroupStageFromMatchdayToComplete(): Promise<SyncGroupS
       create: {
         bracketEntryId: entry.id,
         matchId: prediction.matchId,
-        predHomeScore: predHome,
-        predAwayScore: predAway,
+        predHomeScore: prediction.predHome,
+        predAwayScore: prediction.predAway,
         predHomeTeamId: null,
         predAwayTeamId: null,
       },
       update: {
-        predHomeScore: predHome,
-        predAwayScore: predAway,
+        predHomeScore: prediction.predHome,
+        predAwayScore: prediction.predAway,
         predHomeTeamId: null,
         predAwayTeamId: null,
       },
@@ -169,7 +166,10 @@ export async function syncGroupStageFromMatchdayToComplete(): Promise<SyncGroupS
 
   await prisma.bracketEntry.update({
     where: { id: entry.id },
-    data: { championId: null },
+    data: {
+      championId: null,
+      thirdPlaceTiebreakOrder: Prisma.DbNull,
+    },
   })
 
   revalidatePath('/prode/completo')
@@ -180,7 +180,7 @@ export async function syncGroupStageFromMatchdayToComplete(): Promise<SyncGroupS
     ok: true,
     imported,
     skipped: 0,
-    message: `Importadas ${imported} predicciones (como victoria/empate) desde Fecha a Fecha. Se reiniciaron eliminatorias y campeón.`,
+    message: `Importadas ${imported} predicciones con marcador exacto desde Fecha a Fecha. Se reiniciaron eliminatorias y campeón.`,
   }
 }
 

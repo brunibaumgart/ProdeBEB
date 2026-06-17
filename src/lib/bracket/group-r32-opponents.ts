@@ -1,5 +1,8 @@
 import type { Standing } from '@/lib/bracket'
-import { getBestThirds } from '@/lib/bracket'
+import {
+  getBestThirdsWithTiebreak,
+  type ThirdPlaceTiebreakOrder,
+} from '@/lib/bracket/third-place-tiebreak'
 import {
   ANNEX_C_SLOT_TO_MATCH_ID,
   getAnnexCMapping,
@@ -98,8 +101,11 @@ function teamDisplayName(standing: Standing | undefined): string | undefined {
   return standing?.team?.nameEs ?? standing?.teamName
 }
 
-function buildAnnexContext(groupStandings: Map<string, Standing[]>) {
-  const bestThirds = getBestThirds(groupStandings, 8)
+function buildAnnexContext(
+  groupStandings: Map<string, Standing[]>,
+  thirdPlaceTiebreakOrder?: ThirdPlaceTiebreakOrder | null,
+) {
+  const bestThirds = getBestThirdsWithTiebreak(groupStandings, thirdPlaceTiebreakOrder, 8)
   const qualifiedGroups = getQualifiedThirdGroupsFromStandings(groupStandings, bestThirds)
   const annexMapping =
     qualifiedGroups.length === 8 ? getAnnexCMapping(qualifiedGroups) : null
@@ -214,9 +220,10 @@ export function resolveGroupR32Opponents(
   standings: Standing[],
   groupStandings: Map<string, Standing[]>,
   allGroupsComplete: boolean,
+  thirdPlaceTiebreakOrder?: ThirdPlaceTiebreakOrder | null,
 ): R32OpponentProjection[] {
   const { bestThirds, annexMapping, thirdByMatchId, bestThirdNames, annexResolved } =
-    buildAnnexContext(groupStandings)
+    buildAnnexContext(groupStandings, thirdPlaceTiebreakOrder)
   const provisional = !allGroupsComplete || !annexResolved
 
   return standings.map((standing, index) => {

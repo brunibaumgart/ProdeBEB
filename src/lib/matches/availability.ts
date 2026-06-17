@@ -1,9 +1,12 @@
 import type { MatchWithRelations } from '@/lib/queries/matches'
 import { isDbMatchLocked } from '@/lib/time'
 
-export const PREDICTION_LOCK_MINUTES = 5
+export const PREDICTION_LOCK_MINUTES = 60
 /** Cuándo el grupo puede ver las predicciones de otros (antes del kick-off). */
 export const PREDICTION_REVEAL_MINUTES = 60
+
+export const PREDICTION_LOCK_LABEL =
+  PREDICTION_LOCK_MINUTES === 60 ? '1 hora' : `${PREDICTION_LOCK_MINUTES} min`
 
 export function isMatchPredictable(
   match: Pick<MatchWithRelations, 'status' | 'round' | 'homeTeamId' | 'awayTeamId'>

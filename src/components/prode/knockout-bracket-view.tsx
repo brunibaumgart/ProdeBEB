@@ -1,7 +1,7 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
-import { Loader2 } from 'lucide-react'
+import { useMemo, useState, useTransition, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 
 import { saveBracketMatchPrediction } from '@/app/actions/bracket'
 import { FlagIcon } from '@/components/ui-mundial/flag-icon'
@@ -14,8 +14,12 @@ import {
   BRACKET_MATCH_PLACEMENTS,
   BRACKET_ROUND_COLUMNS,
   KNOCKOUT_BRACKET_ROUNDS,
+  KNOCKOUT_MOBILE_TAB_ROUNDS,
   KNOCKOUT_THIRD_PLACE_ROUND,
+  getKnockoutBracketRoundIndex,
+  getKnockoutRoundUnlockDeps,
   getPreviousRoundMatchIds,
+  type KnockoutBracketRound,
 } from '@/lib/bracket/knockout-bracket-layout'
 import { isKnockoutRoundUnlocked } from '@/lib/bracket/predicted-bracket'
 import type { ResolvedMatchTeams } from '@/lib/bracket/predicted-bracket'
@@ -29,6 +33,12 @@ type BracketTeam = {
   flagEmoji: string
 }
 
+export type CelebrityKnockoutHint = {
+  shortLabel: string
+  winnerNameEs: string
+  matchesUser: boolean
+}
+
 interface KnockoutBracketViewProps {
   teams: BracketTeam[]
   resolvedKnockout: Map<number, ResolvedMatchTeams>
@@ -38,6 +48,9 @@ interface KnockoutBracketViewProps {
   onPredictionSaved: (matchId: number, prediction: BracketSlotPrediction) => void
   persistMode?: 'server' | 'local'
   isMatchLocked?: (matchId: number) => boolean
+  /** Vista compacta móvil: una pantalla, un cruce a la vez. */
+  mobileFit?: boolean
+  celebrityKnockoutHints?: Record<number, CelebrityKnockoutHint[]>
 }
 
 function getRoundProgress(
@@ -119,6 +132,7 @@ function BracketMatchCard({
   pending,
   onPick,
   dense,
+  celebrityHints,
 }: {
   matchId: number
   homeTeam: BracketTeam
@@ -128,6 +142,7 @@ function BracketMatchCard({
   pending: boolean
   onPick: (teamId: string) => void
   dense?: boolean
+  celebrityHints?: CelebrityKnockoutHint[]
 }) {
   const hasWinner = Boolean(winnerId)
 
@@ -164,6 +179,21 @@ function BracketMatchCard({
           dense={dense}
         />
       </div>
+      {celebrityHints && celebrityHints.length > 0 ? (
+        <div className={cn('space-y-0.5', dense ? 'mt-1' : 'mt-1.5')}>
+          {celebrityHints.map((hint) => (
+            <p
+              key={hint.shortLabel}
+              className={cn(
+                'text-center text-[9px] leading-tight',
+                hint.matchesUser ? 'text-brand-green' : 'text-muted-foreground',
+              )}
+            >
+              <span className="font-semibold">{hint.shortLabel}:</span> {hint.winnerNameEs}
+            </p>
+          ))}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -190,8 +220,11 @@ export function KnockoutBracketView({
   onPredictionSaved,
   persistMode = 'server',
   isMatchLocked,
+  mobileFit = false,
+  celebrityKnockoutHints,
 }: KnockoutBracketViewProps) {
   const [activeRoundIndex, setActiveRoundIndex] = useState(0)
+  const [mobileMatchIndex, setMobileMatchIndex] = useState(0)
   const [pendingMatchId, setPendingMatchId] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -209,6 +242,10 @@ export function KnockoutBracketView({
     return map
   }, [])
 
+  useEffect(() => {
+    setMobileMatchIndex(0)
+  }, [activeRoundIndex])
+
   function advanceRoundIfComplete(
     matchId: number,
     roundIndex: number,
@@ -223,6 +260,38 @@ export function KnockoutBracketView({
 
     if (nextDone === round.matchIds.length && roundIndex < KNOCKOUT_BRACKET_ROUNDS.length - 1) {
       setActiveRoundIndex(roundIndex + 1)
+    }
+  }
+
+  function advanceMobileMatchIfNeeded(
+    round: KnockoutBracketRound,
+    matchId: number,
+  ) {
+    if (!mobileFit) return
+
+    const matchIds = round.matchIds
+    const currentIndex = matchIds.indexOf(matchId)
+    if (currentIndex >= 0 && currentIndex < matchIds.length - 1) {
+      setMobileMatchIndex(currentIndex + 1)
+    }
+  }
+
+  function advanceMobileRoundIfComplete(
+    round: KnockoutBracketRound,
+    matchId: number,
+    nextPredictions: Record<number, BracketSlotPrediction>,
+  ) {
+    if (!mobileFit) return
+
+    const progress = getRoundProgress(round.matchIds, nextPredictions)
+    const nextDone =
+      progress.done + (nextPredictions[matchId] ? 0 : 1)
+
+    if (nextDone === round.matchIds.length) {
+      const nextIndex = KNOCKOUT_MOBILE_TAB_ROUNDS.findIndex((entry) => entry.round === round.round)
+      if (nextIndex >= 0 && nextIndex < KNOCKOUT_MOBILE_TAB_ROUNDS.length - 1) {
+        setActiveRoundIndex(nextIndex + 1)
+      }
     }
   }
 
@@ -264,6 +333,14 @@ export function KnockoutBracketView({
         ...predictions,
         [matchId]: prediction,
       })
+      if (mobileFit) {
+        const mobileRound = KNOCKOUT_MOBILE_TAB_ROUNDS[activeRoundIndex]
+        advanceMobileMatchIfNeeded(mobileRound, matchId)
+        advanceMobileRoundIfComplete(mobileRound, matchId, {
+          ...predictions,
+          [matchId]: prediction,
+        })
+      }
       return
     }
 
@@ -286,6 +363,14 @@ export function KnockoutBracketView({
         ...predictions,
         [matchId]: prediction,
       })
+      if (mobileFit) {
+        const mobileRound = KNOCKOUT_MOBILE_TAB_ROUNDS[activeRoundIndex]
+        advanceMobileMatchIfNeeded(mobileRound, matchId)
+        advanceMobileRoundIfComplete(mobileRound, matchId, {
+          ...predictions,
+          [matchId]: prediction,
+        })
+      }
     })
   }
 
@@ -341,14 +426,21 @@ export function KnockoutBracketView({
         pending={isPending && pendingMatchId === matchId}
         onPick={(teamId) => pickWinner(matchId, homeTeam.id, awayTeam.id, teamId, roundIndex)}
         dense={dense}
+        celebrityHints={celebrityKnockoutHints?.[matchId]}
       />
     )
   }
 
-  const activeRound = KNOCKOUT_BRACKET_ROUNDS[activeRoundIndex]
+  const activeMobileRound = mobileFit
+    ? KNOCKOUT_MOBILE_TAB_ROUNDS[activeRoundIndex]
+    : null
+  const activeRound = mobileFit
+    ? activeMobileRound ?? KNOCKOUT_BRACKET_ROUNDS[0]
+    : KNOCKOUT_BRACKET_ROUNDS[activeRoundIndex]
+  const activeBracketRoundIndex = getKnockoutBracketRoundIndex(activeRound)
   const activeUnlocked = isKnockoutRoundUnlocked(
     activeRound.matchIds,
-    getPreviousRoundMatchIds(activeRoundIndex),
+    getKnockoutRoundUnlockDeps(activeRound),
     predictions,
   )
   const activeCanPlay = editable && groupsComplete && activeUnlocked
@@ -415,13 +507,15 @@ export function KnockoutBracketView({
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Tocá la bandera del ganador en cada cruce. La llave sigue el cuadro oficial: equipos del
-        mismo grupo quedan en mitades opuestas (1.º vs 2.º solo pueden verse en la final).
-      </p>
+    <div className={cn('space-y-4', mobileFit && 'flex min-h-0 flex-1 flex-col gap-2 space-y-0')}>
+      {!mobileFit && (
+        <p className="text-sm text-muted-foreground">
+          Tocá la bandera del ganador en cada cruce. La llave sigue el cuadro oficial: equipos del
+          mismo grupo quedan en mitades opuestas (1.º vs 2.º solo pueden verse en la final).
+        </p>
+      )}
 
-      {!groupsComplete && (
+      {!groupsComplete && !mobileFit && (
         <p className="rounded-lg border border-brand-gold/30 bg-brand-gold/10 px-4 py-3 text-sm">
           Completá la fase de grupos para desbloquear la llave.
         </p>
@@ -430,7 +524,112 @@ export function KnockoutBracketView({
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {/* Mobile / tablet */}
-      <div className="space-y-4 lg:hidden">
+      <div className={cn('space-y-4', mobileFit ? 'flex min-h-0 flex-1 flex-col gap-2' : 'lg:hidden')}>
+        {mobileFit ? (
+          <>
+            {!groupsComplete && (
+              <p className="shrink-0 rounded-lg border border-brand-gold/30 bg-brand-gold/10 px-3 py-2 text-xs">
+                Completá grupos para desbloquear la llave.
+              </p>
+            )}
+
+            <div className="grid shrink-0 grid-cols-3 gap-1">
+              {KNOCKOUT_MOBILE_TAB_ROUNDS.map((round, roundIndex) => {
+                const progress = getRoundProgress(round.matchIds, predictions)
+                const isActive = activeRoundIndex === roundIndex
+
+                return (
+                  <button
+                    key={round.round}
+                    type="button"
+                    onClick={() => setActiveRoundIndex(roundIndex)}
+                    className={cn(
+                      'rounded-md border py-1.5 text-center text-[10px] font-semibold transition-colors',
+                      isActive
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-card text-muted-foreground',
+                      progress.done === progress.total &&
+                        progress.total > 0 &&
+                        !isActive &&
+                        'border-brand-green/50 text-brand-green',
+                    )}
+                  >
+                    {round.shortLabel}
+                    <span className="mt-0.5 block text-[9px] font-normal opacity-80">
+                      {progress.done}/{progress.total}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {error && <p className="shrink-0 text-xs text-destructive">{error}</p>}
+
+            <div className="flex min-h-0 flex-1 flex-col justify-center">
+              {(() => {
+                const matchIds = activeRound.matchIds
+                const matchId = matchIds[mobileMatchIndex] ?? matchIds[0]
+                if (!matchId) return null
+
+                return (
+                  <>
+                    <div className="flex-1 content-center">
+                      {renderMatch(
+                        matchId,
+                        activeRound.round === '3rd Place'
+                          ? editable && groupsComplete && thirdPlaceUnlocked
+                          : activeCanPlay,
+                        activeBracketRoundIndex,
+                      )}
+                    </div>
+                    {matchIds.length > 1 && (
+                      <div className="mt-2 flex shrink-0 items-center justify-between gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setMobileMatchIndex((index) => Math.max(0, index - 1))}
+                          disabled={mobileMatchIndex === 0}
+                          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-card disabled:opacity-40"
+                          aria-label="Cruce anterior"
+                        >
+                          <ChevronLeft className="size-4" aria-hidden />
+                        </button>
+                        <div className="flex flex-1 items-center justify-center gap-1">
+                          {matchIds.map((id, index) => (
+                            <span
+                              key={id}
+                              className={cn(
+                                'size-1.5 rounded-full',
+                                index === mobileMatchIndex
+                                  ? 'bg-primary'
+                                  : predictions[id]
+                                    ? 'bg-brand-green'
+                                    : 'bg-muted-foreground/30',
+                              )}
+                            />
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setMobileMatchIndex((index) =>
+                              Math.min(matchIds.length - 1, index + 1),
+                            )
+                          }
+                          disabled={mobileMatchIndex >= matchIds.length - 1}
+                          className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-card disabled:opacity-40"
+                          aria-label="Cruce siguiente"
+                        >
+                          <ChevronRight className="size-4" aria-hidden />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
+            </div>
+          </>
+        ) : (
+          <>
         <div className="flex flex-wrap gap-1.5">
           {KNOCKOUT_BRACKET_ROUNDS.map((round, roundIndex) => {
             const progress = getRoundProgress(round.matchIds, predictions)
@@ -473,6 +672,8 @@ export function KnockoutBracketView({
           </p>
           {renderMobileRoundMatches()}
         </div>
+          </>
+        )}
       </div>
 
       {/* Desktop: grid alineado al árbol FIFA */}
@@ -564,18 +765,20 @@ export function KnockoutBracketView({
         </div>
       </div>
 
-      <div className="mx-auto max-w-xs">
-        <div className="mb-2 text-center">
-          <p className="font-heading text-sm tracking-wide text-muted-foreground">
-            {KNOCKOUT_THIRD_PLACE_ROUND.label.toUpperCase()}
-          </p>
+      {!mobileFit && (
+        <div className="mx-auto max-w-xs">
+          <div className="mb-2 text-center">
+            <p className="font-heading text-sm tracking-wide text-muted-foreground">
+              {KNOCKOUT_THIRD_PLACE_ROUND.label.toUpperCase()}
+            </p>
+          </div>
+          {renderMatch(
+            KNOCKOUT_THIRD_PLACE_ROUND.matchIds[0],
+            editable && groupsComplete && thirdPlaceUnlocked,
+            -1,
+          )}
         </div>
-        {renderMatch(
-          KNOCKOUT_THIRD_PLACE_ROUND.matchIds[0],
-          editable && groupsComplete && thirdPlaceUnlocked,
-          -1,
-        )}
-      </div>
+      )}
     </div>
   )
 }

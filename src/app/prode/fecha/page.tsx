@@ -10,6 +10,7 @@ import {
   canEditPrediction,
   groupMatchesBySection,
   isMatchPredictable,
+  PREDICTION_LOCK_LABEL,
 } from '@/lib/matches/availability'
 import {
   getFinishedPredictions,
@@ -163,7 +164,7 @@ export default async function ProdeFechaPage({
       <div className="mb-6">
         <h1 className="font-heading text-3xl tracking-wide">FECHA A FECHA</h1>
         <p className="mt-2 text-muted-foreground">
-          {editableCount} partido{editableCount !== 1 ? 's' : ''} abierto{editableCount !== 1 ? 's' : ''} · cierre 5 min antes del kick-off
+          {editableCount} partido{editableCount !== 1 ? 's' : ''} abierto{editableCount !== 1 ? 's' : ''} · cierre {PREDICTION_LOCK_LABEL} antes del kick-off
           {scorersEnabled && ' · goleadores opcionales'}
         </p>
       </div>

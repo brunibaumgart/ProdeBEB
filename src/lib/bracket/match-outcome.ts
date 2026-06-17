@@ -43,6 +43,34 @@ export function formatGroupOutcomeLabel(
   }
 }
 
+/** Marcador genérico 1-0 / 0-0 / 0-1 usado al votar por bandera o centro. */
+export function isCanonicalGroupOutcomeScore(predHome: number, predAway: number): boolean {
+  return (
+    (predHome === 1 && predAway === 0) ||
+    (predHome === 0 && predAway === 0) ||
+    (predHome === 0 && predAway === 1)
+  )
+}
+
+export function formatGroupPredictionLabel(
+  predHome: number,
+  predAway: number,
+  homeName: string,
+  awayName: string,
+): { title: string; subtitle?: string } {
+  const outcome = scoresToGroupOutcome(predHome, predAway)
+  if (outcome && isCanonicalGroupOutcomeScore(predHome, predAway)) {
+    return { title: formatGroupOutcomeLabel(outcome, homeName, awayName) }
+  }
+
+  const outcomeTitle =
+    outcome != null ? formatGroupOutcomeLabel(outcome, homeName, awayName) : 'Marcador'
+  return {
+    title: `${predHome} – ${predAway}`,
+    subtitle: outcomeTitle,
+  }
+}
+
 export function encodeKnockoutWinner(
   advancesTeamId: string,
   homeTeamId: string,

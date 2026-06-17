@@ -35,9 +35,9 @@ const LABELS: Record<
   'matchday-to-complete': {
     title: 'Importar desde Fecha a Fecha',
     description: (count) =>
-      `Copiar ${count} predicción${count === 1 ? '' : 'es'} como victoria/empate al Prode Completo. Reinicia eliminatorias y campeón.`,
+      `Copiar ${count} predicción${count === 1 ? '' : 'es'} con marcador exacto al Prode Completo. Reinicia eliminatorias y campeón.`,
     confirm:
-      '¿Importar resultados (victoria/empate) desde Fecha a Fecha? Se borrarán tus cruces de eliminatorias y el campeón.',
+      '¿Importar marcadores exactos desde Fecha a Fecha? Se borrarán tus cruces de eliminatorias y el campeón.',
   },
 }
 

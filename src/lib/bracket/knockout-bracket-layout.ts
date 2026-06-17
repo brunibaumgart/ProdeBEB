@@ -110,7 +110,7 @@ export const KNOCKOUT_BRACKET_ROUNDS: KnockoutBracketRound[] = [
   {
     round: 'Round of 32',
     label: 'Dieciseisavos',
-    shortLabel: 'R32',
+    shortLabel: '16avos',
     matchIds: BRACKET_MATCH_PLACEMENTS.filter((slot) => slot.round === 'Round of 32').map(
       (slot) => slot.matchId,
     ),
@@ -118,7 +118,7 @@ export const KNOCKOUT_BRACKET_ROUNDS: KnockoutBracketRound[] = [
   {
     round: 'Round of 16',
     label: 'Octavos',
-    shortLabel: 'R16',
+    shortLabel: '8vos',
     matchIds: BRACKET_MATCH_PLACEMENTS.filter((slot) => slot.round === 'Round of 16').map(
       (slot) => slot.matchId,
     ),
@@ -126,7 +126,7 @@ export const KNOCKOUT_BRACKET_ROUNDS: KnockoutBracketRound[] = [
   {
     round: 'Quarterfinals',
     label: 'Cuartos',
-    shortLabel: 'CF',
+    shortLabel: '4tos',
     matchIds: BRACKET_MATCH_PLACEMENTS.filter((slot) => slot.round === 'Quarterfinals').map(
       (slot) => slot.matchId,
     ),
@@ -134,7 +134,7 @@ export const KNOCKOUT_BRACKET_ROUNDS: KnockoutBracketRound[] = [
   {
     round: 'Semifinals',
     label: 'Semifinal',
-    shortLabel: 'SF',
+    shortLabel: 'Semi',
     matchIds: BRACKET_MATCH_PLACEMENTS.filter((slot) => slot.round === 'Semifinals').map(
       (slot) => slot.matchId,
     ),
@@ -142,7 +142,7 @@ export const KNOCKOUT_BRACKET_ROUNDS: KnockoutBracketRound[] = [
   {
     round: 'Final',
     label: 'Final',
-    shortLabel: 'F',
+    shortLabel: 'Final',
     matchIds: [104],
   },
 ]
@@ -150,8 +150,29 @@ export const KNOCKOUT_BRACKET_ROUNDS: KnockoutBracketRound[] = [
 export const KNOCKOUT_THIRD_PLACE_ROUND: KnockoutBracketRound = {
   round: '3rd Place',
   label: 'Tercer puesto',
-  shortLabel: '3P',
+  shortLabel: '3°',
   matchIds: [103],
+}
+
+/** Tabs móviles: orden del torneo, tercer puesto antes de la final. */
+export const KNOCKOUT_MOBILE_TAB_ROUNDS: KnockoutBracketRound[] = [
+  ...KNOCKOUT_BRACKET_ROUNDS.slice(0, -1),
+  KNOCKOUT_THIRD_PLACE_ROUND,
+  KNOCKOUT_BRACKET_ROUNDS[KNOCKOUT_BRACKET_ROUNDS.length - 1]!,
+]
+
+export function getKnockoutBracketRoundIndex(round: KnockoutBracketRound): number {
+  if (round.round === '3rd Place') return -1
+  return KNOCKOUT_BRACKET_ROUNDS.findIndex((entry) => entry.round === round.round)
+}
+
+export function getKnockoutRoundUnlockDeps(
+  round: KnockoutBracketRound,
+): number[] {
+  if (round.round === '3rd Place') return [101, 102]
+  const bracketIndex = getKnockoutBracketRoundIndex(round)
+  if (bracketIndex < 0) return []
+  return getPreviousRoundMatchIds(bracketIndex)
 }
 
 export const BRACKET_ROUND_COLUMNS: {
