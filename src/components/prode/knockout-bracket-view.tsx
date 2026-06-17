@@ -247,18 +247,15 @@ export function KnockoutBracketView({
   }, [activeRoundIndex])
 
   function advanceRoundIfComplete(
-    matchId: number,
     roundIndex: number,
     nextPredictions: Record<number, BracketSlotPrediction>,
   ) {
     if (roundIndex < 0) return
 
     const round = KNOCKOUT_BRACKET_ROUNDS[roundIndex]
-    const nextDone =
-      getRoundProgress(round.matchIds, nextPredictions).done +
-      (predictions[matchId] ? 0 : 1)
+    const { done } = getRoundProgress(round.matchIds, nextPredictions)
 
-    if (nextDone === round.matchIds.length && roundIndex < KNOCKOUT_BRACKET_ROUNDS.length - 1) {
+    if (done === round.matchIds.length && roundIndex < KNOCKOUT_BRACKET_ROUNDS.length - 1) {
       setActiveRoundIndex(roundIndex + 1)
     }
   }
@@ -278,16 +275,13 @@ export function KnockoutBracketView({
 
   function advanceMobileRoundIfComplete(
     round: KnockoutBracketRound,
-    matchId: number,
     nextPredictions: Record<number, BracketSlotPrediction>,
   ) {
     if (!mobileFit) return
 
-    const progress = getRoundProgress(round.matchIds, nextPredictions)
-    const nextDone =
-      progress.done + (nextPredictions[matchId] ? 0 : 1)
+    const { done, total } = getRoundProgress(round.matchIds, nextPredictions)
 
-    if (nextDone === round.matchIds.length) {
+    if (done === total) {
       const nextIndex = KNOCKOUT_MOBILE_TAB_ROUNDS.findIndex((entry) => entry.round === round.round)
       if (nextIndex >= 0 && nextIndex < KNOCKOUT_MOBILE_TAB_ROUNDS.length - 1) {
         setActiveRoundIndex(nextIndex + 1)
@@ -329,14 +323,14 @@ export function KnockoutBracketView({
 
     if (persistMode === 'local') {
       onPredictionSaved(matchId, prediction)
-      advanceRoundIfComplete(matchId, roundIndex, {
+      advanceRoundIfComplete(roundIndex, {
         ...predictions,
         [matchId]: prediction,
       })
       if (mobileFit) {
         const mobileRound = KNOCKOUT_MOBILE_TAB_ROUNDS[activeRoundIndex]
         advanceMobileMatchIfNeeded(mobileRound, matchId)
-        advanceMobileRoundIfComplete(mobileRound, matchId, {
+        advanceMobileRoundIfComplete(mobileRound, {
           ...predictions,
           [matchId]: prediction,
         })
@@ -359,14 +353,14 @@ export function KnockoutBracketView({
       }
 
       onPredictionSaved(matchId, prediction)
-      advanceRoundIfComplete(matchId, roundIndex, {
+      advanceRoundIfComplete(roundIndex, {
         ...predictions,
         [matchId]: prediction,
       })
       if (mobileFit) {
         const mobileRound = KNOCKOUT_MOBILE_TAB_ROUNDS[activeRoundIndex]
         advanceMobileMatchIfNeeded(mobileRound, matchId)
-        advanceMobileRoundIfComplete(mobileRound, matchId, {
+        advanceMobileRoundIfComplete(mobileRound, {
           ...predictions,
           [matchId]: prediction,
         })
