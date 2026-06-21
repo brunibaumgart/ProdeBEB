@@ -3,6 +3,10 @@ import type { FixtureMatch } from '@/lib/data'
 const ARG_OFFSET_HOURS = 3
 const ARG_TIMEZONE = 'America/Argentina/Buenos_Aires'
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000
+/** Inicio de la jornada mundialista en hora Argentina. */
+const MATCHDAY_START_HOUR = 11
+/** Cierre de la jornada (madrugada del día calendario siguiente). */
+const MATCHDAY_END_HOUR = 3
 
 export function matchDateUTC(dateStr: string, timeArg: string): Date {
   const [year, month, day] = dateStr.split('-').map(Number)
@@ -10,21 +14,53 @@ export function matchDateUTC(dateStr: string, timeArg: string): Date {
   return new Date(Date.UTC(year, month - 1, day, hours + ARG_OFFSET_HOURS, minutes))
 }
 
-export function getArgentinaTodayBounds(): { gte: Date; lte: Date } {
+function getArgentinaCalendarParts(date = new Date()) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: ARG_TIMEZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).formatToParts(new Date())
-
-  const year = Number(parts.find((part) => part.type === 'year')!.value)
-  const month = Number(parts.find((part) => part.type === 'month')!.value)
-  const day = Number(parts.find((part) => part.type === 'day')!.value)
+    hour: '2-digit',
+    hour12: false,
+  }).formatToParts(date)
 
   return {
-    gte: new Date(Date.UTC(year, month - 1, day, 3, 0, 0)),
-    lte: new Date(Date.UTC(year, month - 1, day + 1, 2, 59, 59, 999)),
+    year: Number(parts.find((part) => part.type === 'year')!.value),
+    month: Number(parts.find((part) => part.type === 'month')!.value),
+    day: Number(parts.find((part) => part.type === 'day')!.value),
+    hour: Number(parts.find((part) => part.type === 'hour')!.value),
+  }
+}
+
+/** Jornada mundialista: 11:00 AR → 03:00 AR del día siguiente. */
+export function getArgentinaTodayBounds(): { gte: Date; lte: Date } {
+  const { year, month, day, hour } = getArgentinaCalendarParts()
+
+  // Entre 00:00 y 02:59 seguimos en la jornada que empezó ayer a las 11.
+  const jornadaStart =
+    hour < MATCHDAY_END_HOUR
+      ? new Date(Date.UTC(year, month - 1, day - 1))
+      : new Date(Date.UTC(year, month - 1, day))
+
+  const startYear = jornadaStart.getUTCFullYear()
+  const startMonth = jornadaStart.getUTCMonth() + 1
+  const startDay = jornadaStart.getUTCDate()
+
+  return {
+    gte: new Date(
+      Date.UTC(startYear, startMonth - 1, startDay, MATCHDAY_START_HOUR + ARG_OFFSET_HOURS, 0, 0),
+    ),
+    lte: new Date(
+      Date.UTC(
+        startYear,
+        startMonth - 1,
+        startDay + 1,
+        MATCHDAY_END_HOUR + ARG_OFFSET_HOURS,
+        0,
+        0,
+        0,
+      ),
+    ),
   }
 }
 

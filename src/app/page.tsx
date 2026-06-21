@@ -25,8 +25,8 @@ export default async function HomePage() {
     getRecentFinishedMatches(3, { includeTestMatches }),
   ])
 
-  let featuredMatches = todayMatches.slice(0, 3)
-  let sectionTitle = 'PARTIDOS DE HOY'
+  let featuredMatches = todayMatches
+  let sectionTitle = 'JORNADA DE HOY'
 
   if (featuredMatches.length === 0) {
     if (upcoming.length > 0) {

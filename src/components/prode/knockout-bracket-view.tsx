@@ -10,9 +10,13 @@ import {
   encodeKnockoutWinner,
 } from '@/lib/bracket/match-outcome'
 import {
-  BRACKET_GRID_ROWS,
   BRACKET_MATCH_PLACEMENTS,
   BRACKET_ROUND_COLUMNS,
+  DESKTOP_FINAL_COLUMN,
+  DESKTOP_MIRROR_GRID_COLUMNS,
+  DESKTOP_MIRROR_GRID_ROWS,
+  DESKTOP_MIRROR_HEADER_COLUMNS,
+  getDesktopMirrorPlacement,
   KNOCKOUT_BRACKET_ROUNDS,
   KNOCKOUT_MOBILE_TAB_ROUNDS,
   KNOCKOUT_THIRD_PLACE_ROUND,
@@ -198,15 +202,30 @@ function BracketMatchCard({
   )
 }
 
-function BracketConnector({ rowSpan }: { rowSpan: number }) {
+function BracketConnector({
+  rowSpan,
+  direction = 'right',
+}: {
+  rowSpan: number
+  direction?: 'left' | 'right'
+}) {
   return (
     <div
       aria-hidden
       className="pointer-events-none relative hidden w-3 shrink-0 lg:block xl:w-4"
       style={{ gridRowEnd: `span ${rowSpan}` }}
     >
-      <div className="absolute inset-y-[12%] right-0 w-1/2 border-y border-r border-primary/25" />
-      <div className="absolute left-1/2 top-1/2 h-px w-1/2 -translate-y-1/2 bg-primary/25" />
+      {direction === 'right' ? (
+        <>
+          <div className="absolute inset-y-[12%] right-0 w-1/2 border-y border-r border-primary/25" />
+          <div className="absolute left-1/2 top-1/2 h-px w-1/2 -translate-y-1/2 bg-primary/25" />
+        </>
+      ) : (
+        <>
+          <div className="absolute inset-y-[12%] left-0 w-1/2 border-y border-l border-primary/25" />
+          <div className="absolute right-1/2 top-1/2 h-px w-1/2 -translate-y-1/2 bg-primary/25" />
+        </>
+      )}
     </div>
   )
 }
@@ -670,89 +689,78 @@ export function KnockoutBracketView({
         )}
       </div>
 
-      {/* Desktop: grid alineado al árbol FIFA */}
-      <div className="hidden lg:block">
-        <div className="mb-3 grid grid-cols-[1fr_auto_1fr] gap-2 text-center text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-          <span>Mitad izquierda → M101</span>
-          <span className="opacity-40">|</span>
-          <span>Mitad derecha → M102</span>
+      {/* Desktop: árbol espejado (mitades convergen al centro) */}
+      <div className="hidden overflow-x-auto lg:block">
+        <div className="mb-3 grid min-w-[72rem] grid-cols-[1fr_auto_1fr] gap-2 text-center text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <span>← Mitad izquierda</span>
+          <span className="px-2 text-primary">Final</span>
+          <span>Mitad derecha →</span>
         </div>
 
-        <div className="mb-2 grid grid-cols-9 gap-x-1 text-center xl:gap-x-2">
-          {BRACKET_ROUND_COLUMNS.map((column, columnIndex) => (
+        <div className="mb-2 grid min-w-[72rem] gap-x-1 text-center xl:gap-x-2" style={{ gridTemplateColumns: DESKTOP_MIRROR_GRID_COLUMNS }}>
+          {DESKTOP_MIRROR_HEADER_COLUMNS.map((header) => (
             <div
-              key={column.round}
-              className="font-heading text-[10px] tracking-wide text-primary xl:text-xs"
-              style={{ gridColumn: columnIndex * 2 + 1 }}
+              key={`${header.column}-${header.shortLabel}`}
+              className={cn(
+                'font-heading text-[10px] tracking-wide text-primary xl:text-xs',
+                header.column === DESKTOP_FINAL_COLUMN && 'font-semibold',
+              )}
+              style={{ gridColumn: header.column }}
             >
-              {column.shortLabel}
+              {header.shortLabel}
             </div>
           ))}
         </div>
 
         <div
-          className="grid w-full gap-x-1 xl:gap-x-2"
+          className="grid min-w-[72rem] gap-x-1 xl:gap-x-2"
           style={{
-            gridTemplateRows: `repeat(${BRACKET_GRID_ROWS}, minmax(2.5rem, auto))`,
-            gridTemplateColumns:
-              'minmax(0,1fr) 0.75rem minmax(0,1fr) 0.75rem minmax(0,1fr) 0.75rem minmax(0,1fr) 0.75rem minmax(0,1fr)',
+            gridTemplateRows: `repeat(${DESKTOP_MIRROR_GRID_ROWS}, minmax(2.5rem, auto))`,
+            gridTemplateColumns: DESKTOP_MIRROR_GRID_COLUMNS,
           }}
         >
-          {BRACKET_ROUND_COLUMNS.map((column, columnIndex) => {
-            const roundIndex = KNOCKOUT_BRACKET_ROUNDS.findIndex((r) => r.round === column.round)
-            const slots = placementsByRound.get(column.round) ?? []
+          {BRACKET_MATCH_PLACEMENTS.map((slot) => {
+            const placement = getDesktopMirrorPlacement(slot.matchId)
+            if (!placement) return null
+
+            const roundIndex = roundIndexByMatchId.get(slot.matchId) ?? 0
             const unlocked = isKnockoutRoundUnlocked(
               KNOCKOUT_BRACKET_ROUNDS[roundIndex]?.matchIds ?? [],
               getPreviousRoundMatchIds(roundIndex),
               predictions,
             )
             const canPlayRound = editable && groupsComplete && unlocked
-            const matchColumn = columnIndex * 2 + 1
-            const connectorColumn = columnIndex * 2 + 2
 
             return (
-              <div key={column.round} className="contents">
-                {slots.map((slot) => {
-                  const roundIdx = roundIndexByMatchId.get(slot.matchId) ?? roundIndex
-                  const showHalfDivider =
-                    column.round === 'Semifinals' && slot.half === 'right'
+              <div key={slot.matchId} className="contents">
+                <div
+                  className={cn(
+                    'relative flex items-center px-0.5',
+                    slot.half === 'left' && slot.round === 'Round of 32' && 'bg-primary/[0.02]',
+                    slot.half === 'right' && slot.round === 'Round of 32' && 'bg-brand-gold/[0.03]',
+                  )}
+                  style={{
+                    gridColumn: placement.matchColumn,
+                    gridRow: `${placement.row} / span ${placement.rowSpan}`,
+                  }}
+                >
+                  {renderMatch(slot.matchId, canPlayRound, roundIndex, true)}
+                </div>
 
-                  return (
-                    <div
-                      key={slot.matchId}
-                      className={cn(
-                        'relative flex items-center px-0.5',
-                        showHalfDivider && 'border-l border-dashed border-primary/20 pl-1',
-                        slot.half === 'left' &&
-                          column.round === 'Round of 32' &&
-                          'bg-primary/[0.02]',
-                        slot.half === 'right' &&
-                          column.round === 'Round of 32' &&
-                          'bg-brand-gold/[0.03]',
-                      )}
-                      style={{
-                        gridColumn: matchColumn,
-                        gridRow: `${slot.row} / span ${slot.rowSpan}`,
-                      }}
-                    >
-                      {renderMatch(slot.matchId, canPlayRound, roundIdx, true)}
-                    </div>
-                  )
-                })}
-
-                {columnIndex < BRACKET_ROUND_COLUMNS.length - 1 &&
-                  slots.map((slot) => (
-                    <div
-                      key={`connector-${slot.matchId}`}
-                      className="flex items-center"
-                      style={{
-                        gridColumn: connectorColumn,
-                        gridRow: `${slot.row} / span ${slot.rowSpan}`,
-                      }}
-                    >
-                      <BracketConnector rowSpan={slot.rowSpan} />
-                    </div>
-                  ))}
+                {placement.connectorColumn != null ? (
+                  <div
+                    className="flex items-center"
+                    style={{
+                      gridColumn: placement.connectorColumn,
+                      gridRow: `${placement.row} / span ${placement.rowSpan}`,
+                    }}
+                  >
+                    <BracketConnector
+                      rowSpan={placement.rowSpan}
+                      direction={placement.connectorDirection}
+                    />
+                  </div>
+                ) : null}
               </div>
             )
           })}

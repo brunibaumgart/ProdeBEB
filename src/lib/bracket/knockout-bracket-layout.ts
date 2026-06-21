@@ -227,3 +227,70 @@ export function getPreviousRoundMatchIds(roundIndex: number): number[] {
   if (roundIndex <= 0) return []
   return KNOCKOUT_BRACKET_ROUNDS[roundIndex - 1].matchIds
 }
+
+/** Filas del árbol espejado en desktop (mitad izq. y der. alineadas). */
+export const DESKTOP_MIRROR_GRID_ROWS = 8
+
+const DESKTOP_LEFT_ROUND_COLUMNS = [1, 3, 5, 7] as const
+const DESKTOP_RIGHT_ROUND_COLUMNS = [17, 15, 13, 11] as const
+export const DESKTOP_FINAL_COLUMN = 9
+
+export type DesktopMirrorPlacement = {
+  matchColumn: number
+  connectorColumn: number | null
+  connectorDirection: 'left' | 'right'
+  row: number
+  rowSpan: number
+}
+
+export const DESKTOP_MIRROR_HEADER_COLUMNS = [
+  { shortLabel: '16avos', column: 1 },
+  { shortLabel: '8vos', column: 3 },
+  { shortLabel: '4tos', column: 5 },
+  { shortLabel: 'Semi', column: 7 },
+  { shortLabel: 'Final', column: DESKTOP_FINAL_COLUMN },
+  { shortLabel: 'Semi', column: 11 },
+  { shortLabel: '4tos', column: 13 },
+  { shortLabel: '8vos', column: 15 },
+  { shortLabel: '16avos', column: 17 },
+] as const
+
+export const DESKTOP_MIRROR_GRID_COLUMNS =
+  'minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(6rem,1.1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr) 0.75rem minmax(5.5rem,1fr)'
+
+export function getDesktopMirrorPlacement(matchId: number): DesktopMirrorPlacement | null {
+  const slot = getBracketMatchPlacement(matchId)
+  if (!slot) return null
+
+  const roundIndex = getKnockoutRoundIndex(matchId)
+
+  if (matchId === 104) {
+    return {
+      matchColumn: DESKTOP_FINAL_COLUMN,
+      connectorColumn: null,
+      connectorDirection: 'right',
+      row: 1,
+      rowSpan: DESKTOP_MIRROR_GRID_ROWS,
+    }
+  }
+
+  if (slot.half === 'left') {
+    const matchColumn = DESKTOP_LEFT_ROUND_COLUMNS[roundIndex] ?? DESKTOP_FINAL_COLUMN
+    return {
+      matchColumn,
+      connectorColumn: roundIndex < DESKTOP_LEFT_ROUND_COLUMNS.length ? matchColumn + 1 : null,
+      connectorDirection: 'right',
+      row: slot.row,
+      rowSpan: slot.rowSpan,
+    }
+  }
+
+  const matchColumn = DESKTOP_RIGHT_ROUND_COLUMNS[roundIndex] ?? DESKTOP_FINAL_COLUMN
+  return {
+    matchColumn,
+    connectorColumn: roundIndex < DESKTOP_RIGHT_ROUND_COLUMNS.length ? matchColumn - 1 : null,
+    connectorDirection: 'left',
+    row: slot.row - 8,
+    rowSpan: slot.rowSpan,
+  }
+}
