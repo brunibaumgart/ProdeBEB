@@ -203,7 +203,7 @@ export function SimulatorMatchRow({
               size="xs"
               onClick={handleModeToggle}
               className="rounded-full px-2.5"
-              title={inputMode === 'outcome' ? 'Usar marcador exacto' : 'Usar victoria / empate'}
+              title={inputMode === 'outcome' ? 'Usar marcador exacto' : 'Usar resultado (gana local / empate / visita)'}
             >
               {inputMode === 'outcome' ? (
                 <>
@@ -213,7 +213,7 @@ export function SimulatorMatchRow({
               ) : (
                 <>
                   <ListOrdered aria-hidden />
-                  V/E/L
+                  Resultado
                 </>
               )}
             </Button>

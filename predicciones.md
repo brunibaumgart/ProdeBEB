@@ -108,3 +108,49 @@ senegal
 turquia
 costa de marfil
 egipto 
+
+16avos
+alemania le gana a turquia
+francia gana a suecia
+corea gana a suiza
+brasil gana a japon
+portual gana a ghana
+españa gana a argelia
+usa gana a costa de marfil
+belgica gana a cabo verde
+marruecos gana a paises bajos
+noruega gana a ecuador
+mexico gana a escocia
+inglaterra gana a congo
+argentina gana a uruguay
+paraguay gana a iran
+canada gana a egipto
+colombia gana a senegal
+
+8vos
+alemania gana a francia
+brasil gana a corea
+españa gana a portugal
+usa gana a belgica
+noruega gana a marruecos
+mexico gana a inglaterra
+argentina gana a paraguay
+colombia gana a canada
+
+4tos
+brasil gana a alemania
+españa gana a usa
+noruega gana a mexico
+argentina gana a colombia
+
+semis
+españa gana a brasil
+argentina gana a noruega
+
+3er puesto
+no especifico
+
+final
+argentina gana a españa
+
+

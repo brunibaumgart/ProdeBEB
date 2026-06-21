@@ -308,10 +308,8 @@ export function ClassificationScenariosPanel({
                   <div
                     key={scenario.id}
                     className={cn(
-                      'overflow-hidden rounded-xl border transition-colors',
-                      isApplied
-                        ? 'border-brand-green/30 bg-card'
-                        : 'border-border/60 bg-card',
+                      'overflow-hidden rounded-xl border border-border/60 bg-card transition-colors',
+                      isApplied && 'ring-1 ring-primary/20',
                     )}
                   >
                     <ClassificationScenarioCard
@@ -326,7 +324,7 @@ export function ClassificationScenariosPanel({
                       <span className="text-[11px] text-muted-foreground">
                         Escenario {index + 1}
                         {isApplied ? (
-                          <span className="ml-1.5 inline-flex items-center gap-1 text-brand-green">
+                          <span className="ml-1.5 inline-flex items-center gap-1 text-primary">
                             <Check className="size-3" aria-hidden />
                             aplicado
                           </span>
@@ -338,11 +336,7 @@ export function ClassificationScenariosPanel({
                         variant={isApplied ? 'outline' : 'default'}
                         onClick={() => handleApply(scenario)}
                         disabled={scenario.picks.length === 0}
-                        className={cn(
-                          'h-8 shrink-0 px-3 text-xs',
-                          !isApplied && 'bg-brand-green text-white hover:bg-brand-green/90',
-                          isApplied && 'border-brand-green/40 text-brand-green',
-                        )}
+                        className="h-8 shrink-0 px-3 text-xs"
                       >
                         {isApplied ? 'Reaplicar' : 'Aplicar'}
                       </Button>
@@ -382,8 +376,8 @@ export function ClassificationScenariosPanel({
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
             {embedded
-              ? 'Buscá escenarios en los partidos pendientes (V/E/L).'
-              : 'Buscá escenarios en los partidos pendientes (victoria / empate / derrota). Desempates con criterio olímpico. Para 8 mejores terceros, compara contra resultados reales de los otros grupos (disponible desde la fecha 2).'}
+              ? 'Buscá escenarios en los partidos pendientes (gana local, empate o gana visitante).'
+              : 'Buscá escenarios en los partidos pendientes (gana local, empate o gana visitante). Desempates con criterio olímpico. Para 8 mejores terceros, compara contra resultados reales de los otros grupos (disponible desde la fecha 2).'}
           </p>
           {!bestThirdAvailable && !embedded && (
             <p className="mt-2 text-xs text-muted-foreground">

@@ -615,8 +615,8 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
                     ¿Qué tiene que pasar?
                   </DialogTitle>
                   <DialogDescription>
-                    Buscá escenarios en los partidos pendientes (V/E/L). Desempates con criterio
-                    olímpico.
+                    Buscá escenarios en los partidos pendientes: gana local, empate o gana visitante.
+                    Desempates con criterio olímpico.
                   </DialogDescription>
                 </DialogHeader>
                 {renderClassificationPanel(false, { showHeader: false, modal: true })}
