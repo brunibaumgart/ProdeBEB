@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { BarChart3, CalendarDays, Grid3x3, MapPin, Users } from 'lucide-react'
 import { auth } from '@clerk/nextjs/server'
 
@@ -15,6 +16,7 @@ import { getArgentinaTodayBounds, isWithinTwoHours } from '@/lib/time'
 
 export default async function HomePage() {
   const { userId: clerkId } = await auth()
+  if (!clerkId) redirect('/bienvenida')
   const includeTestMatches = await canAccessTestContent(clerkId)
   const { gte, lte } = getArgentinaTodayBounds()
 
