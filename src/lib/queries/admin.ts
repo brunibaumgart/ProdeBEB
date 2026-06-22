@@ -269,3 +269,39 @@ export async function getAdminPushNotificationOverview() {
     orderBy: { name: 'asc' },
   })
 }
+
+const VISIT_LIST_LIMIT = 50
+const VISITOR_NOTE_LIMIT = 100
+
+export async function getAnonymousVisitStats() {
+  const now = new Date()
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+  const [totalVisits, uniqueVisitors, visitsLast7Days] = await Promise.all([
+    prisma.anonymousVisit.count(),
+    prisma.anonymousVisit.findMany({ select: { visitorId: true }, distinct: ['visitorId'] }),
+    prisma.anonymousVisit.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+  ])
+
+  return {
+    totalVisits,
+    uniqueVisitors: uniqueVisitors.length,
+    visitsLast7Days,
+  }
+}
+
+export async function getRecentAnonymousVisits(limit = VISIT_LIST_LIMIT) {
+  return prisma.anonymousVisit.findMany({
+    select: { id: true, visitorId: true, path: true, createdAt: true },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  })
+}
+
+export async function getVisitorNotes(limit = VISITOR_NOTE_LIMIT) {
+  return prisma.visitorNote.findMany({
+    select: { id: true, name: true, isAnonymous: true, message: true, createdAt: true },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  })
+}

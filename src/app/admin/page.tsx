@@ -9,6 +9,7 @@ import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
 import { AdminTabs } from '@/components/admin/admin-tabs'
 import { AdminTesteosPanel } from '@/components/admin/admin-testeos-panel'
 import { AdminUsersPanel } from '@/components/admin/admin-users-panel'
+import { AdminVisitsPanel } from '@/components/admin/admin-visits-panel'
 import { AdminWorldCupStats } from '@/components/admin/admin-world-cup-stats'
 import {
   getAdminMatchesForPredictions,
@@ -19,6 +20,9 @@ import {
   getAdminUserPredictions,
   getAdminPushNotificationOverview,
   getAdminUsers,
+  getAnonymousVisitStats,
+  getRecentAnonymousVisits,
+  getVisitorNotes,
   getMatchGoalsByMatchIds,
   getMatchStatistics,
 } from '@/lib/queries/admin'
@@ -37,7 +41,7 @@ interface AdminPageProps {
 
 import type { MatchWithRelations } from '@/lib/queries/matches'
 
-const TAB_IDS = ['partidos', 'finalizados', 'estadisticas', 'predicciones', 'usuarios', 'torneos', 'notificaciones', 'testeos']
+const TAB_IDS = ['partidos', 'finalizados', 'estadisticas', 'predicciones', 'usuarios', 'torneos', 'notificaciones', 'visitas', 'testeos']
 
 function toFormMatch(match: MatchWithRelations) {
   return {
@@ -336,6 +340,16 @@ async function NotificacionesTab() {
   )
 }
 
+async function VisitasTab() {
+  const [stats, visits, notes] = await Promise.all([
+    getAnonymousVisitStats(),
+    getRecentAnonymousVisits(),
+    getVisitorNotes(),
+  ])
+
+  return <AdminVisitsPanel stats={stats} visits={visits} notes={notes} />
+}
+
 async function TesteosTab() {
   const dbUser = await ensureDbUser()
   if (!dbUser) {
@@ -429,6 +443,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <TorneosTab />
       ) : tab === 'notificaciones' ? (
         <NotificacionesTab />
+      ) : tab === 'visitas' ? (
+        <VisitasTab />
       ) : tab === 'testeos' ? (
         <TesteosTab />
       ) : (

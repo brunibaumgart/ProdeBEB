@@ -355,3 +355,24 @@ model TournamentPayment {
   @@index([userId, status])
   @@index([status])
 }
+
+model AnonymousVisit {
+  id        String   @id @default(cuid())
+  visitorId String
+  path      String?
+  createdAt DateTime @default(now())
+
+  @@index([visitorId])
+  @@index([createdAt])
+}
+
+model VisitorNote {
+  id          String   @id @default(cuid())
+  name        String?
+  isAnonymous Boolean  @default(false)
+  message     String
+  visitorId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}

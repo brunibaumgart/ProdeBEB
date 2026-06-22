@@ -36,7 +36,7 @@ export function SiteHeader({ pathname = '/', isAdmin = false }: SiteHeaderProps)
           </Link>
         </Show>
         <Show when="signed-out">
-          <Link href="/" className="flex shrink-0 items-center gap-2">
+          <Link href="/bienvenida" className="flex shrink-0 items-center gap-2">
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary font-heading text-lg text-primary-foreground">
               P
             </span>
@@ -65,6 +65,19 @@ export function SiteHeader({ pathname = '/', isAdmin = false }: SiteHeaderProps)
               </Link>
             )
           })}
+          <Show when="signed-out">
+            <Link
+              href="/bienvenida"
+              className={cn(
+                'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                pathname === '/bienvenida'
+                  ? 'bg-primary/15 text-primary'
+                  : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+              )}
+            >
+              Cómo funciona
+            </Link>
+          </Show>
           <Show when="signed-in">
             <Link
               href="/prode"

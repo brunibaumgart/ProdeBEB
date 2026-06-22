@@ -7,6 +7,7 @@ import { MatchdayScoringNoticeModal } from '@/components/layout/matchday-scoring
 import { PioCountdownBanner } from '@/components/layout/pio-countdown-banner'
 import { PushOnboardingPrompt } from '@/components/layout/push-onboarding-prompt'
 import { SiteHeader } from '@/components/layout/site-header'
+import { VisitTracker } from '@/components/layout/visit-tracker'
 import { isAdminClerkId, isPlatformAdmin } from '@/lib/auth/test-access'
 import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { ensureDbUser } from '@/lib/queries/users'
@@ -29,6 +30,7 @@ export async function AppShell({ children, pathname }: AppShellProps) {
 
   return (
     <div className="flex min-h-full flex-col">
+      {!userId ? <VisitTracker /> : null}
       <SiteHeader pathname={pathname} isAdmin={isAdmin} />
       {dbUser ? (
         <Suspense fallback={null}>
