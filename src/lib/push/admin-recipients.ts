@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client'
 
 import { isPlatformAdmin } from '@/lib/auth/test-access'
+import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { canReceiveSurprisePush } from '@/lib/push/preferences'
 import { prisma } from '@/lib/prisma'
 
@@ -33,15 +34,20 @@ export async function getKickoffPushRecipients() {
   })
 }
 
-/** Usuarios con recordatorio 11:00 y suscripción push activa. */
+/**
+ * Usuarios con recordatorio 11:00 y suscripción push activa.
+ * pio queda excluido a pedido (sin tocar su suscripción ni su toggle).
+ */
 export async function getReminderPushRecipients() {
-  return prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: {
       pushRemindersEnabled: true,
       pushSubscriptions: { some: {} },
     },
     include: { pushSubscriptions: true },
   })
+
+  return users.filter((user) => !isPioProfile(user))
 }
 
 /** Usuarios elegibles (pio / Bruno) con sorpresas activadas. */
