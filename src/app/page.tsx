@@ -12,6 +12,8 @@ import {
   getTodayMatches,
   getUpcomingMatches,
 } from '@/lib/queries/matches'
+import { getUserPredictionsForMatchIds } from '@/lib/queries/predictions'
+import { ensureDbUser } from '@/lib/queries/users'
 import { getArgentinaTodayBounds, isWithinTwoHours } from '@/lib/time'
 
 export default async function HomePage() {
@@ -20,11 +22,12 @@ export default async function HomePage() {
   const includeTestMatches = await canAccessTestContent(clerkId)
   const { gte, lte } = getArgentinaTodayBounds()
 
-  const [todayMatches, nextMatch, upcoming, recent] = await Promise.all([
+  const [todayMatches, nextMatch, upcoming, recent, user] = await Promise.all([
     getTodayMatches(gte, lte, { includeTestMatches }),
     getNextMatch({ includeTestMatches }),
     getUpcomingMatches(3, { includeTestMatches }),
     getRecentFinishedMatches(3, { includeTestMatches }),
+    ensureDbUser(),
   ])
 
   let featuredMatches = todayMatches
@@ -39,6 +42,13 @@ export default async function HomePage() {
       sectionTitle = 'ÚLTIMOS RESULTADOS'
     }
   }
+
+  const predictionsByMatchId = user
+    ? await getUserPredictionsForMatchIds(
+        user.id,
+        featuredMatches.map((match) => match.id)
+      )
+    : new Map()
 
   const showMatchCountdown = nextMatch && isWithinTwoHours(nextMatch.date)
   const countdownTarget = showMatchCountdown ? nextMatch.date : null
@@ -88,7 +98,12 @@ export default async function HomePage() {
         {featuredMatches.length > 0 ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {featuredMatches.map((match) => (
-              <MatchCard key={match.id} match={match} href={`/fixture/${match.id}`} />
+              <MatchCard
+                key={match.id}
+                match={match}
+                href={`/fixture/${match.id}`}
+                prediction={predictionsByMatchId.get(match.id) ?? null}
+              />
             ))}
           </div>
         ) : (
