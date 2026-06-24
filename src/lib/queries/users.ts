@@ -1,7 +1,9 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 
 import { syncUserFromClerk } from '@/lib/auth/sync-user'
+import { isPioProfile } from '@/lib/personal/pio-countdown'
 import { prisma } from '@/lib/prisma'
+import { SURPRISE_PUSH_EMAIL } from '@/lib/push/preferences'
 
 export const USERNAME_REQUIRED_MESSAGE = 'Elegí tu nombre de usuario primero.'
 
@@ -36,6 +38,29 @@ export async function requireDbUserForAction() {
 
 export async function getDbUserByClerkId(clerkId: string) {
   return prisma.user.findUnique({ where: { clerkId } })
+}
+
+/**
+ * Solo para pio y Bruno: devuelve el usuario "contraparte" del par
+ * (a pio le corresponde Bruno y viceversa) junto con la etiqueta a mostrar.
+ * Para cualquier otro usuario devuelve null.
+ */
+export async function getPioBrunoCounterpart(user: { name: string | null; email: string }) {
+  if (isPioProfile(user)) {
+    const bruno = await prisma.user.findFirst({
+      where: { email: { equals: SURPRISE_PUSH_EMAIL, mode: 'insensitive' } },
+    })
+    return bruno ? { label: 'Predicción de Bruno', user: bruno } : null
+  }
+
+  if (user.email.trim().toLowerCase() === SURPRISE_PUSH_EMAIL) {
+    const pio = await prisma.user.findFirst({
+      where: { name: { equals: 'pio', mode: 'insensitive' } },
+    })
+    return pio ? { label: 'Predicción de Pío', user: pio } : null
+  }
+
+  return null
 }
 
 export async function getUserProfileStats(userId: string, options?: { includeFriendly?: boolean }) {

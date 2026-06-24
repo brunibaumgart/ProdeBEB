@@ -13,7 +13,7 @@ import {
   getUpcomingMatches,
 } from '@/lib/queries/matches'
 import { getUserPredictionsForMatchIds } from '@/lib/queries/predictions'
-import { ensureDbUser } from '@/lib/queries/users'
+import { ensureDbUser, getPioBrunoCounterpart } from '@/lib/queries/users'
 import { getArgentinaTodayBounds, isWithinTwoHours } from '@/lib/time'
 
 export default async function HomePage() {
@@ -43,11 +43,15 @@ export default async function HomePage() {
     }
   }
 
-  const predictionsByMatchId = user
-    ? await getUserPredictionsForMatchIds(
-        user.id,
-        featuredMatches.map((match) => match.id)
-      )
+  const matchIds = featuredMatches.map((match) => match.id)
+
+  const [predictionsByMatchId, counterpart] = await Promise.all([
+    user ? getUserPredictionsForMatchIds(user.id, matchIds) : new Map(),
+    user ? getPioBrunoCounterpart(user) : null,
+  ])
+
+  const counterpartPredictionsByMatchId = counterpart
+    ? await getUserPredictionsForMatchIds(counterpart.user.id, matchIds)
     : new Map()
 
   const showMatchCountdown = nextMatch && isWithinTwoHours(nextMatch.date)
@@ -97,14 +101,22 @@ export default async function HomePage() {
         </div>
         {featuredMatches.length > 0 ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredMatches.map((match) => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                href={`/fixture/${match.id}`}
-                prediction={predictionsByMatchId.get(match.id) ?? null}
-              />
-            ))}
+            {featuredMatches.map((match) => {
+              const counterpartPrediction = counterpartPredictionsByMatchId.get(match.id)
+              return (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  href={`/fixture/${match.id}`}
+                  prediction={predictionsByMatchId.get(match.id) ?? null}
+                  otherPrediction={
+                    counterpart && counterpartPrediction
+                      ? { label: counterpart.label, ...counterpartPrediction }
+                      : null
+                  }
+                />
+              )
+            })}
           </div>
         ) : (
           <p className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">

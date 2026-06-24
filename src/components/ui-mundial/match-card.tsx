@@ -13,6 +13,7 @@ interface MatchCardProps {
   href?: string
   className?: string
   prediction?: { predHome: number; predAway: number } | null
+  otherPrediction?: { label: string; predHome: number; predAway: number } | null
 }
 
 function TeamRow({
@@ -41,7 +42,13 @@ function TeamRow({
   )
 }
 
-export function MatchCard({ match, href, className, prediction }: MatchCardProps) {
+export function MatchCard({
+  match,
+  href,
+  className,
+  prediction,
+  otherPrediction,
+}: MatchCardProps) {
   const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
   const friendly = isFriendlyMatch(match)
@@ -88,6 +95,17 @@ export function MatchCard({ match, href, className, prediction }: MatchCardProps
           ) : (
             <span className="text-muted-foreground">Sin predicción</span>
           )}
+        </div>
+      )}
+
+      {otherPrediction && (
+        <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs">
+          <span className="font-semibold uppercase tracking-wide text-muted-foreground">
+            {otherPrediction.label}
+          </span>
+          <span className="font-heading text-sm tabular-nums text-brand-gold">
+            {otherPrediction.predHome} - {otherPrediction.predAway}
+          </span>
         </div>
       )}
 
