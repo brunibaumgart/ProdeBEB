@@ -12,8 +12,27 @@ interface MatchCardProps {
   match: MatchWithRelations
   href?: string
   className?: string
-  prediction?: { predHome: number; predAway: number } | null
-  otherPrediction?: { label: string; predHome: number; predAway: number } | null
+  prediction?: PredictionInfo | null
+  otherPrediction?: (PredictionInfo & { label: string }) | null
+}
+
+interface PredictionInfo {
+  predHome: number
+  predAway: number
+  points?: number | null
+  pointsScorers?: number | null
+}
+
+function getTotalPoints(prediction: PredictionInfo): number | null {
+  if (prediction.points == null) return null
+  return prediction.points + (prediction.pointsScorers ?? 0)
+}
+
+function getPointsColor(points: number | null) {
+  if (points == null) return 'text-muted-foreground'
+  if (points >= 3) return 'text-brand-green'
+  if (points >= 1) return 'text-brand-gold'
+  return 'text-muted-foreground'
 }
 
 function TeamRow({
@@ -89,8 +108,15 @@ export function MatchCard({
             Tu predicción
           </span>
           {prediction ? (
-            <span className="font-heading text-sm tabular-nums text-primary">
-              {prediction.predHome} - {prediction.predAway}
+            <span className="flex items-center gap-2">
+              <span className="font-heading text-sm tabular-nums text-primary">
+                {prediction.predHome} - {prediction.predAway}
+              </span>
+              {isFinished && (
+                <span className={cn('font-bold tabular-nums', getPointsColor(getTotalPoints(prediction)))}>
+                  {getTotalPoints(prediction) != null ? `${getTotalPoints(prediction)} pts` : 'Pendiente'}
+                </span>
+              )}
             </span>
           ) : (
             <span className="text-muted-foreground">Sin predicción</span>
@@ -103,8 +129,19 @@ export function MatchCard({
           <span className="font-semibold uppercase tracking-wide text-muted-foreground">
             {otherPrediction.label}
           </span>
-          <span className="font-heading text-sm tabular-nums text-brand-gold">
-            {otherPrediction.predHome} - {otherPrediction.predAway}
+          <span className="flex items-center gap-2">
+            <span className="font-heading text-sm tabular-nums text-brand-gold">
+              {otherPrediction.predHome} - {otherPrediction.predAway}
+            </span>
+            {isFinished && (
+              <span
+                className={cn('font-bold tabular-nums', getPointsColor(getTotalPoints(otherPrediction)))}
+              >
+                {getTotalPoints(otherPrediction) != null
+                  ? `${getTotalPoints(otherPrediction)} pts`
+                  : 'Pendiente'}
+              </span>
+            )}
           </span>
         </div>
       )}
