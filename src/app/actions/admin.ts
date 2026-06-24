@@ -22,6 +22,7 @@ import {
   advanceKnockoutTeams,
   recalculateMatchdayPointsForMatch,
 } from '@/lib/tournament/points'
+import { recalculateAllPointsForFinishedMatches } from '@/lib/tournament/recalculate-all'
 
 export type AdminActionResponse =
   | { ok: true; message: string }
@@ -389,6 +390,49 @@ export async function recalculateMatchPoints(matchId: number): Promise<SetMatchR
   revalidateAdminMatchPaths()
 
   return { ok: true, message: 'Puntos recalculados desde cero.' }
+}
+
+export async function resendMatchFinishedPush(matchId: number): Promise<SetMatchResultResponse> {
+  try {
+    await assertAdmin()
+  } catch {
+    return { ok: false, error: 'No tenés permisos de administrador.' }
+  }
+
+  const match = await getMatchById(matchId, { includeTestMatches: true })
+  if (!match) return { ok: false, error: 'Partido no encontrado.' }
+  if (match.isTest) return { ok: false, error: 'Los partidos amistosos no envían esta notificación.' }
+  if (match.status !== 'finished' || match.homeScore == null || match.awayScore == null) {
+    return { ok: false, error: 'Solo se puede reenviar en partidos finalizados con marcador.' }
+  }
+
+  const { sent, failed } = await sendMatchFinishedPushForMatchId(
+    matchId,
+    match.homeScore,
+    match.awayScore
+  )
+
+  return {
+    ok: true,
+    message: `Notificación reenviada: ${sent} dispositivo${sent === 1 ? '' : 's'} ok, ${failed} falló${failed === 1 ? '' : 'aron'}.`,
+  }
+}
+
+export async function adminRecalculateAllFinishedMatchesPoints(): Promise<SetMatchResultResponse> {
+  try {
+    await assertAdmin()
+  } catch {
+    return { ok: false, error: 'No tenés permisos de administrador.' }
+  }
+
+  const result = await recalculateAllPointsForFinishedMatches()
+
+  revalidateAdminMatchPaths()
+
+  return {
+    ok: true,
+    message: `Recálculo listo: ${result.predictionsUpdated} predicción${result.predictionsUpdated === 1 ? '' : 'es'} actualizada${result.predictionsUpdated === 1 ? '' : 's'} en ${result.matchesProcessed} partido${result.matchesProcessed === 1 ? '' : 's'} (${result.usersSynced} usuario${result.usersSynced === 1 ? '' : 's'} sincronizado${result.usersSynced === 1 ? '' : 's'}).`,
+  }
 }
 
 export async function setUserTester(

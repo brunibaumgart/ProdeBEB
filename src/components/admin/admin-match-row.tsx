@@ -2,10 +2,10 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, RefreshCw, Radio } from 'lucide-react'
+import { Loader2, RefreshCw, Radio, BellRing } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { notifyMatchStarted, recalculateMatchPoints } from '@/app/actions/admin'
+import { notifyMatchStarted, recalculateMatchPoints, resendMatchFinishedPush } from '@/app/actions/admin'
 import { AdminMatchPredictions } from '@/components/admin/admin-match-predictions'
 import { Button } from '@/components/ui/button'
 import { FlagIcon } from '@/components/ui-mundial/flag-icon'
@@ -36,6 +36,7 @@ interface AdminMatchRowProps {
   stats?: MatchStatistics
   predictions?: AdminPredictionView[]
   showHeader?: boolean
+  canResendFinishedPush?: boolean
 }
 
 function TeamLabel({ team, fallback }: { team: TeamInfo | null; fallback: string }) {
@@ -66,8 +67,16 @@ function StatBar({ label, value, total, colorClass }: { label: string; value: nu
   )
 }
 
-export function AdminMatchRow({ match, action, stats, predictions, showHeader = true }: AdminMatchRowProps) {
+export function AdminMatchRow({
+  match,
+  action,
+  stats,
+  predictions,
+  showHeader = true,
+  canResendFinishedPush = false,
+}: AdminMatchRowProps) {
   const [isPending, startTransition] = useTransition()
+  const [isResendPending, startResendTransition] = useTransition()
   const router = useRouter()
   const canNotifyKickoff =
     action === 'notify-kickoff' && !match.isTest && !match.kickoffPushNotifiedAt
@@ -81,6 +90,17 @@ export function AdminMatchRow({ match, action, stats, predictions, showHeader = 
       if (result.ok) {
         toast.success(result.message)
         router.refresh()
+      } else {
+        toast.error(result.error)
+      }
+    })
+  }
+
+  function handleResendFinishedPush() {
+    startResendTransition(async () => {
+      const result = await resendMatchFinishedPush(match.id)
+      if (result.ok) {
+        toast.success(result.message)
       } else {
         toast.error(result.error)
       }
@@ -148,22 +168,40 @@ export function AdminMatchRow({ match, action, stats, predictions, showHeader = 
         </div>
       )}
 
-      {!showHeader && action && (
-        <div className="flex justify-end px-4 py-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleAction}
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Loader2 className="size-3.5 animate-spin" aria-hidden />
-            ) : (
-              <RefreshCw className="size-3.5" aria-hidden />
-            )}
-            Recalcular puntos
-          </Button>
+      {!showHeader && (action || canResendFinishedPush) && (
+        <div className="flex justify-end gap-2 px-4 py-2">
+          {canResendFinishedPush && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleResendFinishedPush}
+              disabled={isResendPending}
+            >
+              {isResendPending ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : (
+                <BellRing className="size-3.5" aria-hidden />
+              )}
+              Reenviar notificación de fin
+            </Button>
+          )}
+          {action && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAction}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : (
+                <RefreshCw className="size-3.5" aria-hidden />
+              )}
+              Recalcular puntos
+            </Button>
+          )}
         </div>
       )}
 

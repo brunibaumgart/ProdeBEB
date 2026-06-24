@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/app-shell'
 import { AdminMatchForm } from '@/components/admin/admin-match-form'
 import { AdminMatchRow } from '@/components/admin/admin-match-row'
 import { AdminPredictionsPanel } from '@/components/admin/admin-predictions-panel'
+import { AdminRecalculateAllPointsPanel } from '@/components/admin/admin-recalculate-all-points-panel'
 import { AdminManualPushRemindersPanel } from '@/components/admin/admin-manual-push-reminders-panel'
 import { AdminPushNotificationsPanel } from '@/components/admin/admin-push-notifications-panel'
 import { AdminScoringAdjustmentPanel } from '@/components/admin/admin-scoring-adjustment-panel'
@@ -180,6 +181,8 @@ async function FinalizadosTab() {
 
   return (
     <div className="space-y-6">
+      <AdminRecalculateAllPointsPanel />
+
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           Editá marcador o goleadores; los puntos se recalculan al guardar.
@@ -223,6 +226,7 @@ async function FinalizadosTab() {
                   predictions={predictionsByMatchId.get(match.id)}
                   action="recalculate"
                   showHeader={false}
+                  canResendFinishedPush={!match.isTest}
                 />
               </div>
             )
