@@ -12,34 +12,11 @@ import { syncTournamentMemberPoints } from '@/lib/tournament/points'
 import { calculateChampionPoints } from './champion'
 import { recalculateEarlyBonusForEntry } from './early-bonus'
 import { buildPredictedTeamIdsInRound, calculateBracketSlotPoints } from './match'
-import { countPositionPoints } from './positions'
+import { countGroupPositionPoints, countR32QualifierPoints } from './positions'
 
 const FINAL_MATCH_ID = 104
 const GROUP_STAGE_LAST_MATCH_ID = 72
 
-async function areAllGroupMatchesFinished(): Promise<boolean> {
-  const unfinished = await prisma.match.count({
-    where: {
-      round: 'Group Stage',
-      status: { not: 'finished' },
-    },
-  })
-  return unfinished === 0
-}
-
-async function buildRealGroupStandings(): Promise<Map<string, Standing[]>> {
-  const [teams, groupMatches] = await Promise.all([getAllTeams(), getGroupStageMatches()])
-  const groups = [...new Set(teams.map((t) => t.group))].sort()
-  const map = new Map<string, Standing[]>()
-
-  for (const group of groups) {
-    const groupTeams = teams.filter((t) => t.group === group)
-    const matches = groupMatches.filter((m) => m.group === group)
-    map.set(group, resolveGroupStandingsFromDb(groupTeams, matches, group))
-  }
-
-  return map
-}
 
 async function buildPredictedGroupStandings(
   entryId: string,
@@ -100,35 +77,38 @@ async function loadEntryKnockoutSlots(bracketEntryId: string) {
 }
 
 async function recalculatePositionPointsForEntry(entryId: string): Promise<number> {
-  const allFinished = await areAllGroupMatchesFinished()
-  if (!allFinished) {
-    await prisma.bracketEntry.update({
-      where: { id: entryId },
-      data: { pointsPositions: 0 },
-    })
-    return 0
-  }
-
-  const [predictedStandings, actualStandings] = await Promise.all([
-    buildPredictedGroupStandings(entryId),
-    buildRealGroupStandings(),
-  ])
-
+  const predictedStandings = await buildPredictedGroupStandings(entryId)
   if (!predictedStandings) {
-    await prisma.bracketEntry.update({
-      where: { id: entryId },
-      data: { pointsPositions: 0 },
-    })
+    await prisma.bracketEntry.update({ where: { id: entryId }, data: { pointsPositions: 0 } })
     return 0
   }
 
-  const pointsPositions = countPositionPoints(predictedStandings, actualStandings)
+  const [allTeams, groupMatches] = await Promise.all([getAllTeams(), getGroupStageMatches()])
+  const groups = [...new Set(allTeams.map((t) => t.group))].sort()
 
-  await prisma.bracketEntry.update({
-    where: { id: entryId },
-    data: { pointsPositions },
-  })
+  const finishedGroupStandings = new Map<string, Standing[]>()
+  const allGroupStandings = new Map<string, Standing[]>()
+  let allGroupsDone = true
 
+  for (const group of groups) {
+    const gTeams = allTeams.filter((t) => t.group === group)
+    const gMatches = groupMatches.filter((m) => m.group === group)
+    const standings = resolveGroupStandingsFromDb(gTeams, gMatches, group)
+    allGroupStandings.set(group, standings)
+
+    const isComplete = gMatches.length > 0 && gMatches.every((m) => m.status === 'finished')
+    if (isComplete) {
+      finishedGroupStandings.set(group, standings)
+    } else {
+      allGroupsDone = false
+    }
+  }
+
+  const posPoints = countGroupPositionPoints(predictedStandings, finishedGroupStandings)
+  const r32Points = allGroupsDone ? countR32QualifierPoints(predictedStandings, allGroupStandings) : 0
+  const pointsPositions = posPoints + r32Points
+
+  await prisma.bracketEntry.update({ where: { id: entryId }, data: { pointsPositions } })
   return pointsPositions
 }
 
@@ -214,12 +194,13 @@ export async function recalculateCompleteScoringForMatch(matchId: number): Promi
     affectedEntries.set(slot.bracketEntryId, slot.bracketEntry.userId)
   }
 
-  if (match.round === 'Group Stage') {
-    const allFinished = await areAllGroupMatchesFinished()
-    if (allFinished) {
-      const entries = await prisma.bracketEntry.findMany({
-        select: { id: true, userId: true },
-      })
+  if (match.round === 'Group Stage' && match.group) {
+    // Trigger position points when this specific group's last match finishes
+    const remainingInGroup = await prisma.match.count({
+      where: { group: match.group, round: 'Group Stage', status: { not: 'finished' } },
+    })
+    if (remainingInGroup === 0) {
+      const entries = await prisma.bracketEntry.findMany({ select: { id: true, userId: true } })
       for (const entry of entries) {
         await recalculatePositionPointsForEntry(entry.id)
         affectedEntries.set(entry.id, entry.userId)

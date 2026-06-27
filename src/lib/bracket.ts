@@ -209,6 +209,73 @@ export function resolveGroupStandingsFromPredictions(
   return computeStandings(teams, predicted, group)
 }
 
+const POSSIBLE_OUTCOMES = [
+  { homeScore: 1, awayScore: 0 },
+  { homeScore: 1, awayScore: 1 },
+  { homeScore: 0, awayScore: 1 },
+] as const
+
+/**
+ * Returns standings where only positions that are the same across ALL possible
+ * outcomes of remaining matches are included (sparse array).
+ * If no matches are pending, returns full standings.
+ */
+export function resolveClinichedGroupPositions(
+  teams: { name: string; nameEs: string; iso2: string; flagEmoji: string }[],
+  finishedMatches: MatchWithRelations[],
+  pendingMatches: MatchWithRelations[],
+  group: string,
+): Standing[] {
+  const baseInputs: StandingsMatchInput[] = finishedMatches.map((m) => ({
+    group: m.group,
+    status: m.status,
+    homeScore: m.homeScore,
+    awayScore: m.awayScore,
+    homeName: m.homeTeam?.name ?? m.homeLabel ?? '',
+    awayName: m.awayTeam?.name ?? m.awayLabel ?? '',
+  }))
+
+  const pendingRefs = pendingMatches.map((m) => ({
+    group: m.group,
+    homeName: m.homeTeam?.name ?? m.homeLabel ?? '',
+    awayName: m.awayTeam?.name ?? m.awayLabel ?? '',
+  }))
+
+  const allScenarios: Standing[][] = []
+
+  function enumerate(idx: number, extra: StandingsMatchInput[]) {
+    if (idx === pendingRefs.length) {
+      allScenarios.push(computeStandings(teams, [...baseInputs, ...extra], group))
+      return
+    }
+    const ref = pendingRefs[idx]
+    for (const outcome of POSSIBLE_OUTCOMES) {
+      enumerate(idx + 1, [
+        ...extra,
+        {
+          group: ref.group,
+          status: 'finished',
+          homeScore: outcome.homeScore,
+          awayScore: outcome.awayScore,
+          homeName: ref.homeName,
+          awayName: ref.awayName,
+        },
+      ])
+    }
+  }
+
+  enumerate(0, [])
+
+  const result: Standing[] = []
+  for (let pos = 0; pos < teams.length; pos++) {
+    const first = allScenarios[0]?.[pos]
+    if (first && allScenarios.every((s) => s[pos]?.teamName === first.teamName)) {
+      result[pos] = first
+    }
+  }
+  return result
+}
+
 export function resolveBracketSlot(
   label: string,
   groupStandings: Map<string, Standing[]>

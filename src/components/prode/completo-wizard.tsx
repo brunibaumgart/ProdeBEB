@@ -240,6 +240,16 @@ export function CompletoWizard({
     return { done, total }
   }, [knockoutMatches, displayPredictions])
 
+  const confirmedKnockoutMatchIds = useMemo(
+    () =>
+      new Set(
+        knockoutMatches
+          .filter((m) => m.homeTeam != null && m.awayTeam != null)
+          .map((m) => m.id),
+      ),
+    [knockoutMatches],
+  )
+
   const knockoutComplete =
     activeCelebrity?.knockoutComplete ?? knockoutProgress.done === knockoutProgress.total
 
@@ -380,6 +390,7 @@ export function CompletoWizard({
                 editable={displayEditable}
                 groupsComplete={groupsComplete}
                 onPredictionSaved={handlePredictionSaved}
+                confirmedMatchIds={confirmedKnockoutMatchIds}
                 mobileFit
               />
 
@@ -631,6 +642,7 @@ export function CompletoWizard({
             editable={displayEditable}
             groupsComplete={groupsComplete}
             onPredictionSaved={handlePredictionSaved}
+            confirmedMatchIds={confirmedKnockoutMatchIds}
           />
 
           {displayEditable && !locked && knockoutComplete && (

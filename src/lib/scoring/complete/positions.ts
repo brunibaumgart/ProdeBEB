@@ -28,34 +28,46 @@ export function getRoundOf32TeamNames(standings: Map<string, Standing[]>): Set<s
   return names
 }
 
-export function countPositionPoints(
+/** Puntos por posición exacta en grupos ya finalizados (no incluye clasificados al R32). */
+export function countGroupPositionPoints(
   predictedStandings: Map<string, Standing[]>,
   actualStandings: Map<string, Standing[]>,
 ): number {
   let points = 0
-
-  const actualR32 = getRoundOf32TeamNames(actualStandings)
-  const predictedR32 = getRoundOf32TeamNames(predictedStandings)
-
-  for (const teamName of actualR32) {
-    if (predictedR32.has(teamName)) {
-      points += COMPLETE_POINTS_R32_QUALIFIER
-    }
-  }
-
   for (const [groupKey, actual] of actualStandings) {
     const predicted = predictedStandings.get(groupKey)
     if (!predicted) continue
-
     const predictedRanks = standingsToRankMap(predicted)
     const actualRanks = standingsToRankMap(actual)
-
     for (const [teamName, actualRank] of actualRanks) {
       if (predictedRanks.get(teamName) === actualRank) {
         points += COMPLETE_POINTS_EXACT_GROUP_POSITION
       }
     }
   }
-
   return points
+}
+
+/** Puntos por equipos que clasifican al R32. Requiere standings de TODOS los grupos. */
+export function countR32QualifierPoints(
+  predictedStandings: Map<string, Standing[]>,
+  actualStandings: Map<string, Standing[]>,
+): number {
+  let points = 0
+  const actualR32 = getRoundOf32TeamNames(actualStandings)
+  const predictedR32 = getRoundOf32TeamNames(predictedStandings)
+  for (const teamName of actualR32) {
+    if (predictedR32.has(teamName)) {
+      points += COMPLETE_POINTS_R32_QUALIFIER
+    }
+  }
+  return points
+}
+
+export function countPositionPoints(
+  predictedStandings: Map<string, Standing[]>,
+  actualStandings: Map<string, Standing[]>,
+): number {
+  return countGroupPositionPoints(predictedStandings, actualStandings)
+    + countR32QualifierPoints(predictedStandings, actualStandings)
 }

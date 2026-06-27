@@ -155,6 +155,67 @@ export function getSimulatorBestThirds(
   return getBestThirds(groupStandings, 8)
 }
 
+const CLINCH_OUTCOMES = [
+  { predHome: 1, predAway: 0 },
+  { predHome: 1, predAway: 1 },
+  { predHome: 0, predAway: 1 },
+] as const
+
+/**
+ * Returns standings where only positions clinched across ALL possible outcomes
+ * for remaining matches are included. Uses real results for finished matches
+ * and enumerates all 3^n combinations for pending ones.
+ */
+export function resolveClinichedGroupPositionsFromRefs(
+  teams: { name: string; nameEs: string; iso2: string; flagEmoji: string }[],
+  groupMatchRefs: SimulatorGroupMatchRef[],
+  group: string,
+): Standing[] {
+  const gMatches = groupMatchRefs.filter((m) => m.group === group)
+  const finished = gMatches.filter((m) => isSimulatorMatchFinished(m))
+  const pending = gMatches.filter((m) => !isSimulatorMatchFinished(m))
+
+  if (finished.length === 0) return []
+
+  const baseMatches = gMatches.map((m) => ({
+    matchId: m.id,
+    group: m.group,
+    homeName: m.homeName,
+    awayName: m.awayName,
+  }))
+
+  const basePredictions: Record<number, { predHome: number; predAway: number }> = {}
+  for (const m of finished) {
+    basePredictions[m.id] = { predHome: m.homeScore!, predAway: m.awayScore! }
+  }
+
+  const allScenarios: Standing[][] = []
+
+  function enumerate(idx: number, extra: Record<number, { predHome: number; predAway: number }>) {
+    if (idx === pending.length) {
+      allScenarios.push(
+        resolveGroupStandingsFromPredictions(teams, baseMatches, { ...basePredictions, ...extra }, group),
+      )
+      return
+    }
+    const m = pending[idx]
+    for (const outcome of CLINCH_OUTCOMES) {
+      enumerate(idx + 1, { ...extra, [m.id]: outcome })
+    }
+  }
+
+  enumerate(0, {})
+
+  const result: Standing[] = []
+  for (let pos = 0; pos < teams.length; pos++) {
+    const first = allScenarios[0]?.[pos]
+    if (first && allScenarios.every((s) => s[pos]?.teamName === first.teamName)) {
+      result[pos] = first
+    }
+  }
+  return result
+}
+
 export function loadSimulatorOverrides(): Record<number, BracketSlotPrediction> {
   if (typeof window === 'undefined') return {}
 

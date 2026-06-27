@@ -8,12 +8,18 @@ import { formatDbMatchKickoff } from '@/lib/time'
 import type { MatchWithRelations } from '@/lib/queries/matches'
 import { cn } from '@/lib/utils'
 
+type ConfirmedTeam = { nameEs: string; iso2: string; flagEmoji: string }
+
 interface MatchCardProps {
   match: MatchWithRelations
   href?: string
   className?: string
   prediction?: PredictionInfo | null
   otherPrediction?: (PredictionInfo & { label: string }) | null
+  /** Equipo local confirmado por resultados reales (cuando no está en la BD aún). */
+  confirmedHomeTeam?: ConfirmedTeam | null
+  /** Equipo visitante confirmado por resultados reales (cuando no está en la BD aún). */
+  confirmedAwayTeam?: ConfirmedTeam | null
 }
 
 interface PredictionInfo {
@@ -67,10 +73,14 @@ export function MatchCard({
   className,
   prediction,
   otherPrediction,
+  confirmedHomeTeam,
+  confirmedAwayTeam,
 }: MatchCardProps) {
   const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
   const friendly = isFriendlyMatch(match)
+  const effectiveHomeTeam = match.homeTeam ?? confirmedHomeTeam ?? null
+  const effectiveAwayTeam = match.awayTeam ?? confirmedAwayTeam ?? null
 
   const content = (
     <article
@@ -92,12 +102,12 @@ export function MatchCard({
       <div className="space-y-2">
         <TeamRow
           label={match.homeLabel ?? 'Local'}
-          team={match.homeTeam}
+          team={effectiveHomeTeam}
           score={isFinished || isLive ? match.homeScore : null}
         />
         <TeamRow
           label={match.awayLabel ?? 'Visitante'}
-          team={match.awayTeam}
+          team={effectiveAwayTeam}
           score={isFinished || isLive ? match.awayScore : null}
         />
       </div>
@@ -155,6 +165,16 @@ export function MatchCard({
         )}
         {match.group && !isLive && !isFinished && (
           <span className="shrink-0 font-medium">Grupo {match.group}</span>
+        )}
+        {!match.group && !isLive && !isFinished && effectiveHomeTeam && effectiveAwayTeam && (
+          <span className="shrink-0 rounded-full bg-brand-green/10 px-2 py-0.5 font-semibold text-brand-green">
+            Cruce confirmado
+          </span>
+        )}
+        {!match.group && !isLive && !isFinished && (effectiveHomeTeam || effectiveAwayTeam) && !(effectiveHomeTeam && effectiveAwayTeam) && (
+          <span className="shrink-0 rounded-full bg-brand-gold/10 px-2 py-0.5 font-semibold text-brand-gold">
+            Rival TBD
+          </span>
         )}
       </div>
     </article>

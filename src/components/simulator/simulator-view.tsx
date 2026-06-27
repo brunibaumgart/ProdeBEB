@@ -31,6 +31,7 @@ import {
   findNextGroupMatchIndex,
   loadSimulatorOverrides,
   pruneSimulatorOverrides,
+  resolveClinichedGroupPositionsFromRefs,
   resolveGroupStandingsHybrid,
   saveSimulatorOverrides,
   type SimulatorGroupMatchRef,
@@ -151,6 +152,36 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
     }
     return ids
   }, [allMatchRefs])
+
+  // Compute confirmed R32+ matchups from complete groups (real results only, no simulation)
+  const confirmedKnockoutMatchIds = useMemo(() => {
+    const confirmed = new Set<number>()
+
+    // DB-confirmed (admin set teams)
+    knockoutMatches.filter((m) => m.homeTeam != null && m.awayTeam != null).forEach((m) => confirmed.add(m.id))
+
+    // Compute clinched positions from real results (works even for incomplete groups)
+    const realGroupStandings = new Map<string, ReturnType<typeof resolveClinichedGroupPositionsFromRefs>>()
+    for (const group of GROUPS) {
+      const gTeams = teams.filter((t) => t.group === group)
+      realGroupStandings.set(group, resolveClinichedGroupPositionsFromRefs(gTeams, groupMatchRefs, group))
+    }
+
+    const localTeamByName = new Map(teams.map((t) => [t.name, t]))
+    const resolvedFromStandings = resolvePredictedBracket(
+      realGroupStandings,
+      knockoutMatches.map((m) => ({ id: m.id, homeLabel: m.homeLabel, awayLabel: m.awayLabel })),
+      {},
+      {},
+      localTeamByName,
+    )
+
+    for (const [matchId, res] of resolvedFromStandings) {
+      if (res.homeTeamId && res.awayTeamId) confirmed.add(matchId)
+    }
+
+    return confirmed
+  }, [knockoutMatches, groupMatchRefs, teams])
 
   const [overrides, setOverrides] = useState<Record<number, BracketSlotPrediction>>(() =>
     loadSimulatorOverrides(),
@@ -727,6 +758,7 @@ export function SimulatorView({ teams, groupMatches, knockoutMatches }: Simulato
             persistMode="local"
             isMatchLocked={(matchId) => !pendingMatchIds.has(matchId)}
             onPredictionSaved={handleKnockoutPredictionSaved}
+            confirmedMatchIds={confirmedKnockoutMatchIds}
           />
 
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">

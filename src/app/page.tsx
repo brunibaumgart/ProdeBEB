@@ -5,6 +5,7 @@ import { auth } from '@clerk/nextjs/server'
 
 import { AppShell } from '@/components/layout/app-shell'
 import { CountdownTimer, MatchCard } from '@/components/ui-mundial'
+import { MatchHistorySection } from '@/components/home/match-history-section'
 import { canAccessTestContent } from '@/lib/auth/test-access'
 import {
   getNextMatch,
@@ -12,7 +13,7 @@ import {
   getTodayMatches,
   getUpcomingMatches,
 } from '@/lib/queries/matches'
-import { getUserPredictionsForMatchIds } from '@/lib/queries/predictions'
+import { getUserPredictionsForMatchIds, getFinishedPredictions } from '@/lib/queries/predictions'
 import { ensureDbUser, getPioBrunoCounterpart } from '@/lib/queries/users'
 import { getArgentinaTodayBounds, isWithinTwoHours } from '@/lib/time'
 
@@ -45,9 +46,11 @@ export default async function HomePage() {
 
   const matchIds = featuredMatches.map((match) => match.id)
 
-  const [predictionsByMatchId, counterpart] = await Promise.all([
+  const [predictionsByMatchId, counterpart, finishedPredictions] = await Promise.all([
     user ? getUserPredictionsForMatchIds(user.id, matchIds) : new Map(),
     user ? getPioBrunoCounterpart(user) : null,
+    // Always exclude test/friendly matches from historial
+    user ? getFinishedPredictions(user.id, { includeTestMatches: false }) : [],
   ])
 
   const counterpartPredictionsByMatchId = counterpart
@@ -124,6 +127,10 @@ export default async function HomePage() {
           </p>
         )}
       </section>
+
+      {finishedPredictions.length > 0 && (
+        <MatchHistorySection predictions={[...finishedPredictions].reverse()} />
+      )}
 
       <section>
         <h2 className="mb-4 font-heading text-2xl tracking-wide">EXPLORAR</h2>

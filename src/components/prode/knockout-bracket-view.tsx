@@ -55,6 +55,8 @@ interface KnockoutBracketViewProps {
   /** Vista compacta móvil: una pantalla, un cruce a la vez. */
   mobileFit?: boolean
   celebrityKnockoutHints?: Record<number, CelebrityKnockoutHint[]>
+  /** Partidos donde ambos equipos ya están confirmados por resultados reales. */
+  confirmedMatchIds?: Set<number>
 }
 
 function getRoundProgress(
@@ -137,6 +139,7 @@ function BracketMatchCard({
   onPick,
   dense,
   celebrityHints,
+  confirmed,
 }: {
   matchId: number
   homeTeam: BracketTeam
@@ -147,6 +150,7 @@ function BracketMatchCard({
   onPick: (teamId: string) => void
   dense?: boolean
   celebrityHints?: CelebrityKnockoutHint[]
+  confirmed?: boolean
 }) {
   const hasWinner = Boolean(winnerId)
 
@@ -155,13 +159,31 @@ function BracketMatchCard({
       className={cn(
         'relative w-full rounded-xl border bg-card/80 shadow-sm backdrop-blur-sm',
         dense ? 'p-1' : 'p-2',
-        hasWinner ? 'border-primary/25' : 'border-border/60',
+        confirmed
+          ? 'border-brand-green/40'
+          : hasWinner
+            ? 'border-primary/25'
+            : 'border-border/60',
       )}
     >
       {!dense && (
-        <p className="mb-1.5 text-center text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-          M{matchId}
-        </p>
+        <div className="mb-1.5 flex items-center justify-center gap-1.5">
+          <p className="text-center text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            M{matchId}
+          </p>
+          {confirmed && (
+            <span className="rounded-full bg-brand-green/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-brand-green">
+              Real
+            </span>
+          )}
+        </div>
+      )}
+      {dense && confirmed && (
+        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2">
+          <span className="rounded-full bg-brand-green/20 px-1 py-0.5 text-[8px] font-semibold text-brand-green">
+            ✓
+          </span>
+        </div>
       )}
       <div className={cn(dense ? 'space-y-1' : 'space-y-1.5')}>
         <TeamFlagButton
@@ -241,6 +263,7 @@ export function KnockoutBracketView({
   isMatchLocked,
   mobileFit = false,
   celebrityKnockoutHints,
+  confirmedMatchIds,
 }: KnockoutBracketViewProps) {
   const [activeRoundIndex, setActiveRoundIndex] = useState(0)
   const [mobileMatchIndex, setMobileMatchIndex] = useState(0)
@@ -440,6 +463,7 @@ export function KnockoutBracketView({
         onPick={(teamId) => pickWinner(matchId, homeTeam.id, awayTeam.id, teamId, roundIndex)}
         dense={dense}
         celebrityHints={celebrityKnockoutHints?.[matchId]}
+        confirmed={confirmedMatchIds?.has(matchId)}
       />
     )
   }
