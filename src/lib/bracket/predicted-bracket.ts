@@ -36,10 +36,19 @@ export interface ResolvedMatchTeams {
   awayTeamName: string | null
 }
 
+const TOTAL_GROUPS = 12
+
 function buildThirdPlaceByMatchId(
   groupStandings: Map<string, Standing[]>,
   thirdPlaceTiebreakOrder?: ThirdPlaceTiebreakOrder | null,
 ): Map<number, string> {
+  // Third-place slot assignments require ALL groups to be fully finalized:
+  // incomplete groups could still produce a better third that displaces the current top-8.
+  if (groupStandings.size < TOTAL_GROUPS) return new Map()
+  for (const standings of groupStandings.values()) {
+    if (standings.filter(Boolean).length < 4) return new Map()
+  }
+
   const bestThirds = getBestThirdsWithTiebreak(groupStandings, thirdPlaceTiebreakOrder, 8)
   const qualifiedGroups = getQualifiedThirdGroupsFromStandings(groupStandings, bestThirds)
 
