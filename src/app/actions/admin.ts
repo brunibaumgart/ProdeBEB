@@ -23,6 +23,7 @@ import {
   recalculateMatchdayPointsForMatch,
 } from '@/lib/tournament/points'
 import { recalculateAllPointsForFinishedMatches } from '@/lib/tournament/recalculate-all'
+import { recalculateCompletePositionPointsForAllEntries } from '@/lib/scoring/complete'
 
 export type AdminActionResponse =
   | { ok: true; message: string }
@@ -432,6 +433,23 @@ export async function adminRecalculateAllFinishedMatchesPoints(): Promise<SetMat
   return {
     ok: true,
     message: `Recálculo listo: ${result.predictionsUpdated} predicción${result.predictionsUpdated === 1 ? '' : 'es'} actualizada${result.predictionsUpdated === 1 ? '' : 's'} en ${result.matchesProcessed} partido${result.matchesProcessed === 1 ? '' : 's'} (${result.usersSynced} usuario${result.usersSynced === 1 ? '' : 's'} sincronizado${result.usersSynced === 1 ? '' : 's'}).`,
+  }
+}
+
+export async function adminRecalculateCompletePositionPoints(): Promise<SetMatchResultResponse> {
+  try {
+    await assertAdmin()
+  } catch {
+    return { ok: false, error: 'No tenés permisos de administrador.' }
+  }
+
+  const count = await recalculateCompletePositionPointsForAllEntries()
+
+  revalidateAdminMatchPaths()
+
+  return {
+    ok: true,
+    message: `Puntos de posiciones del Completo recalculados para ${count} entrada${count === 1 ? '' : 's'}.`,
   }
 }
 

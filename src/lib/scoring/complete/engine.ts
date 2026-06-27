@@ -303,6 +303,15 @@ export async function recalculateCompleteScoringForUser(userId: string): Promise
   await finalizeEntryScoring(entry.id, userId)
 }
 
+export async function recalculateCompletePositionPointsForAllEntries(): Promise<number> {
+  const entries = await prisma.bracketEntry.findMany({ select: { id: true, userId: true } })
+  for (const entry of entries) {
+    await recalculatePositionPointsForEntry(entry.id)
+    await syncTournamentMemberPoints(entry.userId)
+  }
+  return entries.length
+}
+
 /** Llamar al confirmar bracket (lock) para sincronizar torneos. */
 export async function onBracketLocked(userId: string): Promise<void> {
   const entry = await prisma.bracketEntry.findUnique({ where: { userId } })

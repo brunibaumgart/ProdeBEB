@@ -33,34 +33,6 @@ interface MatchHistorySectionProps {
 
 const PAGE_SIZE = 10
 
-function getResultLabel(
-  pts: number,
-  predHome: number,
-  predAway: number,
-  homeScore: number | null,
-  awayScore: number | null,
-): { label: string; color: string } {
-  if (homeScore == null || awayScore == null) return { label: '—', color: 'text-muted-foreground' }
-
-  if (predHome === homeScore && predAway === awayScore) {
-    return { label: 'Exacto', color: 'text-brand-green' }
-  }
-
-  const predDiff = predHome - predAway
-  const realDiff = homeScore - awayScore
-  const sameOutcome =
-    (predHome > predAway && homeScore > awayScore) ||
-    (predHome < predAway && homeScore < awayScore) ||
-    (predHome === predAway && homeScore === awayScore)
-
-  if (sameOutcome && predDiff === realDiff) {
-    return { label: 'Gan. + DG', color: 'text-brand-gold' }
-  }
-  if (sameOutcome) {
-    return { label: 'Ganador', color: 'text-brand-gold' }
-  }
-  return { label: 'Sin pts', color: 'text-muted-foreground' }
-}
 
 function formatDateShort(date: Date): string {
   return date.toLocaleDateString('es-AR', {
@@ -91,15 +63,6 @@ export function MatchHistorySection({ predictions }: MatchHistorySectionProps) {
           {pageItems.map((pred) => {
             const totalPts =
               pred.points != null ? pred.points + (pred.pointsScorers ?? 0) : null
-            const resultInfo = pred.points != null
-              ? getResultLabel(
-                  pred.points,
-                  pred.predHome,
-                  pred.predAway,
-                  pred.match.homeScore,
-                  pred.match.awayScore,
-                )
-              : { label: 'Pend.', color: 'text-muted-foreground' }
 
             const pointsColor =
               totalPts == null
@@ -148,13 +111,6 @@ export function MatchHistorySection({ predictions }: MatchHistorySectionProps) {
 
                 <span className="shrink-0 text-[11px] text-muted-foreground">
                   {pred.predHome}-{pred.predAway}
-                </span>
-
-                <span className={cn('w-16 shrink-0 text-right text-[11px] font-semibold', resultInfo.color)}>
-                  {resultInfo.label}
-                  {pred.pointsScorers != null && pred.pointsScorers > 0 && (
-                    <span className="ml-0.5 text-brand-green">+{pred.pointsScorers}⚽</span>
-                  )}
                 </span>
 
                 <span className={cn('w-10 shrink-0 text-right text-xs font-bold', pointsColor)}>

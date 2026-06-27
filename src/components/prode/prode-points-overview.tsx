@@ -34,7 +34,7 @@ export function ProdePointsOverview({
       label: 'Completo',
       value: pointsComplete,
       highlight: false,
-      disabled: true,
+      disabled: false,
     },
     {
       label: 'Total',

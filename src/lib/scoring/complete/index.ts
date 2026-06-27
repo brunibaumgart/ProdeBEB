@@ -12,5 +12,6 @@ export { recalculateEarlyBonusForEntry, recalculateEarlyBonusForUser } from './e
 export {
   recalculateCompleteScoringForMatch,
   recalculateCompleteScoringForUser,
+  recalculateCompletePositionPointsForAllEntries,
   onBracketLocked,
 } from './engine'

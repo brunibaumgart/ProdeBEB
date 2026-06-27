@@ -46,7 +46,7 @@ export default async function ProdePage() {
   const bracketInProgress = bracketEntry != null && !bracketEntry.locked
 
   const completoStatus = bracketLocked
-    ? 'Cerrado'
+    ? bracketEntry != null ? 'Ver puntos' : 'Cerrado'
     : bracketEntry?.locked
       ? 'Confirmado (editable)'
       : bracketInProgress
@@ -54,7 +54,7 @@ export default async function ProdePage() {
         : 'Disponible'
 
   const completoStatusClass = bracketLocked
-    ? 'text-muted-foreground'
+    ? bracketEntry != null ? 'text-brand-gold' : 'text-muted-foreground'
     : bracketEntry?.locked
       ? 'text-brand-green'
       : bracketInProgress
