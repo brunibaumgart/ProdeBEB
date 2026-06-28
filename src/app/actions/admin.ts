@@ -24,6 +24,7 @@ import {
 } from '@/lib/tournament/points'
 import { recalculateAllPointsForFinishedMatches } from '@/lib/tournament/recalculate-all'
 import { recalculateCompletePositionPointsForAllEntries } from '@/lib/scoring/complete'
+import { populateR32TeamsFromGroupStandings } from '@/lib/tournament/populate-r32-teams'
 
 export type AdminActionResponse =
   | { ok: true; message: string }
@@ -433,6 +434,23 @@ export async function adminRecalculateAllFinishedMatchesPoints(): Promise<SetMat
   return {
     ok: true,
     message: `Recálculo listo: ${result.predictionsUpdated} predicción${result.predictionsUpdated === 1 ? '' : 'es'} actualizada${result.predictionsUpdated === 1 ? '' : 's'} en ${result.matchesProcessed} partido${result.matchesProcessed === 1 ? '' : 's'} (${result.usersSynced} usuario${result.usersSynced === 1 ? '' : 's'} sincronizado${result.usersSynced === 1 ? '' : 's'}).`,
+  }
+}
+
+export async function adminPopulateR32Teams(): Promise<SetMatchResultResponse> {
+  try {
+    await assertAdmin()
+  } catch {
+    return { ok: false, error: 'No tenés permisos de administrador.' }
+  }
+
+  const updated = await populateR32TeamsFromGroupStandings()
+
+  revalidateAdminMatchPaths()
+
+  return {
+    ok: true,
+    message: `${updated} partido${updated === 1 ? '' : 's'} de 16avos actualizado${updated === 1 ? '' : 's'} con los equipos confirmados.`,
   }
 }
 

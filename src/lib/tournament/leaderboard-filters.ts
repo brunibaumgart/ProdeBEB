@@ -58,7 +58,6 @@ export function buildLeaderboardFilters({
       label: 'Completo',
       field: 'pointsComplete',
       columnLabel: 'Completo',
-      disabled: true,
     })
   }
 
