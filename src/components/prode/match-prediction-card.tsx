@@ -45,6 +45,7 @@ interface MatchPredictionCardProps {
   prediction?: {
     predHome: number
     predAway: number
+    predPenaltiesWinnerId?: string | null
     points: number | null
     pointsScorers?: number | null
     homeScorerIds?: string[]
@@ -85,6 +86,7 @@ export function MatchPredictionCard({
   const isFinished = match.status === 'finished'
   const locked = predictable && !canEdit && !isFinished
   const friendly = isFriendlyMatch(match)
+  const isKnockout = match.round !== 'Group Stage' && !match.isTest
 
   const [savedPrediction, setSavedPrediction] = useState(prediction ?? null)
   const [optimisticPrediction, applyOptimisticPrediction] = useOptimistic(
@@ -97,6 +99,9 @@ export function MatchPredictionCard({
   const displayPrediction = optimisticPrediction
   const [predHome, setPredHome] = useState<number | null>(prediction?.predHome ?? null)
   const [predAway, setPredAway] = useState<number | null>(prediction?.predAway ?? null)
+  const [predPenaltiesWinnerId, setPredPenaltiesWinnerId] = useState<string | null>(
+    prediction?.predPenaltiesWinnerId ?? null,
+  )
   const [homeScorers, setHomeScorers] = useState<string[]>(prediction?.homeScorerIds ?? [])
   const [awayScorers, setAwayScorers] = useState<string[]>(prediction?.awayScorerIds ?? [])
   const [editMode, setEditMode] = useState<EditMode>(() => {
@@ -116,6 +121,7 @@ export function MatchPredictionCard({
     setSavedPrediction(prediction ?? null)
     setPredHome(prediction?.predHome ?? null)
     setPredAway(prediction?.predAway ?? null)
+    setPredPenaltiesWinnerId(prediction?.predPenaltiesWinnerId ?? null)
     setHomeScorers(prediction?.homeScorerIds ?? [])
     setAwayScorers(prediction?.awayScorerIds ?? [])
     if (!autoOpenEdit || !canEdit) {
@@ -142,6 +148,7 @@ export function MatchPredictionCard({
   function restoreFromSaved() {
     setPredHome(savedPrediction?.predHome ?? null)
     setPredAway(savedPrediction?.predAway ?? null)
+    setPredPenaltiesWinnerId(savedPrediction?.predPenaltiesWinnerId ?? null)
     setHomeScorers(savedPrediction?.homeScorerIds ?? [])
     setAwayScorers(savedPrediction?.awayScorerIds ?? [])
   }
@@ -175,11 +182,15 @@ export function MatchPredictionCard({
 
     setError(null)
 
+    const isDraw = home === away
+    const penaltiesWinner = isKnockout && isDraw ? predPenaltiesWinnerId : null
+
     const normalizedHomeScorers = adjustScorersToCount(homeScorers, home)
     const normalizedAwayScorers = adjustScorersToCount(awayScorers, away)
     const nextPrediction = {
       predHome: home,
       predAway: away,
+      predPenaltiesWinnerId: penaltiesWinner,
       points: savedPrediction?.points ?? null,
       pointsScorers: savedPrediction?.pointsScorers ?? null,
       homeScorerIds: normalizedHomeScorers.filter(Boolean),
@@ -190,10 +201,13 @@ export function MatchPredictionCard({
       applyOptimisticPrediction(nextPrediction)
       setEditMode('idle')
 
-      const result = await savePrediction(match.id, home, away, {
-        homePlayerIds: nextPrediction.homeScorerIds,
-        awayPlayerIds: nextPrediction.awayScorerIds,
-      })
+      const result = await savePrediction(
+        match.id,
+        home,
+        away,
+        { homePlayerIds: nextPrediction.homeScorerIds, awayPlayerIds: nextPrediction.awayScorerIds },
+        penaltiesWinner,
+      )
       if (result.ok) {
         setHomeScorers(normalizedHomeScorers)
         setAwayScorers(normalizedAwayScorers)
@@ -241,6 +255,19 @@ export function MatchPredictionCard({
     editMode === 'idle' && hasSavedScorers && displayPrediction != null
 
   const showHeaderActions = canEdit && editMode === 'idle' && displayPrediction != null
+
+  const editingIsDraw =
+    isEditingScore && activeHome != null && activeAway != null && activeHome === activeAway
+  const showPenaltiesPicker = isKnockout && editingIsDraw && isEditingScore && predictable
+
+  const savedIsDraw =
+    displayPrediction != null &&
+    displayPrediction.predHome === displayPrediction.predAway
+  const showSavedPenaltiesWinner =
+    editMode === 'idle' &&
+    isKnockout &&
+    savedIsDraw &&
+    displayPrediction?.predPenaltiesWinnerId != null
 
   return (
     <article
@@ -372,6 +399,48 @@ export function MatchPredictionCard({
                 readOnly
               />
             )}
+
+            {showPenaltiesPicker && match.homeTeamId && match.awayTeamId && match.homeTeam && match.awayTeam && (
+              <div className="mt-3 border-t border-white/10 pt-3">
+                <p className="mb-2 text-center text-xs font-medium text-white/70">
+                  ¿Quién avanza por penales? <span className="text-brand-gold">+2 pts</span>
+                </p>
+                <div className="flex gap-2">
+                  {[
+                    { id: match.homeTeamId, ...match.homeTeam },
+                    { id: match.awayTeamId, ...match.awayTeam },
+                  ].map((team) => (
+                    <button
+                      key={team.id}
+                      type="button"
+                      onClick={() => setPredPenaltiesWinnerId(predPenaltiesWinnerId === team.id ? null : team.id)}
+                      disabled={isPending}
+                      className={cn(
+                        'flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-2 py-2 text-sm font-medium transition-colors disabled:opacity-50',
+                        predPenaltiesWinnerId === team.id
+                          ? 'border-brand-gold bg-brand-gold/20 text-brand-gold'
+                          : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white',
+                      )}
+                    >
+                      <span>{team.flagEmoji}</span>
+                      <span className="truncate">{team.nameEs}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {showSavedPenaltiesWinner && displayPrediction && (() => {
+              const winnerId = displayPrediction.predPenaltiesWinnerId
+              const winnerTeam =
+                winnerId === match.homeTeamId ? match.homeTeam : match.awayTeam
+              if (!winnerTeam) return null
+              return (
+                <p className="mt-2 text-center text-xs text-white/70">
+                  Penales: <span className="font-medium text-white/90">{winnerTeam.flagEmoji} {winnerTeam.nameEs}</span>
+                </p>
+              )
+            })()}
           </div>
         )}
 

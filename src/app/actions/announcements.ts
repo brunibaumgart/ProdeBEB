@@ -8,7 +8,8 @@ import {
   MATCHDAY_DRAW_SCORING_NOTICE_TAG,
 } from '@/lib/announcements/matchday-draw-scoring'
 import { deliverPushPayload } from '@/lib/push/delivery'
-import { getPushNotificationIcon } from '@/lib/push/icons'
+import { getPushNotificationIcon, PIO_PUSH_ICON } from '@/lib/push/icons'
+import { canReceiveSurprisePush } from '@/lib/push/preferences'
 import { prisma } from '@/lib/prisma'
 import { requireDbUserForAction } from '@/lib/queries/users'
 import { recalculateAllFinishedMatchdayPoints } from '@/lib/tournament/recalculate-matchday'
@@ -92,5 +93,66 @@ export async function adminSendMatchdayDrawScoringNoticePush(): Promise<Announce
   return {
     ok: true,
     message: `Aviso enviado a ${recipients.length} usuario${recipients.length === 1 ? '' : 's'} (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
+  }
+}
+
+export async function adminSendPenaltiesWinnerNoticePush(): Promise<AnnouncementActionResult> {
+  const { userId } = await auth()
+  if (!userId || userId !== process.env.ADMIN_USER_ID) {
+    return { ok: false, error: 'No autorizado.' }
+  }
+
+  const recipients = await prisma.user.findMany({
+    where: {
+      pushRemindersEnabled: true,
+      pushSubscriptions: { some: {} },
+    },
+    include: { pushSubscriptions: true },
+  })
+
+  if (recipients.length === 0) {
+    return { ok: false, error: 'No hay usuarios con recordatorio 11:00 activo.' }
+  }
+
+  let sent = 0
+  let failed = 0
+
+  for (const user of recipients) {
+    const isSpecial = canReceiveSurprisePush({
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      clerkId: user.clerkId,
+    })
+
+    const payload = isSpecial
+      ? {
+          title: 'Un pedido especialmente para vos 🐤',
+          body: 'Entra a marcar el ganador de las tandas de penales',
+          url: '/prode/fecha',
+          icon: PIO_PUSH_ICON,
+          tag: 'penalties-winner-notice',
+        }
+      : {
+          title: '¡Nueva opción en Fecha a Fecha!',
+          body: 'Ahora podés elegir quién avanza por penales en los duelos eliminatorios y sumar 2 puntos extra.',
+          url: '/prode/fecha',
+          icon: getPushNotificationIcon({ name: user.name }),
+          tag: 'penalties-winner-notice',
+        }
+
+    const result = await deliverPushPayload(user.pushSubscriptions, payload, { userId: user.id })
+    sent += result.sent
+    failed += result.failed
+  }
+
+  if (sent === 0) {
+    return { ok: false, error: 'No se pudo enviar a ningún dispositivo.' }
+  }
+
+  const suffix = failed > 0 ? ` (${failed} falló)` : ''
+  return {
+    ok: true,
+    message: `Push de penales enviado a ${recipients.length} usuario${recipients.length === 1 ? '' : 's'} (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
   }
 }

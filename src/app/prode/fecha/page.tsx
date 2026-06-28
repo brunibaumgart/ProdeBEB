@@ -123,6 +123,7 @@ export default async function ProdeFechaPage({
     {
       predHome: number
       predAway: number
+      predPenaltiesWinnerId: string | null
       points: number | null
       pointsScorers: number | null
       homeScorerIds: string[]
@@ -136,6 +137,7 @@ export default async function ProdeFechaPage({
       predictions[match.id] = {
         predHome: prediction.predHome,
         predAway: prediction.predAway,
+        predPenaltiesWinnerId: prediction.predPenaltiesWinnerId,
         points: prediction.points,
         pointsScorers: prediction.pointsScorers,
         homeScorerIds: prediction.scorers

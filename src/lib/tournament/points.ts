@@ -71,7 +71,8 @@ export async function advanceKnockoutTeams(
   homeTeamId: string | null,
   awayTeamId: string | null,
   homeScore: number,
-  awayScore: number
+  awayScore: number,
+  penaltiesWinnerId?: string | null,
 ) {
   if (!homeTeamId || !awayTeamId) return
 
@@ -84,6 +85,9 @@ export async function advanceKnockoutTeams(
   } else if (awayScore > homeScore) {
     winnerTeamId = awayTeamId
     loserTeamId = homeTeamId
+  } else if (penaltiesWinnerId) {
+    winnerTeamId = penaltiesWinnerId
+    loserTeamId = penaltiesWinnerId === homeTeamId ? awayTeamId : homeTeamId
   }
 
   if (!winnerTeamId) return

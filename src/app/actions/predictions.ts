@@ -43,7 +43,8 @@ export async function savePrediction(
   matchId: number,
   predHome: number,
   predAway: number,
-  scorers?: { homePlayerIds: string[]; awayPlayerIds: string[] }
+  scorers?: { homePlayerIds: string[]; awayPlayerIds: string[] },
+  predPenaltiesWinnerId?: string | null,
 ): Promise<SavePredictionResult> {
   const dbUser = await requireDbUserForAction()
   if (!dbUser.ok) return dbUser
@@ -104,6 +105,10 @@ export async function savePrediction(
     }
   }
 
+  const isKnockout = match.round !== 'Group Stage'
+  const isDraw = predHome === predAway
+  const penaltiesWinner = isKnockout && isDraw ? (predPenaltiesWinnerId ?? null) : null
+
   const prediction = await prisma.prediction.upsert({
     where: {
       userId_matchId: {
@@ -116,10 +121,12 @@ export async function savePrediction(
       matchId,
       predHome,
       predAway,
+      predPenaltiesWinnerId: penaltiesWinner,
     },
     update: {
       predHome,
       predAway,
+      predPenaltiesWinnerId: penaltiesWinner,
     },
   })
 

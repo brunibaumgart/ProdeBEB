@@ -29,6 +29,7 @@ type SerializableMatch = {
 type SerializablePrediction = {
   predHome: number
   predAway: number
+  predPenaltiesWinnerId?: string | null
   points: number | null
   pointsScorers?: number | null
   homeScorerIds?: string[]

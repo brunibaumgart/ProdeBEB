@@ -43,7 +43,8 @@ export async function setMatchResult(
   matchId: number,
   homeScore: number,
   awayScore: number,
-  scorers?: { homePlayerIds: string[]; awayPlayerIds: string[] }
+  scorers?: { homePlayerIds: string[]; awayPlayerIds: string[] },
+  penaltiesWinnerId?: string | null,
 ): Promise<SetMatchResultResponse> {
   try {
     await assertAdmin()
@@ -93,11 +94,17 @@ export async function setMatchResult(
     }
   }
 
+  const isKnockout = match.round !== 'Group Stage'
+  const isDraw = homeScore === awayScore
+  const resolvedPenaltiesWinnerId =
+    isKnockout && isDraw ? (penaltiesWinnerId ?? null) : null
+
   await prisma.match.update({
     where: { id: matchId },
     data: {
       homeScore,
       awayScore,
+      penaltiesWinnerId: resolvedPenaltiesWinnerId,
       status: 'finished',
     },
   })
@@ -132,8 +139,9 @@ export async function setMatchResult(
   await Promise.all(
     predictions.map((prediction) => {
       const points = calculateMatchdayPoints(
-        { predHome: prediction.predHome, predAway: prediction.predAway },
-        { homeScore, awayScore }
+        { predHome: prediction.predHome, predAway: prediction.predAway, predPenaltiesWinnerId: prediction.predPenaltiesWinnerId },
+        { homeScore, awayScore, penaltiesWinnerId: resolvedPenaltiesWinnerId },
+        isKnockout,
       )
 
       return prisma.prediction.update({
@@ -152,7 +160,8 @@ export async function setMatchResult(
       match.homeTeamId,
       match.awayTeamId,
       homeScore,
-      awayScore
+      awayScore,
+      resolvedPenaltiesWinnerId,
     )
   }
 
@@ -362,7 +371,8 @@ export async function recalculateMatchPoints(matchId: number): Promise<SetMatchR
     return { ok: false, error: 'Solo se pueden recalcular puntos de partidos finalizados.' }
   }
 
-  const { homeScore, awayScore } = match
+  const { homeScore, awayScore, penaltiesWinnerId, round } = match
+  const isKnockout = round !== 'Group Stage'
 
   await prisma.prediction.updateMany({
     where: { matchId },
@@ -374,8 +384,9 @@ export async function recalculateMatchPoints(matchId: number): Promise<SetMatchR
   await Promise.all(
     predictions.map((prediction) => {
       const points = calculateMatchdayPoints(
-        { predHome: prediction.predHome, predAway: prediction.predAway },
-        { homeScore, awayScore }
+        { predHome: prediction.predHome, predAway: prediction.predAway, predPenaltiesWinnerId: prediction.predPenaltiesWinnerId },
+        { homeScore, awayScore, penaltiesWinnerId },
+        isKnockout,
       )
 
       return prisma.prediction.update({

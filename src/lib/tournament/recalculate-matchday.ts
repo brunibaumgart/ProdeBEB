@@ -19,7 +19,7 @@ export async function recalculateAllFinishedMatchdayPoints(): Promise<Recalculat
       homeScore: { not: null },
       awayScore: { not: null },
     },
-    select: { id: true, homeScore: true, awayScore: true },
+    select: { id: true, round: true, homeScore: true, awayScore: true, penaltiesWinnerId: true },
     orderBy: { id: 'asc' },
   })
 
@@ -30,16 +30,18 @@ export async function recalculateAllFinishedMatchdayPoints(): Promise<Recalculat
   for (const match of matches) {
     const homeScore = match.homeScore!
     const awayScore = match.awayScore!
+    const isKnockout = match.round !== 'Group Stage'
     const predictions = await prisma.prediction.findMany({
       where: { matchId: match.id },
-      select: { id: true, userId: true, predHome: true, predAway: true, points: true },
+      select: { id: true, userId: true, predHome: true, predAway: true, predPenaltiesWinnerId: true, points: true },
     })
 
     for (const prediction of predictions) {
       predictionsChecked += 1
       const newPoints = calculateMatchdayPoints(
-        { predHome: prediction.predHome, predAway: prediction.predAway },
-        { homeScore, awayScore },
+        { predHome: prediction.predHome, predAway: prediction.predAway, predPenaltiesWinnerId: prediction.predPenaltiesWinnerId },
+        { homeScore, awayScore, penaltiesWinnerId: match.penaltiesWinnerId },
+        isKnockout,
       )
 
       if (prediction.points !== newPoints) {

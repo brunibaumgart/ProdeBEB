@@ -16,6 +16,7 @@ interface AdminMatchFormProps {
     id: number
     date: string
     timeArg: string
+    round: string
     status?: string
     homeTeam: { id: string; nameEs: string; iso2: string; flagEmoji: string } | null
     awayTeam: { id: string; nameEs: string; iso2: string; flagEmoji: string } | null
@@ -30,6 +31,7 @@ interface AdminMatchFormProps {
   initialAwayScore?: number | null
   initialHomeScorers?: string[]
   initialAwayScorers?: string[]
+  initialPenaltiesWinnerId?: string | null
 }
 
 export function AdminMatchForm({
@@ -41,14 +43,17 @@ export function AdminMatchForm({
   initialAwayScore = null,
   initialHomeScorers = [],
   initialAwayScorers = [],
+  initialPenaltiesWinnerId = null,
 }: AdminMatchFormProps) {
   const isEdit = mode === 'edit'
   const isLive = mode === 'live'
+  const isKnockout = match.round !== 'Group Stage'
 
   const [homeScore, setHomeScore] = useState<number | null>(initialHomeScore)
   const [awayScore, setAwayScore] = useState<number | null>(initialAwayScore)
   const [homeScorers, setHomeScorers] = useState<string[]>(initialHomeScorers)
   const [awayScorers, setAwayScorers] = useState<string[]>(initialAwayScorers)
+  const [penaltiesWinnerId, setPenaltiesWinnerId] = useState<string | null>(initialPenaltiesWinnerId)
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const [isNotifyPending, startNotifyTransition] = useTransition()
@@ -61,17 +66,21 @@ export function AdminMatchForm({
     setAwayScore(initialAwayScore)
     setHomeScorers(initialHomeScorers)
     setAwayScorers(initialAwayScorers)
+    setPenaltiesWinnerId(initialPenaltiesWinnerId)
   }, [
     mode,
     initialHomeScore,
     initialAwayScore,
     initialHomeScorers,
     initialAwayScorers,
+    initialPenaltiesWinnerId,
     match.id,
   ])
 
   const totalGoals = (homeScore ?? 0) + (awayScore ?? 0)
   const showScorers = homeScore != null && awayScore != null && totalGoals > 0
+  const showPenaltiesPicker =
+    isKnockout && homeScore != null && awayScore != null && homeScore === awayScore
 
   function getScorersPayload() {
     return {
@@ -125,6 +134,7 @@ export function AdminMatchForm({
         scores.homeScore,
         scores.awayScore,
         getScorersPayload(),
+        showPenaltiesPicker ? penaltiesWinnerId : null,
       )
       setFeedback(result.ok ? result.message : result.error)
     })
@@ -140,6 +150,7 @@ export function AdminMatchForm({
         scores.homeScore,
         scores.awayScore,
         getScorersPayload(),
+        showPenaltiesPicker ? penaltiesWinnerId : null,
       )
       setFeedback(result.ok ? result.message : result.error)
       if (result.ok && mode === 'create') {
@@ -147,6 +158,7 @@ export function AdminMatchForm({
         setAwayScore(null)
         setHomeScorers([])
         setAwayScorers([])
+        setPenaltiesWinnerId(null)
       }
     })
   }
@@ -217,6 +229,33 @@ export function AdminMatchForm({
               onAwayChange={setAwayScorers}
               disabled={isPending}
             />
+          )}
+
+          {showPenaltiesPicker && match.homeTeam && match.awayTeam && (
+            <div className="mt-4 border-t border-border/60 pt-4">
+              <p className="mb-2 text-xs font-medium text-muted-foreground">
+                Ganador por penales
+              </p>
+              <div className="flex gap-2">
+                {[match.homeTeam, match.awayTeam].map((team) => (
+                  <button
+                    key={team.id}
+                    type="button"
+                    onClick={() => setPenaltiesWinnerId(penaltiesWinnerId === team.id ? null : team.id)}
+                    disabled={isPending}
+                    className={cn(
+                      'flex flex-1 items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50',
+                      penaltiesWinnerId === team.id
+                        ? 'border-primary bg-primary/15 text-primary'
+                        : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground',
+                    )}
+                  >
+                    <span>{team.flagEmoji}</span>
+                    <span>{team.nameEs}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
 

@@ -6,6 +6,7 @@ import { AdminRecalculateAllPointsPanel } from '@/components/admin/admin-recalcu
 import { AdminManualPushRemindersPanel } from '@/components/admin/admin-manual-push-reminders-panel'
 import { AdminPushNotificationsPanel } from '@/components/admin/admin-push-notifications-panel'
 import { AdminScoringAdjustmentPanel } from '@/components/admin/admin-scoring-adjustment-panel'
+import { AdminPenaltiesWinnerPushPanel } from '@/components/admin/admin-penalties-winner-push-panel'
 import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
 import { AdminTabs } from '@/components/admin/admin-tabs'
 import { AdminTesteosPanel } from '@/components/admin/admin-testeos-panel'
@@ -49,11 +50,13 @@ function toFormMatch(match: MatchWithRelations) {
     id: match.id,
     date: match.date.toISOString(),
     timeArg: match.timeArg,
+    round: match.round,
     status: match.status,
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
     homeScore: match.homeScore,
     awayScore: match.awayScore,
+    penaltiesWinnerId: match.penaltiesWinnerId,
     venue: match.venue,
     isTest: match.isTest,
     kickoffPushNotifiedAt: match.kickoffPushNotifiedAt?.toISOString() ?? null,
@@ -111,6 +114,7 @@ async function PartidosTab() {
                   initialAwayScore={match.awayScore}
                   initialHomeScorers={goals.home}
                   initialAwayScorers={goals.away}
+                  initialPenaltiesWinnerId={match.penaltiesWinnerId}
                   homePlayers={
                     match.homeTeamId ? (playersByTeamId.get(match.homeTeamId) ?? []) : []
                   }
@@ -213,6 +217,7 @@ async function FinalizadosTab() {
                   initialAwayScore={match.awayScore}
                   initialHomeScorers={goals.home}
                   initialAwayScorers={goals.away}
+                  initialPenaltiesWinnerId={match.penaltiesWinnerId}
                   homePlayers={
                     match.homeTeamId ? (playersByTeamId.get(match.homeTeamId) ?? []) : []
                   }
@@ -338,6 +343,7 @@ async function NotificacionesTab() {
   return (
     <div className="space-y-6">
       <AdminManualPushRemindersPanel />
+      <AdminPenaltiesWinnerPushPanel />
       <AdminScoringAdjustmentPanel />
       <AdminPushNotificationsPanel users={users} />
     </div>

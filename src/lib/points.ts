@@ -1,11 +1,13 @@
 export interface MatchResult {
   homeScore: number
   awayScore: number
+  penaltiesWinnerId?: string | null
 }
 
 export interface Prediction {
   predHome: number
   predAway: number
+  predPenaltiesWinnerId?: string | null
 }
 
 function getOutcome(home: number, away: number): 'home' | 'away' | 'draw' {
@@ -16,25 +18,39 @@ function getOutcome(home: number, away: number): 'home' | 'away' | 'draw' {
 
 // ─── Prode Fecha a Fecha ───────────────────────────────────────────────────
 
-export function calculateMatchdayPoints(pred: Prediction, result: MatchResult): number {
+export function calculateMatchdayPoints(
+  pred: Prediction,
+  result: MatchResult,
+  isKnockout = false,
+): number {
   let points = 0
 
   const predOutcome = getOutcome(pred.predHome, pred.predAway)
   const realOutcome = getOutcome(result.homeScore, result.awayScore)
 
   if (pred.predHome === result.homeScore && pred.predAway === result.awayScore) {
-    return 3
-  }
-
-  if (predOutcome === realOutcome) {
-    points += 1
+    points = 3
+  } else if (predOutcome === realOutcome) {
+    points = 1
 
     // En empates la diferencia siempre es 0: el bonus de DG no aplica (solo 1 pt sin exacto).
     if (predOutcome !== 'draw') {
       const predDiff = pred.predHome - pred.predAway
       const realDiff = result.homeScore - result.awayScore
-      if (predDiff === realDiff) points += 1
+      if (predDiff === realDiff) points = 2
     }
+  }
+
+  // En duelos eliminatorios: +2 pts si el empate fue por penales y acertaste quién pasa.
+  if (
+    isKnockout &&
+    predOutcome === 'draw' &&
+    realOutcome === 'draw' &&
+    pred.predPenaltiesWinnerId != null &&
+    result.penaltiesWinnerId != null &&
+    pred.predPenaltiesWinnerId === result.penaltiesWinnerId
+  ) {
+    points += 2
   }
 
   return points
