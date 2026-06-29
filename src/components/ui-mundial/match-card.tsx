@@ -25,6 +25,7 @@ interface MatchCardProps {
 interface PredictionInfo {
   predHome: number
   predAway: number
+  predPenaltiesWinnerId?: string | null
   points?: number | null
   pointsScorers?: number | null
 }
@@ -67,6 +68,16 @@ function TeamRow({
   )
 }
 
+function resolvePenFlag(
+  predPenaltiesWinnerId: string | null | undefined,
+  match: { homeTeamId: string | null; awayTeamId: string | null; homeTeam: { flagEmoji: string } | null; awayTeam: { flagEmoji: string } | null },
+): string | null {
+  if (!predPenaltiesWinnerId) return null
+  if (predPenaltiesWinnerId === match.homeTeamId) return match.homeTeam?.flagEmoji ?? null
+  if (predPenaltiesWinnerId === match.awayTeamId) return match.awayTeam?.flagEmoji ?? null
+  return null
+}
+
 export function MatchCard({
   match,
   href,
@@ -79,6 +90,7 @@ export function MatchCard({
   const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
   const friendly = isFriendlyMatch(match)
+  const isKnockout = match.round !== 'Group Stage' && !match.isTest
   const effectiveHomeTeam = match.homeTeam ?? confirmedHomeTeam ?? null
   const effectiveAwayTeam = match.awayTeam ?? confirmedAwayTeam ?? null
 
@@ -121,6 +133,10 @@ export function MatchCard({
             <span className="flex items-center gap-2">
               <span className="font-heading text-sm tabular-nums text-primary">
                 {prediction.predHome} - {prediction.predAway}
+                {isKnockout && prediction.predHome === prediction.predAway && (() => {
+                  const flag = resolvePenFlag(prediction.predPenaltiesWinnerId, match)
+                  return flag ? <span className="ml-1 text-xs" title="Ganador por penales">{flag}</span> : null
+                })()}
               </span>
               {isFinished && (
                 <span className={cn('font-bold tabular-nums', getPointsColor(getTotalPoints(prediction)))}>
@@ -142,6 +158,10 @@ export function MatchCard({
           <span className="flex items-center gap-2">
             <span className="font-heading text-sm tabular-nums text-brand-gold">
               {otherPrediction.predHome} - {otherPrediction.predAway}
+              {isKnockout && otherPrediction.predHome === otherPrediction.predAway && (() => {
+                const flag = resolvePenFlag(otherPrediction.predPenaltiesWinnerId, match)
+                return flag ? <span className="ml-1 text-xs" title="Ganador por penales">{flag}</span> : null
+              })()}
             </span>
             {isFinished && (
               <span

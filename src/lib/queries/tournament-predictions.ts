@@ -12,6 +12,7 @@ export type TournamentMemberPredictionView = {
   userName: string
   predHome: number
   predAway: number
+  predPenaltiesWinnerId: string | null
   points: number | null
   pointsScorers: number | null
   scorerNames: string[]
@@ -57,6 +58,7 @@ function mapMemberPrediction(prediction: {
   userId: string
   predHome: number
   predAway: number
+  predPenaltiesWinnerId: string | null
   points: number | null
   pointsScorers: number | null
   user: { name: string }
@@ -68,6 +70,7 @@ function mapMemberPrediction(prediction: {
     userName: prediction.user.name,
     predHome: prediction.predHome,
     predAway: prediction.predAway,
+    predPenaltiesWinnerId: prediction.predPenaltiesWinnerId,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
     scorerNames: prediction.scorers.map((scorer) =>

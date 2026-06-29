@@ -10,6 +10,7 @@ import type { TournamentMemberPredictionView } from '@/lib/queries/tournament-pr
 export type UserMatchPredictionDetail = {
   predHome: number
   predAway: number
+  predPenaltiesWinnerId: string | null
   points: number | null
   pointsScorers: number | null
   scorerNames: string[]
@@ -34,6 +35,7 @@ function mapMemberPrediction(prediction: {
   userId: string
   predHome: number
   predAway: number
+  predPenaltiesWinnerId: string | null
   points: number | null
   pointsScorers: number | null
   user: { name: string }
@@ -45,6 +47,7 @@ function mapMemberPrediction(prediction: {
     userName: prediction.user.name,
     predHome: prediction.predHome,
     predAway: prediction.predAway,
+    predPenaltiesWinnerId: prediction.predPenaltiesWinnerId,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
     scorerNames: prediction.scorers.map((scorer) =>
@@ -57,6 +60,7 @@ function mapUserPrediction(
   prediction: {
     predHome: number
     predAway: number
+    predPenaltiesWinnerId: string | null
     points: number | null
     pointsScorers: number | null
     scorers: { playerId: string | null; isOwnGoal: boolean; player: { name: string } | null }[]
@@ -67,6 +71,7 @@ function mapUserPrediction(
   return {
     predHome: prediction.predHome,
     predAway: prediction.predAway,
+    predPenaltiesWinnerId: prediction.predPenaltiesWinnerId,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
     scorerNames: prediction.scorers.map((scorer) =>

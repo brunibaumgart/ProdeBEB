@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils'
 interface MatchPredictionsPanelProps {
   match: Pick<
     MatchWithRelations,
-    'id' | 'date' | 'timeArg' | 'status' | 'homeScore' | 'awayScore' | 'homeTeam' | 'awayTeam' | 'homeLabel' | 'awayLabel'
+    'id' | 'date' | 'timeArg' | 'status' | 'round' | 'homeTeamId' | 'awayTeamId' | 'homeScore' | 'awayScore' | 'homeTeam' | 'awayTeam' | 'homeLabel' | 'awayLabel'
   >
   context: MatchPredictionsContext
   canEditPrediction: boolean
@@ -21,6 +21,16 @@ interface MatchPredictionsPanelProps {
 
 function getFechaEditHref(matchId: number) {
   return `/prode/fecha?match=${matchId}&edit=1`
+}
+
+function resolvePenaltiesWinnerFlag(
+  predPenaltiesWinnerId: string | null | undefined,
+  match: Pick<MatchPredictionsPanelProps['match'], 'homeTeamId' | 'awayTeamId' | 'homeTeam' | 'awayTeam'>,
+): string | null {
+  if (!predPenaltiesWinnerId) return null
+  if (predPenaltiesWinnerId === match.homeTeamId) return match.homeTeam?.flagEmoji ?? null
+  if (predPenaltiesWinnerId === match.awayTeamId) return match.awayTeam?.flagEmoji ?? null
+  return null
 }
 
 function getTeamSide(match: MatchPredictionsPanelProps['match']) {
@@ -51,6 +61,7 @@ function TournamentPredictionsBlock({
   group: TournamentMatchPredictionsGroup
   match: MatchPredictionsPanelProps['match']
 }) {
+  const isKnockout = match.round !== 'Group Stage'
   return (
     <section className="rounded-xl border border-border bg-card p-4">
       <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
@@ -95,11 +106,18 @@ function TournamentPredictionsBlock({
               </tr>
             </thead>
             <tbody>
-              {group.predictions.map((prediction) => (
+              {group.predictions.map((prediction) => {
+                const penFlag = isKnockout
+                  ? resolvePenaltiesWinnerFlag(prediction.predPenaltiesWinnerId, match)
+                  : null
+                return (
                 <tr key={prediction.id} className="border-b border-border/40 last:border-0">
                   <td className="px-2 py-2 font-medium">{prediction.userName}</td>
                   <td className="px-2 py-2 text-center font-heading text-base tabular-nums">
-                    {prediction.predHome} - {prediction.predAway}
+                    <span>{prediction.predHome} - {prediction.predAway}</span>
+                    {penFlag && (
+                      <span className="ml-1.5 text-sm" title="Ganador por penales">{penFlag}</span>
+                    )}
                   </td>
                   <td className="px-2 py-2 text-muted-foreground">
                     {prediction.scorerNames.length > 0 ? prediction.scorerNames.join(', ') : '—'}
@@ -117,7 +135,8 @@ function TournamentPredictionsBlock({
                     </td>
                   ) : null}
                 </tr>
-              ))}
+              )
+              })}
             </tbody>
           </table>
         </div>
@@ -133,6 +152,7 @@ export function MatchPredictionsPanel({
 }: MatchPredictionsPanelProps) {
   const { home, away } = getTeamSide(match)
   const isFinished = match.status === 'finished'
+  const isKnockout = match.round !== 'Group Stage'
   const userPrediction = context.userPrediction
 
   return (
@@ -159,6 +179,16 @@ export function MatchPredictionsPanel({
               homeScore={userPrediction.predHome}
               awayScore={userPrediction.predAway}
             />
+            {isKnockout && userPrediction.predPenaltiesWinnerId && (() => {
+              const flag = resolvePenaltiesWinnerFlag(userPrediction.predPenaltiesWinnerId, match)
+              if (!flag) return null
+              return (
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">Penales:</span>{' '}
+                  {flag}
+                </p>
+              )
+            })()}
             {userPrediction.scorerNames.length > 0 ? (
               <p className="text-sm text-muted-foreground">
                 <span className="font-medium text-foreground">Goleadores:</span>{' '}

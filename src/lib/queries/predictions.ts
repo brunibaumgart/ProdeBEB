@@ -17,6 +17,7 @@ export type UserMatchPredictionSummary = {
   matchId: number
   predHome: number
   predAway: number
+  predPenaltiesWinnerId: string | null
   points: number | null
   pointsScorers: number | null
 }
@@ -33,6 +34,7 @@ export async function getUserPredictionsForMatchIds(userId: string, matchIds: nu
       matchId: true,
       predHome: true,
       predAway: true,
+      predPenaltiesWinnerId: true,
       points: true,
       pointsScorers: true,
     },
