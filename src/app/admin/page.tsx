@@ -275,26 +275,38 @@ async function PrediccionesTab({
       ? await getAdminMatchPredictions(selectedMatchId)
       : []
 
-  const userPredictions = userPredictionsRaw.map((prediction) => ({
-    id: prediction.id,
-    predHome: prediction.predHome,
-    predAway: prediction.predAway,
-    points: prediction.points,
-    pointsScorers: prediction.pointsScorers,
-    scorerNames: prediction.scorers.map((scorer) =>
-      formatScorerSlotLabel(scorerSlotToId(scorer), scorer.player?.name),
-    ),
-    match: {
-      id: prediction.match.id,
-      date: prediction.match.date.toISOString(),
-      timeArg: prediction.match.timeArg,
-      status: prediction.match.status,
-      homeScore: prediction.match.homeScore,
-      awayScore: prediction.match.awayScore,
-      homeTeam: prediction.match.homeTeam,
-      awayTeam: prediction.match.awayTeam,
-    },
-  }))
+  const userPredictions = userPredictionsRaw.map((prediction) => {
+    const isKnockout = prediction.match.round !== 'Group Stage'
+    let penaltiesWinnerFlag: string | null = null
+    if (isKnockout && prediction.predPenaltiesWinnerId) {
+      if (prediction.predPenaltiesWinnerId === prediction.match.homeTeamId) {
+        penaltiesWinnerFlag = prediction.match.homeTeam?.flagEmoji ?? null
+      } else if (prediction.predPenaltiesWinnerId === prediction.match.awayTeamId) {
+        penaltiesWinnerFlag = prediction.match.awayTeam?.flagEmoji ?? null
+      }
+    }
+    return {
+      id: prediction.id,
+      predHome: prediction.predHome,
+      predAway: prediction.predAway,
+      penaltiesWinnerFlag,
+      points: prediction.points,
+      pointsScorers: prediction.pointsScorers,
+      scorerNames: prediction.scorers.map((scorer) =>
+        formatScorerSlotLabel(scorerSlotToId(scorer), scorer.player?.name),
+      ),
+      match: {
+        id: prediction.match.id,
+        date: prediction.match.date.toISOString(),
+        timeArg: prediction.match.timeArg,
+        status: prediction.match.status,
+        homeScore: prediction.match.homeScore,
+        awayScore: prediction.match.awayScore,
+        homeTeam: prediction.match.homeTeam,
+        awayTeam: prediction.match.awayTeam,
+      },
+    }
+  })
 
   return (
     <AdminPredictionsPanel

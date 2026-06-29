@@ -147,6 +147,7 @@ export type AdminPredictionView = {
   userEmail: string
   predHome: number
   predAway: number
+  penaltiesWinnerFlag: string | null
   points: number | null
   pointsScorers: number | null
   scorerNames: string[]
@@ -158,6 +159,15 @@ const adminPredictionInclude = {
     include: { player: { select: { name: true } } },
     orderBy: { id: 'asc' as const },
   },
+  match: {
+    select: {
+      round: true,
+      homeTeamId: true,
+      awayTeamId: true,
+      homeTeam: { select: { flagEmoji: true } },
+      awayTeam: { select: { flagEmoji: true } },
+    },
+  },
 } as const
 
 function mapAdminPrediction(
@@ -166,12 +176,29 @@ function mapAdminPrediction(
     userId: string
     predHome: number
     predAway: number
+    predPenaltiesWinnerId: string | null
     points: number | null
     pointsScorers: number | null
     user: { id: string; name: string; email: string }
     scorers: { playerId: string | null; player: { name: string } | null; isOwnGoal: boolean }[]
+    match: {
+      round: string
+      homeTeamId: string | null
+      awayTeamId: string | null
+      homeTeam: { flagEmoji: string } | null
+      awayTeam: { flagEmoji: string } | null
+    }
   },
 ): AdminPredictionView {
+  const isKnockout = prediction.match.round !== 'Group Stage'
+  let penaltiesWinnerFlag: string | null = null
+  if (isKnockout && prediction.predPenaltiesWinnerId) {
+    if (prediction.predPenaltiesWinnerId === prediction.match.homeTeamId) {
+      penaltiesWinnerFlag = prediction.match.homeTeam?.flagEmoji ?? null
+    } else if (prediction.predPenaltiesWinnerId === prediction.match.awayTeamId) {
+      penaltiesWinnerFlag = prediction.match.awayTeam?.flagEmoji ?? null
+    }
+  }
   return {
     id: prediction.id,
     userId: prediction.userId,
@@ -179,6 +206,7 @@ function mapAdminPrediction(
     userEmail: prediction.user.email,
     predHome: prediction.predHome,
     predAway: prediction.predAway,
+    penaltiesWinnerFlag,
     points: prediction.points,
     pointsScorers: prediction.pointsScorers,
     scorerNames: prediction.scorers.map((scorer) =>

@@ -25,6 +25,7 @@ type UserPrediction = {
   id: string
   predHome: number
   predAway: number
+  penaltiesWinnerFlag: string | null
   points: number | null
   pointsScorers: number | null
   scorerNames: string[]
@@ -145,6 +146,11 @@ export function AdminPredictionsPanel({
                   <div className="text-right text-sm">
                     <p className="font-heading text-lg tabular-nums">
                       {prediction.predHome} - {prediction.predAway}
+                      {prediction.penaltiesWinnerFlag && (
+                        <span className="ml-1.5 text-base" title="Ganador por penales">
+                          {prediction.penaltiesWinnerFlag}
+                        </span>
+                      )}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {prediction.match.homeScore != null && prediction.match.awayScore != null

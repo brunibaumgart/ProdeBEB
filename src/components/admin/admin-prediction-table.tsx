@@ -95,6 +95,11 @@ export function AdminPredictionTable({
                     </td>
                     <td className="px-3 py-2 text-center font-heading text-base tabular-nums">
                       {prediction.predHome} - {prediction.predAway}
+                      {prediction.penaltiesWinnerFlag && (
+                        <span className="ml-1.5 text-sm" title="Ganador por penales">
+                          {prediction.penaltiesWinnerFlag}
+                        </span>
+                      )}
                     </td>
                     {!compact ? (
                       <td className="px-3 py-2 text-muted-foreground">
