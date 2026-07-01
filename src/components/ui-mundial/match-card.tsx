@@ -20,6 +20,8 @@ interface MatchCardProps {
   confirmedHomeTeam?: ConfirmedTeam | null
   /** Equipo visitante confirmado por resultados reales (cuando no está en la BD aún). */
   confirmedAwayTeam?: ConfirmedTeam | null
+  /** Si es true, los puntos mostrados excluyen los de goleadores (solo fecha a fecha). */
+  matchdayPointsOnly?: boolean
 }
 
 interface PredictionInfo {
@@ -30,8 +32,9 @@ interface PredictionInfo {
   pointsScorers?: number | null
 }
 
-function getTotalPoints(prediction: PredictionInfo): number | null {
+function getTotalPoints(prediction: PredictionInfo, matchdayPointsOnly?: boolean): number | null {
   if (prediction.points == null) return null
+  if (matchdayPointsOnly) return prediction.points
   return prediction.points + (prediction.pointsScorers ?? 0)
 }
 
@@ -86,6 +89,7 @@ export function MatchCard({
   otherPrediction,
   confirmedHomeTeam,
   confirmedAwayTeam,
+  matchdayPointsOnly,
 }: MatchCardProps) {
   const isFinished = match.status === 'finished'
   const isLive = match.status === 'live'
@@ -139,8 +143,10 @@ export function MatchCard({
                 })()}
               </span>
               {isFinished && (
-                <span className={cn('font-bold tabular-nums', getPointsColor(getTotalPoints(prediction)))}>
-                  {getTotalPoints(prediction) != null ? `${getTotalPoints(prediction)} pts` : 'Pendiente'}
+                <span className={cn('font-bold tabular-nums', getPointsColor(getTotalPoints(prediction, matchdayPointsOnly)))}>
+                  {getTotalPoints(prediction, matchdayPointsOnly) != null
+                    ? `${getTotalPoints(prediction, matchdayPointsOnly)} pts`
+                    : 'Pendiente'}
                 </span>
               )}
             </span>
@@ -165,10 +171,13 @@ export function MatchCard({
             </span>
             {isFinished && (
               <span
-                className={cn('font-bold tabular-nums', getPointsColor(getTotalPoints(otherPrediction)))}
+                className={cn(
+                  'font-bold tabular-nums',
+                  getPointsColor(getTotalPoints(otherPrediction, matchdayPointsOnly)),
+                )}
               >
-                {getTotalPoints(otherPrediction) != null
-                  ? `${getTotalPoints(otherPrediction)} pts`
+                {getTotalPoints(otherPrediction, matchdayPointsOnly) != null
+                  ? `${getTotalPoints(otherPrediction, matchdayPointsOnly)} pts`
                   : 'Pendiente'}
               </span>
             )}

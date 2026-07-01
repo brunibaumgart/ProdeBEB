@@ -117,6 +117,7 @@ export default async function HomePage() {
                       ? { label: counterpart.label, ...counterpartPrediction }
                       : null
                   }
+                  matchdayPointsOnly={Boolean(counterpart)}
                 />
               )
             })}
