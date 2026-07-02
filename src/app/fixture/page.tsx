@@ -13,6 +13,7 @@ import { getMatches, getGroupStageMatches, getKnockoutMatches, groupMatchesByDay
 import { formatDayHeader, getArgentinaTodayDateStr } from '@/lib/time'
 import { resolveClinichedGroupPositions } from '@/lib/bracket'
 import { resolvePredictedBracket } from '@/lib/bracket/predicted-bracket'
+import { resolveKnockoutSlotCandidates } from '@/lib/bracket/slot-candidates'
 import type { MatchRound } from '@/types'
 
 const GROUPS = 'ABCDEFGHIJKL'.split('')
@@ -88,6 +89,16 @@ export default async function FixturePage({ searchParams }: FixturePageProps) {
     }
   }
 
+  // Equipos aún vivos que podrían ocupar un cruce de eliminación directa todavía no definido
+  const slotCandidatesMap = resolveKnockoutSlotCandidates(knockoutMs)
+  const candidateTeamsMap = new Map<number, { home: ConfirmedTeam[]; away: ConfirmedTeam[] }>()
+  for (const [matchId, { home, away }] of slotCandidatesMap) {
+    candidateTeamsMap.set(matchId, {
+      home: home.map((teamId) => teamById.get(teamId)).filter((t): t is NonNullable<typeof t> => Boolean(t)),
+      away: away.map((teamId) => teamById.get(teamId)).filter((t): t is NonNullable<typeof t> => Boolean(t)),
+    })
+  }
+
   const grouped = groupMatchesByDay(matches)
   const todayKey = getArgentinaTodayDateStr()
   const noFilters = !params.grupo && !params.fase && !params.equipo
@@ -140,6 +151,7 @@ export default async function FixturePage({ searchParams }: FixturePageProps) {
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {dayMatches.map((match) => {
                     const ct = confirmedTeamsMap.get(match.id)
+                    const cand = candidateTeamsMap.get(match.id)
                     return (
                       <MatchCard
                         key={match.id}
@@ -147,6 +159,8 @@ export default async function FixturePage({ searchParams }: FixturePageProps) {
                         href={`/fixture/${match.id}`}
                         confirmedHomeTeam={ct?.home ?? null}
                         confirmedAwayTeam={ct?.away ?? null}
+                        homeTeamCandidates={cand?.home}
+                        awayTeamCandidates={cand?.away}
                       />
                     )
                   })}

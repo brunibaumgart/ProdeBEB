@@ -20,6 +20,10 @@ interface MatchCardProps {
   confirmedHomeTeam?: ConfirmedTeam | null
   /** Equipo visitante confirmado por resultados reales (cuando no está en la BD aún). */
   confirmedAwayTeam?: ConfirmedTeam | null
+  /** Posibles equipos locales mientras el cruce anterior no está definido (2+ equipos aún vivos). */
+  homeTeamCandidates?: ConfirmedTeam[]
+  /** Posibles equipos visitantes mientras el cruce anterior no está definido (2+ equipos aún vivos). */
+  awayTeamCandidates?: ConfirmedTeam[]
   /** Si es true, los puntos mostrados excluyen los de goleadores (solo fecha a fecha). */
   matchdayPointsOnly?: boolean
 }
@@ -49,11 +53,41 @@ function TeamRow({
   label,
   team,
   score,
+  candidates,
 }: {
   label: string
   team?: { nameEs: string; iso2: string; flagEmoji: string } | null
   score: number | null
+  candidates?: ConfirmedTeam[]
 }) {
+  if (!team && candidates && candidates.length > 1) {
+    return (
+      <div className="flex items-center gap-2 text-left">
+        <div className="flex -space-x-1.5">
+          {candidates.slice(0, 4).map((c) => (
+            <FlagIcon
+              key={c.iso2}
+              iso2={c.iso2}
+              flagEmoji={c.flagEmoji}
+              size="sm"
+              className="rounded-sm ring-2 ring-card"
+            />
+          ))}
+          {candidates.length > 4 && (
+            <span className="flex size-5 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground ring-2 ring-card">
+              +{candidates.length - 4}
+            </span>
+          )}
+        </div>
+        <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+          {candidates.length <= 2
+            ? candidates.map((c) => c.nameEs).join(' o ')
+            : `${candidates.length} posibles`}
+        </span>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-center gap-2 text-left">
       {team ? (
@@ -89,6 +123,8 @@ export function MatchCard({
   otherPrediction,
   confirmedHomeTeam,
   confirmedAwayTeam,
+  homeTeamCandidates,
+  awayTeamCandidates,
   matchdayPointsOnly,
 }: MatchCardProps) {
   const isFinished = match.status === 'finished'
@@ -120,11 +156,13 @@ export function MatchCard({
           label={match.homeLabel ?? 'Local'}
           team={effectiveHomeTeam}
           score={isFinished || isLive ? match.homeScore : null}
+          candidates={homeTeamCandidates}
         />
         <TeamRow
           label={match.awayLabel ?? 'Visitante'}
           team={effectiveAwayTeam}
           score={isFinished || isLive ? match.awayScore : null}
+          candidates={awayTeamCandidates}
         />
       </div>
 

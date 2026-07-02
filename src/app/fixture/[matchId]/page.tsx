@@ -12,8 +12,10 @@ import { canAccessTestContent } from '@/lib/auth/test-access'
 import { friendlyMatchCardClass, isFriendlyMatch } from '@/lib/matches/friendly'
 import { canEditPrediction, isMatchPredictable } from '@/lib/matches/availability'
 import { getMatchTitle } from '@/lib/match-label'
+import { resolveKnockoutSlotCandidates } from '@/lib/bracket/slot-candidates'
 import { getMatchPredictionsContext } from '@/lib/queries/match-predictions-context'
-import { getMatchById, getOfficialMatchIds } from '@/lib/queries/matches'
+import { getMatchById, getKnockoutMatches, getOfficialMatchIds } from '@/lib/queries/matches'
+import { getAllTeams } from '@/lib/queries/teams'
 import { ensureDbUser } from '@/lib/queries/users'
 import { formatDbMatchKickoff, formatUtcTime, toArgentinaTime } from '@/lib/time'
 import { cn } from '@/lib/utils'
@@ -74,12 +76,33 @@ function TeamBlock({
   label,
   score,
   kitColor,
+  candidates,
 }: {
   team?: { nameEs: string; iso2: string; flagEmoji: string; kitPrimary: string } | null
   label: string
   score: number | null
   kitColor?: string
+  candidates?: { nameEs: string; iso2: string; flagEmoji: string }[]
 }) {
+  if (!team && candidates && candidates.length > 1) {
+    return (
+      <div className="flex flex-1 flex-col items-center gap-3 text-center">
+        <div className="flex max-w-[220px] flex-wrap items-center justify-center gap-1.5 sm:max-w-xs">
+          {candidates.map((c) => (
+            <span
+              key={c.iso2}
+              className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs font-medium"
+            >
+              <FlagIcon iso2={c.iso2} flagEmoji={c.flagEmoji} size="sm" className="rounded-sm" />
+              {c.nameEs}
+            </span>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">{candidates.length} posibles</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-1 flex-col items-center gap-3 text-center">
       <div
@@ -114,6 +137,20 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
 
   const match = await getMatchById(id, { includeTestMatches })
   if (!match) notFound()
+
+  let homeCandidates: { nameEs: string; iso2: string; flagEmoji: string }[] | undefined
+  let awayCandidates: { nameEs: string; iso2: string; flagEmoji: string }[] | undefined
+  if (match.round !== 'Group Stage' && (!match.homeTeamId || !match.awayTeamId)) {
+    const [knockoutMs, allTeams] = await Promise.all([
+      getKnockoutMatches({ includeTestMatches }),
+      getAllTeams(),
+    ])
+    const teamById = new Map(allTeams.map((t) => [t.id, t]))
+    const slotCandidatesMap = resolveKnockoutSlotCandidates(knockoutMs)
+    const cand = slotCandidatesMap.get(match.id)
+    homeCandidates = cand?.home.map((teamId) => teamById.get(teamId)).filter((t): t is NonNullable<typeof t> => Boolean(t))
+    awayCandidates = cand?.away.map((teamId) => teamById.get(teamId)).filter((t): t is NonNullable<typeof t> => Boolean(t))
+  }
 
   const dbUser = clerkId ? await ensureDbUser() : null
   const predictionsContext =
@@ -152,6 +189,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
             label={match.homeLabel ?? 'Local'}
             score={showScore ? match.homeScore : null}
             kitColor={match.homeTeam?.kitPrimary}
+            candidates={homeCandidates}
           />
           <span className="font-heading text-2xl text-muted-foreground sm:text-3xl">VS</span>
           <TeamBlock
@@ -159,6 +197,7 @@ export default async function MatchDetailPage({ params }: MatchDetailPageProps) 
             label={match.awayLabel ?? 'Visitante'}
             score={showScore ? match.awayScore : null}
             kitColor={match.awayTeam?.kitPrimary}
+            candidates={awayCandidates}
           />
         </div>
 
