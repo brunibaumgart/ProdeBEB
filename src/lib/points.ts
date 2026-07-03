@@ -2,6 +2,8 @@ export interface MatchResult {
   homeScore: number
   awayScore: number
   penaltiesWinnerId?: string | null
+  homeTeamId?: string | null
+  awayTeamId?: string | null
 }
 
 export interface Prediction {
@@ -41,16 +43,24 @@ export function calculateMatchdayPoints(
     }
   }
 
-  // En duelos eliminatorios: +2 pts si el empate fue por penales y acertaste quién pasa.
-  if (
-    isKnockout &&
-    predOutcome === 'draw' &&
-    realOutcome === 'draw' &&
-    pred.predPenaltiesWinnerId != null &&
-    result.penaltiesWinnerId != null &&
-    pred.predPenaltiesWinnerId === result.penaltiesWinnerId
-  ) {
-    points += 2
+  // En duelos eliminatorios con predicción de empate + ganador por penales:
+  if (isKnockout && predOutcome === 'draw' && pred.predPenaltiesWinnerId != null) {
+    if (
+      // +2 pts si el partido también terminó empatado y acertaste quién pasa por penales.
+      realOutcome === 'draw' &&
+      result.penaltiesWinnerId != null &&
+      pred.predPenaltiesWinnerId === result.penaltiesWinnerId
+    ) {
+      points += 2
+    } else {
+      // +1 pt si el equipo que elegiste como ganador por penales terminó ganando el partido
+      // directamente (sin ir a penales), ya que igual acertaste quién avanza.
+      const realWinnerTeamId =
+        realOutcome === 'home' ? result.homeTeamId : realOutcome === 'away' ? result.awayTeamId : null
+      if (realWinnerTeamId != null && pred.predPenaltiesWinnerId === realWinnerTeamId) {
+        points += 1
+      }
+    }
   }
 
   return points

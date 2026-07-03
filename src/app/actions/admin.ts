@@ -140,7 +140,13 @@ export async function setMatchResult(
     predictions.map((prediction) => {
       const points = calculateMatchdayPoints(
         { predHome: prediction.predHome, predAway: prediction.predAway, predPenaltiesWinnerId: prediction.predPenaltiesWinnerId },
-        { homeScore, awayScore, penaltiesWinnerId: resolvedPenaltiesWinnerId },
+        {
+          homeScore,
+          awayScore,
+          penaltiesWinnerId: resolvedPenaltiesWinnerId,
+          homeTeamId: match.homeTeamId,
+          awayTeamId: match.awayTeamId,
+        },
         isKnockout,
       )
 
@@ -371,7 +377,7 @@ export async function recalculateMatchPoints(matchId: number): Promise<SetMatchR
     return { ok: false, error: 'Solo se pueden recalcular puntos de partidos finalizados.' }
   }
 
-  const { homeScore, awayScore, penaltiesWinnerId, round } = match
+  const { homeScore, awayScore, penaltiesWinnerId, round, homeTeamId, awayTeamId } = match
   const isKnockout = round !== 'Group Stage'
 
   await prisma.prediction.updateMany({
@@ -385,7 +391,7 @@ export async function recalculateMatchPoints(matchId: number): Promise<SetMatchR
     predictions.map((prediction) => {
       const points = calculateMatchdayPoints(
         { predHome: prediction.predHome, predAway: prediction.predAway, predPenaltiesWinnerId: prediction.predPenaltiesWinnerId },
-        { homeScore, awayScore, penaltiesWinnerId },
+        { homeScore, awayScore, penaltiesWinnerId, homeTeamId, awayTeamId },
         isKnockout,
       )
 

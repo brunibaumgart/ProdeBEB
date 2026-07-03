@@ -19,7 +19,15 @@ export async function recalculateAllFinishedMatchdayPoints(): Promise<Recalculat
       homeScore: { not: null },
       awayScore: { not: null },
     },
-    select: { id: true, round: true, homeScore: true, awayScore: true, penaltiesWinnerId: true },
+    select: {
+      id: true,
+      round: true,
+      homeScore: true,
+      awayScore: true,
+      penaltiesWinnerId: true,
+      homeTeamId: true,
+      awayTeamId: true,
+    },
     orderBy: { id: 'asc' },
   })
 
@@ -40,7 +48,13 @@ export async function recalculateAllFinishedMatchdayPoints(): Promise<Recalculat
       predictionsChecked += 1
       const newPoints = calculateMatchdayPoints(
         { predHome: prediction.predHome, predAway: prediction.predAway, predPenaltiesWinnerId: prediction.predPenaltiesWinnerId },
-        { homeScore, awayScore, penaltiesWinnerId: match.penaltiesWinnerId },
+        {
+          homeScore,
+          awayScore,
+          penaltiesWinnerId: match.penaltiesWinnerId,
+          homeTeamId: match.homeTeamId,
+          awayTeamId: match.awayTeamId,
+        },
         isKnockout,
       )
 
