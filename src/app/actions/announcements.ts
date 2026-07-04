@@ -156,3 +156,58 @@ export async function adminSendPenaltiesWinnerNoticePush(): Promise<Announcement
     message: `Push de penales enviado a ${recipients.length} usuario${recipients.length === 1 ? '' : 's'} (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
   }
 }
+
+const PIO_RESULT_CORRECTION_MATCH_ID = 90
+
+export async function adminSendPioResultCorrectionPush(): Promise<AnnouncementActionResult> {
+  const { userId } = await auth()
+  if (!userId || userId !== process.env.ADMIN_USER_ID) {
+    return { ok: false, error: 'No autorizado.' }
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { name: { equals: 'pio', mode: 'insensitive' } },
+    include: { pushSubscriptions: true },
+  })
+  if (!user) return { ok: false, error: 'Usuario pio no encontrado.' }
+  if (user.pushSubscriptions.length === 0) {
+    return { ok: false, error: 'pio no tiene notificaciones push activas.' }
+  }
+
+  const match = await prisma.match.findUnique({
+    where: { id: PIO_RESULT_CORRECTION_MATCH_ID },
+    include: { homeTeam: true, awayTeam: true },
+  })
+  if (!match) return { ok: false, error: 'Partido no encontrado.' }
+
+  const prediction = await prisma.prediction.findUnique({
+    where: { userId_matchId: { userId: user.id, matchId: PIO_RESULT_CORRECTION_MATCH_ID } },
+  })
+  if (!prediction) return { ok: false, error: 'pio no tiene predicción cargada para este partido.' }
+
+  const homeFlag = match.homeTeam?.flagEmoji ?? '⚽'
+  const awayFlag = match.awayTeam?.flagEmoji ?? '⚽'
+  const points = prediction.points ?? 0
+
+  const payload = {
+    title: `${homeFlag} vs ${awayFlag} · Resultado corregido`,
+    body: `Arreglamos tu predicción a ${prediction.predHome}-${prediction.predAway}. Ahora sumás +${points} pt 🎉`,
+    url: `/fixture/${PIO_RESULT_CORRECTION_MATCH_ID}`,
+    icon: getPushNotificationIcon({ name: user.name }),
+    tag: `prediction-corrected-${PIO_RESULT_CORRECTION_MATCH_ID}`,
+  }
+
+  const { sent, failed } = await deliverPushPayload(user.pushSubscriptions, payload, {
+    userId: user.id,
+  })
+
+  if (sent === 0) {
+    return { ok: false, error: 'No se pudo enviar a ningún dispositivo.' }
+  }
+
+  const suffix = failed > 0 ? ` (${failed} falló)` : ''
+  return {
+    ok: true,
+    message: `Push enviado a pio (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
+  }
+}
