@@ -8,6 +8,7 @@ import { AdminPushNotificationsPanel } from '@/components/admin/admin-push-notif
 import { AdminScoringAdjustmentPanel } from '@/components/admin/admin-scoring-adjustment-panel'
 import { AdminPenaltiesWinnerPushPanel } from '@/components/admin/admin-penalties-winner-push-panel'
 import { AdminResultCorrectionPushPanel } from '@/components/admin/admin-result-correction-push-panel'
+import { AdminFinalistPushPanel } from '@/components/admin/admin-finalist-push-panel'
 import { AdminQuickLinks } from '@/components/admin/admin-quick-links'
 import { AdminTabs } from '@/components/admin/admin-tabs'
 import { AdminTesteosPanel } from '@/components/admin/admin-testeos-panel'
@@ -358,6 +359,7 @@ async function NotificacionesTab() {
       <AdminManualPushRemindersPanel />
       <AdminPenaltiesWinnerPushPanel />
       <AdminResultCorrectionPushPanel />
+      <AdminFinalistPushPanel />
       <AdminScoringAdjustmentPanel />
       <AdminPushNotificationsPanel users={users} />
     </div>

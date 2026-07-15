@@ -157,6 +157,48 @@ export async function adminSendPenaltiesWinnerNoticePush(): Promise<Announcement
   }
 }
 
+export async function adminSendFinalistNoticePush(): Promise<AnnouncementActionResult> {
+  const { userId } = await auth()
+  if (!userId || userId !== process.env.ADMIN_USER_ID) {
+    return { ok: false, error: 'No autorizado.' }
+  }
+
+  const recipients = await prisma.user.findMany({
+    where: { pushSubscriptions: { some: {} } },
+    include: { pushSubscriptions: true },
+  })
+
+  if (recipients.length === 0) {
+    return { ok: false, error: 'No hay usuarios con push activo.' }
+  }
+
+  let sent = 0
+  let failed = 0
+
+  for (const user of recipients) {
+    const payload = {
+      title: 'SOMOS FINALISTAS DEL MUNDO! 🇦🇷',
+      body: 'Argentina 2-1 Inglaterra. ¡Nos vemos en la final!',
+      url: '/prode/fecha',
+      icon: getPushNotificationIcon({ name: user.name }),
+      tag: 'argentina-finalista',
+    }
+    const result = await deliverPushPayload(user.pushSubscriptions, payload, { userId: user.id })
+    sent += result.sent
+    failed += result.failed
+  }
+
+  if (sent === 0) {
+    return { ok: false, error: 'No se pudo enviar a ningún dispositivo.' }
+  }
+
+  const suffix = failed > 0 ? ` (${failed} falló)` : ''
+  return {
+    ok: true,
+    message: `Aviso enviado a ${recipients.length} usuario${recipients.length === 1 ? '' : 's'} (${sent} dispositivo${sent === 1 ? '' : 's'})${suffix}.`,
+  }
+}
+
 const PIO_RESULT_CORRECTION_MATCH_ID = 90
 
 export async function adminSendPioResultCorrectionPush(): Promise<AnnouncementActionResult> {
