@@ -7,6 +7,7 @@ import './globals.css'
 import 'flag-icons/css/flag-icons.min.css'
 
 import { PullToRefresh } from '@/components/layout/pull-to-refresh'
+import { ShutdownDialog } from '@/components/layout/shutdown-dialog'
 import { ensureDbUser } from '@/lib/queries/users'
 import { getSiteUrl } from '@/lib/site-url'
 
@@ -60,6 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       >
         <body className="min-h-full bg-background text-foreground antialiased">
           <PullToRefresh prodeName={dbUser?.name}>{children}</PullToRefresh>
+          <ShutdownDialog />
           <Toaster richColors closeButton position="top-center" />
         </body>
       </html>
